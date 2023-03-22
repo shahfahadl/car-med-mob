@@ -73,15 +73,15 @@
 
 ### Key Features <a name="key-features"></a>
 
-> Live Customer order creation
-> Live Customer order cancellation
-> Live Customer order Bidding
-> Live Customer order Rating
-> Live Vendor order Acceptance and Bidding
-> Live Vendor order Completion
-> Payments
-> Location
-> And much more
+-[] Live Customer order creation
+-[] Live Customer order cancellation
+-[] Live Customer order Bidding
+-[] Live Customer order Rating
+-[] Live Vendor order Acceptance and Bidding
+-[] Live Vendor order Completion
+-[] Payments
+-[] Location
+-[] And much more
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -101,24 +101,20 @@ To get a local copy up and running, follow these steps.
 ### Prerequisites
 
 npm install
-yarn install
 
 ### Setup
 
 Clone this repository to your desired folder:
 
-git clone https://github.com/waleed2000x/carmed-frontend.git
-git clone https://github.com/waleed2000x/carmed-backend.git
+git clone https://github.com/waleed2000x/car-med-mob.git
 
 ### Install
 
 npm install
-yarn install
 
 ### Usage
 
-yarn run dev for Frontend
-npm run dev for Backend
+npm start
 
 ### Run tests
 
@@ -148,16 +144,16 @@ This is not a deployable project
 ## 🔭 Future Features <a name="future-features"></a>
 ### future-features
 
-> Add location
-> Add Payments
-
-### errors
-
-> Signup without selecting dropdowns
-> Reload Order [id] shows error
-> Routes not protected
-> styling mistakes
-> on Logout and login sidebar margin not updated
+-[] Add location
+-[] Add Payments
+-[] Add Orders
+-[] Add Registration
+-[] Add available orders
+-[] Add completed orders
+-[] Add inProcessOrders
+-[] Add orderNow
+-[] Add Process
+-[] Add Single Order
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- CONTRIBUTING -->
