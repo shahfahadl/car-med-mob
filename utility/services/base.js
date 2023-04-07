@@ -1,11 +1,9 @@
-import { BrowserUtility } from '@utility/browser-utility';
-import { commonConstants } from '@utility/constants/api';
+import { BrowserUtility } from '../browser-utility';
+import { commonConstants } from '../constants/api';
 import axios from 'axios';
-import getConfig from 'next/config';
-const { publicRuntimeConfig } = getConfig();
+import process from '../../env'
 
-const server = publicRuntimeConfig.apiPath;
-const baseURL = server;
+const baseURL = process.API_PATH;
 
 const onSuccess = (response) => response.data
 
@@ -26,6 +24,7 @@ const onError = async (error) => {
 }
 
 const request = async (options, isSecure) => {
+  console.log("options : ",options)
   const headers = {};
 
   if (isSecure) {

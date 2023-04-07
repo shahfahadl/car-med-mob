@@ -1,4 +1,4 @@
-import { BrowserUtility } from '@utility/browser-utility';
+import { BrowserUtility } from '../browser-utility';
 import { APIPath, commonConstants } from '../constants/api';
 import { BaseService } from './base';
 import { CRUDService } from './crud';

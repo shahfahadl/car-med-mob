@@ -1,4 +1,4 @@
-import { CommonUtility } from '@utility/common';
+import { CommonUtility } from '../common';
 import { BaseService } from './base';
 
 export class CRUDService {

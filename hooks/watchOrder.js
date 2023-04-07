@@ -1,8 +1,8 @@
-import FirebaseService from '@utility/services/firebase';
+import FirebaseService from '../utility/services/firebase';
 import { collection, query, where,doc, getDoc } from 'firebase/firestore';
 import { useMemo } from 'react';
-import { useCollection, useDocument } from 'react-firebase-hooks/firestore';
-import { useAuth } from "@contexts/auth"
+import { useCollection} from 'react-firebase-hooks/firestore';
+import { useAuth } from "../contexts/auth";
 
 export const orderUserPending = () => {
     const { user } = useAuth();

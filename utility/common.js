@@ -1,3 +1,5 @@
+import process from '../env'
+
 export class CommonUtility {
     static objectToParams = (obj) => {
       let str = '';
@@ -11,4 +13,20 @@ export class CommonUtility {
       }
       return str;
     };
+
+    static useBackendImage = (image) =>{
+      return process.IMAGE_PATH + image
+    }
+
+    static currencyFormat = (value, currency, options = {}) => {
+      const tempCurrency = currency || "pkr";
+      return isNaN(value || 0)
+        ? value
+        : new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: tempCurrency,
+            ...(options || {}),
+          }).format(value || 0);
+    };
+
   }

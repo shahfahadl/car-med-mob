@@ -8,13 +8,14 @@ export const colors = {
     boxShadow: "#c9c9c9",
     blue: "#0390fc",
     halfBlack: "#bfbfbf",
+    navBg: "#11001C",
 }
 
 export const fonts = {
     fontFamilyRegular: "font-family:'Inter-Regular';",
     fontFamilyBold: "font-family:'Inter-Bold'; font-weight: bold; ",
-    fontSizeNormal: "16px",
-    fontSizeLarge: "20px",
-    fontSizeXLarge: "30px",
-    fontSizeSmall: "12px",
+    fontSizeNormal: "font-size:16px;",
+    fontSizeLarge: "font-size:20px;",
+    fontSizeXLarge: "font-size:30px;",
+    fontSizeSmall: "font-size:12px;",
 }

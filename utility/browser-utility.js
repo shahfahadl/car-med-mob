@@ -1,32 +1,61 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export class BrowserUtility {
-    static save = (key, value) => {
-        window.localStorage.setItem(key, value);
-    };
-
-    static get = key => window.localStorage.getItem(key);
-
-    static saveObj = (key, obj) => {
-        localStorage.setItem(key, JSON.stringify(obj));
-    };
-
-    static getObj = (key) => {
-        const temp = localStorage.getItem(key);
-        if (temp) {
-            return JSON.parse(temp)
-        }
-        return null;
-    };
-
-    static remove = key => {
-        window.localStorage.removeItem(key);
-    };
-
-    static removeAll = () => {
-        window.localStorage.clear();
-    };
-
-    static isMobileSafari() {
-        const ua = window.navigator.userAgent;
-        return /(iPad|iPhone|iPod).*WebKit/.test(ua) && !/(CriOS|OPiOS)/.test(ua);
+  static save = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (error) {
+      console.log('Error saving data:', error);
     }
+  };
+
+  static get = async (key) => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      return value;
+    } catch (error) {
+      console.log('Error retrieving data:', error);
+      return null;
+    }
+  };
+
+  static saveObj = async (key, obj) => {
+    try {
+      const jsonValue = JSON.stringify(obj);
+      await AsyncStorage.setItem(key, jsonValue);
+    } catch (error) {
+      console.log('Error saving object:', error);
+    }
+  };
+
+  static getObj = async (key) => {
+    try {
+      const jsonValue = await AsyncStorage.getItem(key);
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (error) {
+      console.log('Error retrieving object:', error);
+      return null;
+    }
+  };
+
+  static remove = async (key) => {
+    try {
+      await AsyncStorage.removeItem(key);
+    } catch (error) {
+      console.log('Error removing data:', error);
+    }
+  };
+
+  static removeAll = async () => {
+    try {
+      await AsyncStorage.clear();
+    } catch (error) {
+      console.log('Error clearing data:', error);
+    }
+  };
+
+  static isMobileSafari() {
+    const ua = window.navigator.userAgent;
+    return /(iPad|iPhone|iPod).*WebKit/.test(ua) && !/(CriOS|OPiOS)/.test(ua);
+  }
 }

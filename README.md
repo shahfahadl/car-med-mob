@@ -145,7 +145,6 @@ This is not a deployable project
 ### future-features
 
 -[] Add location
--[] Add Payments
 -[] Add Orders
 -[] Add Registration
 -[] Add available orders
@@ -153,7 +152,11 @@ This is not a deployable project
 -[] Add inProcessOrders
 -[] Add orderNow
 -[] Add Process
--[] Add Single Order
+
+### Errors
+-[] No validations for forms at registration
+-[] Pages not Fully made
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- CONTRIBUTING -->
