@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components/native';
 import DrawerHook from '../hooks/handleDrawer'
-import { close,listDashes,arrowRight,play,pause, tick,list, listDashesWhite, playWhite, pauseWhite, tickWhite } from './importingImages'
+import { close,listDashes,arrowRight,play,pause, tick,list, listDashesWhite, playWhite, pauseWhite, tickWhite, listWhite, closeWhite } from './importingImages'
 import { useAuth } from '../contexts/auth'
 import { TouchableOpacity } from 'react-native';
 import { useNavigation , useRoute } from '@react-navigation/native';
@@ -26,6 +26,7 @@ const NavContainer = styled.View`
     width: 280px;
     height: 100%;
     display: flex;
+    justify-content: start;
     flex-direction: column;
     align-items: center;
     background-color: ${colors.navBg};
@@ -76,18 +77,32 @@ const MenuItem = styled.TouchableOpacity`
 `
 
 const MenuContainer = styled.View`
-    width: 50px;
+    width: 100%;
+    background-color: ${colors.navBg};
     height: 50px;
     display: flex;
-    align-items: center;
     justify-content: center;
     display: ${({disable})=> disable? "none":"" };
+    padding-left: 20px;
+`
+
+const LogoutButton = styled.TouchableOpacity`
+    width: 220px;
+    padding: 10px;
+    border: 2px solid ${colors.yellow};
+    border-radius: 5px;
+    margin: 10px 0;
+    margin-top: auto;
+    letter-spacing: 3px;
+    font-size: 14;
+    color: ${colors.yellow};
+    text-align: center;
 `
 
 const Navigation = () => {
     const navigation = useNavigation();
     const { isOpen , openDrawer , closeDrawer } = DrawerHook()
-    const { isVendor , user} = useAuth()
+    const { isVendor , user, logout} = useAuth()
     const route = useRoute();
     const routeName = route.name
 
@@ -138,6 +153,14 @@ const Navigation = () => {
         },[400])
     }
 
+    const handleLogout = () => {
+        logout()
+        closeDrawer()
+        setTimeout(()=>{
+            navigation.navigate("Registration")
+        },[400])
+    }
+
     return (<>{ user && 
     <DrawerContainer isOpen={isOpen}>
          <NavContainer>
@@ -145,7 +168,7 @@ const Navigation = () => {
                 <ImageContainer image={user.profile} />
                 <View>
                     <H3>{user.name}</H3>
-                    <H4 dimmed >View Profile</H4>
+                    <H4 dimmed >{user.type}</H4>
                 </View>
             </ProfileContainer>
             <View>
@@ -159,14 +182,17 @@ const Navigation = () => {
                     </MenuItem>
                 ))}
             </View>
+            <LogoutButton onPress={handleLogout} >
+                LOGOUT
+            </LogoutButton>
         </NavContainer>
         <MenuContainer >
             { isOpen? 
                 <TouchableOpacity onPress={closeDrawer} >
-                    <IconContainer source={close} />
+                    <IconContainer source={closeWhite} />
                 </TouchableOpacity> : 
                 <TouchableOpacity onPress={openDrawer} >
-                    <IconContainer source={list} />
+                    <IconContainer source={listWhite} />
                 </TouchableOpacity>
             }
         </MenuContainer> 
