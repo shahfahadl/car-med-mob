@@ -12,7 +12,7 @@ const CustomText = styled.Text`
   color: ${({ inverted }) => inverted? "black":"white" };
 `;
 
-export const CustomButton = ({inverted=false,children, ...rest }) => {
+export const CustomButton = ({inverted,children, ...rest }) => {
     return (
       <StyledButton {...rest} >
         <CustomText inverted={inverted} >

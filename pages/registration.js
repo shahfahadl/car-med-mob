@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 import { useAuth } from '../contexts/auth'
 import { useNavigation } from '@react-navigation/native';
 import Login from '../page-components/registration/login';
-// import Signup from '../page-components/registration/signup';
+import Signup from '../page-components/registration/signup';
 
 const RegistrationContainer = styled.ScrollView`
   min-height: 100%;
@@ -27,7 +27,7 @@ function Registration() {
   return (
     <RegistrationContainer>
       <Login />
-      {/* <Signup /> */}
+      <Signup />
     </RegistrationContainer>
   )
 }

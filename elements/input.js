@@ -38,7 +38,7 @@ const Input = styled.TextInput`
   placeholderTextColor: #8a8a8a;
 `;
 
-export const CustomTextInput = ({ label,hint,width, inverted=false, ...rest }) => {
+export const CustomTextInput = ({ label,hint,width, inverted, ...rest }) => {
   return (
     <TextInputContainer width={width}  >
       <Label inverted={inverted} >{label}</Label>
@@ -61,7 +61,7 @@ const Images = styled.Image`
   height: 16px;
 `;
 
-export const CustomPasswordInput = ({ label,hint, width,inverted=false, ...rest }) => {
+export const CustomPasswordInput = ({ label,hint, width,inverted, ...rest }) => {
 
   const [hide , setHide] = useState(true)
 
@@ -104,10 +104,6 @@ export const CustomDropdownInput = ({ label,width, options , inverted=false, ...
       <CustomPicker
         inverted={inverted}
         {...rest}
-        // selectedValue={selectedValue}
-        // onValueChange={(itemValue, itemIndex) =>
-        //   setSelectedValue(itemValue)
-        // }
       >
         {options.map((option)=>(
           <CustomPicker.Item key={option.label} label={option.label} value={option.value} />
@@ -135,7 +131,7 @@ const Image = styled.Image`
   resizeMode: 'cover';
 `
 
-export const CustomImageInput = ({image , setImage, inverted=false,styling}) => {
+export const CustomImageInput = ({image , setImage, inverted,styling}) => {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({

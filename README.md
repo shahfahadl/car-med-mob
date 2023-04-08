@@ -146,15 +146,14 @@ This is not a deployable project
 
 -[] Add location
 -[] Add Orders
--[] Add Registration
 -[] Add available orders
 -[] Add completed orders
 -[] Add inProcessOrders
 -[] Add orderNow
 -[] Add Process
+-[] Check User and vendor Signup Validations
 
 ### Errors
--[] No validations for forms at registration
 -[] Pages not Fully made
 
 
