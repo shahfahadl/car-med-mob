@@ -1,6 +1,72 @@
 import React from 'react'
+import Toast from 'react-native-toast-message';
 
 export default function Signup() {
+
+    const signupFun = async () => {
+        if(userType === "vendor"){
+          const payload = new FormData()
+          payload.append('profile', Date.now() + image.name )
+          payload.append('image', image)
+          payload.append('name', name)
+          payload.append('contact', contact)
+          payload.append('email', email)
+          payload.append('password', password)
+          payload.append('cnic', cnic)
+          payload.append('skill', skills)
+          payload.append('gender', gender)
+          try{
+            const res = await VendorService.add(payload);
+            if(res.token){
+                login();
+                VendorService.storeVendor(res);
+                navigation.navigate('Vendor_availableOrders');
+            }
+          }catch(error){
+            console.log(error)
+            Toast.show({
+              type: 'error',
+              text1: 'Some error occurred',
+            });
+          }
+        }else{
+          const data = new FormData()
+          if(image){
+              data.append('profile', Date.now() + image.name)
+              data.append('image', image)
+          }
+          data.append('name', name)
+          data.append('cnic', cnic)
+          data.append('email', email)
+          data.append('password', password)
+          data.append('gender',gender )
+    
+          try{
+            let res = null
+            if(image){
+              res = await UserService.add(payload)
+            }else{
+              res = await UserService.addWithoutProfile(payload)
+            }
+            if(res.token){
+              login();
+              UserService.storeUser(res);
+              navigation.navigate('User_order');
+            }
+            Toast.show({
+              type: 'success',
+              text1: 'Creating Account',
+            });
+          }catch(error){
+            console.error(error)
+            Toast.show({
+              type: 'error',
+              text1: 'Some error occurred',
+            });
+          }
+        }
+    }
+
   return (
     <SignupContainer>
         <Heading>

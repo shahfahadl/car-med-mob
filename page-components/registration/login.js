@@ -1,9 +1,19 @@
-import React, { useState } from 'react'
-import registrationImage from '../../assets/registration-bg.png'
-import arrowImage from '../../assets/arrow-down.png'
-import { CustomTextInput, CustomDropdownInput , CustomPasswordInput } from '../../elements/input';
-import { CustomButton } from '../../elements/button';
-import { LoginSchema } from '../../utility/validationSchema';
+import React, { useState } from "react";
+import styled from "styled-components/native";
+import registrationImage from "../../assets/registration-bg.png";
+import arrowImage from "../../assets/arrow-down.png";
+import {
+  CustomTextInput,
+  CustomDropdownInput,
+  CustomPasswordInput,
+} from "../../elements/input";
+import { CustomButton } from "../../elements/button";
+import Toast from 'react-native-toast-message';
+import { LoginSchema } from "../../utility/validationSchema";
+import UserService from "../../utility/services/user";
+import { useAuth } from "../../contexts/auth";
+import { useNavigation } from '@react-navigation/native';
+import { fonts } from "../../utility/theme";
 
 const SignupButton = styled.Text`
   display: flex;
@@ -31,33 +41,102 @@ const RegistrationImage = styled.Image`
   right: 0;
   width: 210px;
   height: 260px;
-`
+`;
 const ArrowImage = styled.Image`
   width: 60px;
   height: 24px;
-`
+`;
 
 export default function Login() {
 
-  const [ values , setValues ] = useState({
+  const [ errors , setErrors ] = useState({})
+  const [role, setRole] = useState("user");
+  const navigation = useNavigation()
+  const { login } = useAuth() ;
+
+  const [values, setValues] = useState({
     email: "",
     password: "",
-    role:"user"
-  })
+  });
+  const singInAsOptions = [
+    { label: "User", value: "user" },
+    { label: "Vendor", value: "vendor" },
+  ];
+
+  const handleLogin = () => {
+    LoginSchema.validate(values, { abortEarly: false })
+    .then(async ()=>{
+        try {
+            let res = null;
+            if (role === "user") {
+                res = await UserService.login(values);
+            } else {
+                res = await VendorService.login(values);
+            }
+            UserService.storeUser(res);
+            if (res.token) {
+                login();
+                if (role === "user") {
+                navigation.navigate("User_order");
+                } else {
+                navigation.navigate("Vendor_availableOrders");
+                }
+            }
+            Toast.show({
+                type: "success",
+                text1: "Logging In",
+            });
+        } catch (error) {
+            Toast.show({
+                type: "error",
+                text1: "User not available",
+            });
+        }
+    })
+    .catch((validationErrors)=>{
+        const errors = {};
+        validationErrors.inner.forEach((error) => {
+            errors[error.path] = error.message;
+        });
+        setErrors(errors);
+        Toast.show({
+            type: "error",
+            text1: "Form Values Incorrect",
+        });
+    })
+  };
 
   return (
     <LoginContainer>
-        <RegistrationImage source={registrationImage} />
-        <CustomTextInput value={email} onChangeText={(e)=>setEmail(e)} width="80%" placeholder="example@gmail.com" label="Email" />
-        <CustomPasswordInput value={password} onChangeText={(e)=>setPassword(e)} width="80%" placeholder="***************" label="Password" />
-        <CustomDropdownInput width="80%" options={singInAsOptions} selectedValue={userType} onValueChange={(value)=>setUserType(value)} label="Sign-in As" />
-        <CustomButton onPress={Login}>
-          Log In
-        </CustomButton>
-        <SignupButton>
-          Signup
-          <ArrowImage source={arrowImage} />
-        </SignupButton>
-      </LoginContainer>
-  )
+      <RegistrationImage source={registrationImage} />
+      <CustomTextInput
+        value={values.email}
+        onChangeText={(e) => setValues((prev)=>({...prev,email: e }))}
+        width="80%"
+        placeholder="example@gmail.com"
+        label="Email"
+        hint={errors.email}
+      />
+      <CustomPasswordInput
+        value={values.password}
+        onChangeText={(e) => setValues((prev)=>({...prev,password: e }))}
+        width="80%"
+        placeholder="***************"
+        label="Password"
+        hint={errors.password}
+      />
+      <CustomDropdownInput
+        width="80%"
+        options={singInAsOptions}
+        selectedValue={role}
+        onValueChange={(value) => setRole(value)}
+        label="Sign-in As"
+      />
+      <CustomButton onPress={handleLogin}>Log In</CustomButton>
+      <SignupButton>
+        Signup
+        <ArrowImage source={arrowImage} />
+      </SignupButton>
+    </LoginContainer>
+  );
 }

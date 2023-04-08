@@ -9,12 +9,21 @@ import { TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { colors } from '../utility/theme';
 
 const TextInputContainer = styled.View`
   max-width: 350px;
   width: ${({ width }) => width };
 `;
   
+const Hint = styled.Text`
+  position: absolute;
+  bottom: -12px;
+  left: 0;
+  font-size: 10px;
+  color: ${colors.red};
+`;
+
 const Label = styled.Text`
   color: ${({ inverted }) => inverted? "white":"black" };
   margin-bottom: 10px;
@@ -29,11 +38,14 @@ const Input = styled.TextInput`
   placeholderTextColor: #8a8a8a;
 `;
 
-export const CustomTextInput = ({ label,width, inverted=false, ...rest }) => {
+export const CustomTextInput = ({ label,hint,width, inverted=false, ...rest }) => {
   return (
     <TextInputContainer width={width}  >
       <Label inverted={inverted} >{label}</Label>
-      <Input {...rest} inverted={inverted} />
+      <View>
+        <Input {...rest} inverted={inverted} />
+        {hint && <Hint>{hint}</Hint>}
+      </View>
     </TextInputContainer>
   );
 };
@@ -49,7 +61,7 @@ const Images = styled.Image`
   height: 16px;
 `;
 
-export const CustomPasswordInput = ({ label, width,inverted=false, ...rest }) => {
+export const CustomPasswordInput = ({ label,hint, width,inverted=false, ...rest }) => {
 
   const [hide , setHide] = useState(true)
 
@@ -70,6 +82,7 @@ export const CustomPasswordInput = ({ label, width,inverted=false, ...rest }) =>
             }
           </TouchableOpacity>
         </InputLeft>
+        {hint && <Hint>{hint}</Hint>}
       </View>
     </TextInputContainer>
   );
