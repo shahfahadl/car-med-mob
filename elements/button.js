@@ -9,7 +9,7 @@ const StyledButton = styled.TouchableOpacity`
 
 const CustomText = styled.Text`
   ${fonts.fontFamilyBold}
-  color: ${({ inverted, color }) => color || inverted? "black":"white" };
+  color: ${({ inverted, color }) => color || (inverted? "black":"white") };
 `;
 
 export const CustomButton = ({inverted,children, ...rest }) => {
@@ -23,9 +23,10 @@ export const CustomButton = ({inverted,children, ...rest }) => {
   };
 
 const StyledOutlineButton = styled.TouchableOpacity`
-  padding: 10px 30px;
-  border: 2px solid ${({color})=>color};
-  border-radius: 15px;
+  padding: 5px 10px;
+  border: 3px solid ${({color})=>color};
+  border-radius: 10px;
+
 `
 
 export const CustomOutlineButton = ({color,children, ...rest }) => {

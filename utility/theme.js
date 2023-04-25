@@ -5,11 +5,10 @@ export const colors = {
     yellow: "#FFC30B",
     yellowLight: "rgba(255, 195, 11, 0.2)",
     box: "#F1F3F5",
-    boxShadow: "#c9c9c9",
+    boxShadow: "#9d9d9d",
     blue: "#0390fc",
     halfBlack: "#bfbfbf",
     navBg: "#11001C",
-    boxShadow: "#c9c9c9",
 }
 
 export const fonts = {

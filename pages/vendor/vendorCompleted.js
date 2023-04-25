@@ -3,7 +3,7 @@ import React from 'react'
 import Navigation from '../../Layout/Navigation'
 import styled from 'styled-components/native'
 import { colors, fonts } from "../../utility/theme";
-import { orderVendorProcess } from "../../hooks/watchOrder";
+import { orderVendorCompleted } from "../../hooks/watchOrder";
 import { ImageContainer } from "../../elements/common";
 import { CustomOutlineButton } from "../../elements/button";
 
@@ -56,22 +56,11 @@ const OrderTop = styled.View`
   width: 100%;
   display: flex;
   flex-direction: row;
-  column-gap: 20px;
+  justify-content: space-between;
 `;
 
-const OrderBid = styled.View`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  margin: 20px 0;
-`;
-
-const Buttons = styled.View`
-  display: flex;
-  flex-direction: row;
-  justify-content: end;
-  width:100%;
-  column-gap: 10px;
+const OrderBottom = styled.View`
+    margin-top: 10px;
 `;
 
 const OrderItem = ({ order }) => {
@@ -83,44 +72,49 @@ const OrderItem = ({ order }) => {
         </View>
         <View>
           <FlexRow>
-            <H4 bold>Name &nbsp;</H4>
-            <H4>{order.userName}</H4>
-          </FlexRow>
-          <FlexRow style={{ alignItems: "center" }}>
-            <H4 bold>Location &nbsp;</H4>
-            <H4 light>{order.location} &nbsp;</H4>
-            <ShowMaps>
-              <H4>Show maps</H4>
-            </ShowMaps>
-          </FlexRow>
-          <FlexRow>
-            <H4 bold>Problem &nbsp;</H4>
-            <H4>{order.problem}</H4>
+            <H4 bold>Price &nbsp;</H4>
+            <H4>PKR {order.bid}</H4>
           </FlexRow>
         </View>
       </OrderTop>
-      <OrderBid>
+      <OrderBottom>
         <FlexRow>
-          <H4 light bold>
-            Price &nbsp;
+          <H4 bold>
+            Order Id &nbsp;
           </H4>
-          <H4 bold>PKR {order.bid}</H4>
+          <H4>{order.id}</H4>
         </FlexRow>
-      </OrderBid>
-      <Buttons>
-        <CustomOutlineButton color={colors.red} >
-          Cancel
-        </CustomOutlineButton>
-        <CustomOutlineButton color={colors.green} >
-          Complete
-        </CustomOutlineButton>
-      </Buttons>
+        <FlexRow>
+          <H4 bold>
+            Name &nbsp;
+          </H4>
+          <H4>{order.userName}</H4>
+        </FlexRow>
+        <FlexRow>
+          <H4 bold>
+            Location &nbsp;
+          </H4>
+          <H4>{order.location}</H4>
+        </FlexRow>
+        <FlexRow>
+          <H4 bold>
+            Problem &nbsp;
+          </H4>
+          <H4>{order.problem}</H4>
+        </FlexRow>
+        <FlexRow>
+          <H4 bold>
+            Rating &nbsp;
+          </H4>
+          <H4>{!!order.rating? order.rating : "Not Rated Yet" }</H4>
+        </FlexRow>
+      </OrderBottom>
     </OrderContainer>
   );
 };
 
-const InProcessOrders = () => {
-  const { data: orders } = orderVendorProcess();
+const VendorCompleted = () => {
+  const { data: orders } = orderVendorCompleted();
   console.log(orders);
   return (
     <Container>
@@ -140,4 +134,4 @@ const InProcessOrders = () => {
   );
 }
 
-export default InProcessOrders
+export default VendorCompleted

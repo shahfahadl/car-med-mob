@@ -31,38 +31,38 @@ export class CommonUtility {
 }
 
 export const genderOptions = [
-  { text: "Male", value: "male" },
-  { text: "Female", value: "female" },
+  { label: "Male", value: "male" },
+  { label: "Female", value: "female" },
 ];
 
 export const signInAsOptions = [
-  { value: "user", text: "User" },
-  { value: "vendor", text: "Vendor" },
+  { value: "user", label: "User" },
+  { value: "vendor", label: "Vendor" },
 ];
 
 export const skillOption = [
   {
     value: "dentAndPaint",
-    text: "Dent and Paint",
+    label: "Dent and Paint",
   },
   {
     value: "carWash",
-    text: "Car Wash",
+    label: "Car Wash",
   },
   {
     value: "tyres",
-    text: "Tyres",
+    label: "Tyres",
   },
   {
     value: "mechanic",
-    text: "Mechanic",
+    label: "Mechanic",
   },
   {
     value: "electrician",
-    text: "Electrician",
+    label: "Electrician",
   },
   {
     value: "battery",
-    text: "Battery",
+    label: "Battery",
   },
 ];

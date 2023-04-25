@@ -6,6 +6,7 @@ import { CustomButton } from "../../elements/button";
 import Toast from "react-native-toast-message";
 import { LoginSchema } from "../../utility/validationSchema";
 import UserService from "../../utility/services/user";
+import VendorService from "../../utility/services/vendor";
 import { useAuth } from "../../contexts/auth";
 import { useNavigation } from "@react-navigation/native";
 import { fonts } from "../../utility/theme";
