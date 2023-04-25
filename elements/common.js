@@ -9,8 +9,8 @@ const Container = styled.View`
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid white;
-    width: 65px;
-    height: 65px;
+    width: ${({width})=>width}px;
+    height: ${({height})=>height}px;
 `
 
 const Image = styled.Image`
@@ -23,11 +23,10 @@ const IconContainer = styled.Image`
     height: 30px;
 `
 
-export const ImageContainer = ({image}) => {
+export const ImageContainer = ({image , width=65 , height=65}) => {
     const url = image? CommonUtility.useBackendImage(image):null;
-    console.log("url: ",url)
     return (
-        <Container>
+        <Container width={width} height={height} >
             {url? <Image source={url} /> : <IconContainer source={userIcon} /> }
         </Container>
     )

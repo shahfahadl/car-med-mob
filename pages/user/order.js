@@ -41,7 +41,7 @@ const OrderRight = styled.TouchableOpacity`
 `;
 
 const ShowMaps = styled.TouchableOpacity`
-  padding: 2px 5px;
+  padding: 0px 5px;
   border: 2px solid black;
   background-color: ${colors.yellowLight};
   width: max-content;
@@ -57,7 +57,7 @@ const H4 = styled.Text`
 const FlexRow = styled.View`
   display: flex;
   flex-direction: row;
-`
+`;
 
 const IconContainer = styled.Image`
   height: 20px;
@@ -70,24 +70,42 @@ const Center = styled.View`
   margin-top: 20px;
 `;
 
+const RequestCount = styled.Text`
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: -8px;
+  right: -5px;
+  border-radius: 50%;
+  background-color: ${colors.red};
+  color: white;
+`;
+
 const OrderItem = ({ order }) => {
   return (
     <OrderContainer>
       <OrderLeft>
         <View>
           <FlexRow>
-            <H4 bold>Name &nbsp;</H4>
-            <H4>{order.userName}</H4>
+            <H4 bold>Car Type &nbsp;</H4>
+            <H4>{order.carType}</H4>
           </FlexRow>
-          <FlexRow style={{alignItems: "center"}} >
-            <H4 bold>Location &nbsp;</H4><H4 light>{order.location} &nbsp;</H4><ShowMaps><H4>Show maps</H4></ShowMaps> 
+          <FlexRow style={{ alignItems: "center" }}>
+            <H4 bold>Location &nbsp;</H4>
+            <H4 light>{order.location} &nbsp;</H4>
+            <ShowMaps>
+              <H4>Show maps</H4>
+            </ShowMaps>
           </FlexRow>
           <FlexRow>
             <H4 bold>Problem &nbsp;</H4>
             <H4>{order.problem}</H4>
           </FlexRow>
         </View>
-        <FlexRow style={{marginTop: "20px"}} >
+        <FlexRow style={{ marginTop: "20px" }}>
           <H4 light bold>
             Bid &nbsp;
           </H4>
@@ -95,6 +113,9 @@ const OrderItem = ({ order }) => {
         </FlexRow>
       </OrderLeft>
       <OrderRight>
+        {order.requests.length > 0 && (
+          <RequestCount>{order.requests.length}</RequestCount>
+        )}
         <IconContainer source={arrowRight} />
       </OrderRight>
     </OrderContainer>
@@ -103,21 +124,21 @@ const OrderItem = ({ order }) => {
 
 const Order = () => {
   const { data: orders, loading } = orderUserPending();
-  console.log(orders);
 
   return (
     <Container>
       <Navigation />
-      { orders.length > 0 ? 
+      {orders.length > 0 ? (
         <OrdersContainer>
           {orders?.map((order) => (
             <OrderItem key={order.id} order={order} />
           ))}
-        </OrdersContainer>:
+        </OrdersContainer>
+      ) : (
         <Center>
-          <H4 bold >No Orders Yet</H4>
+          <H4 bold>No Orders Yet</H4>
         </Center>
-      }
+      )}
     </Container>
   );
 };

@@ -144,19 +144,13 @@ This is not a deployable project
 ## 🔭 Future Features <a name="future-features"></a>
 ### future-features
 
--[] Add location
--[] Add Orders
--[] Add available orders
--[] Add completed orders
--[] Add inProcessOrders
--[] Add Process
--[] Check User and vendor Signup Validations
 
 ### Errors
--[] Pages not Fully made
--[] Cannot order
--[] Cannot signup
--[] Signup Image not uploading
+
+-[] Cannot signup due to image not uploading
+-[] Buttons not working
+-[] Cards button and popup not handled
+-[] Booking not handled at all
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- CONTRIBUTING -->

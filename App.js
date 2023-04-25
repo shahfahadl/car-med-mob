@@ -15,6 +15,7 @@ import AvailableOrders from './pages/vendor/availableOrders'
 import InProcessOrders from './pages/vendor/inProcessOrders'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import VendorCompleted from './pages/vendor/vendorCompleted';
 
 const Stack = createStackNavigator();
 
@@ -56,6 +57,7 @@ export default function App() {
           <Stack.Screen name="User_singleOrder" component={SingleOrder} />
           <Stack.Screen name="Vendor_availableOrders" component={AvailableOrders} />
           <Stack.Screen name="Vendor_inProcessOrders" component={InProcessOrders} />
+          <Stack.Screen name="Vendor_completed" component={VendorCompleted} />
         </Stack.Navigator>
       <PositionFixed>
         <Toast />

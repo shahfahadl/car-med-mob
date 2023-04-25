@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components/native';
 import DrawerHook from '../hooks/handleDrawer'
-import { close,listDashes,arrowRight,play,pause, tick,list, listDashesWhite, playWhite, pauseWhite, tickWhite, listWhite, closeWhite } from './importingImages'
+import { listDashes,arrowRight,play,pause, tick, listDashesWhite, playWhite, pauseWhite, tickWhite, listWhite, closeWhite } from './importingImages'
 import { useAuth } from '../contexts/auth'
 import { TouchableOpacity } from 'react-native';
 import { useNavigation , useRoute } from '@react-navigation/native';
@@ -119,6 +119,12 @@ const Navigation = () => {
                     name: "In-Process Requests",
                     routeName: "Vendor_inProcessOrders",
                     selected: routeName === "Vendor_inProcessOrders"
+                },
+                {
+                    icon: routeName === "Vendor_completed"? tick : tickWhite,
+                    name: "Completed",
+                    routeName: "Vendor_completed",
+                    selected: routeName === "Vendor_completed"
                 }
             ]
         }else{

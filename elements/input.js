@@ -96,24 +96,23 @@ const CustomPicker = styled(Picker)`
   color: ${({ inverted }) => inverted? "black":"white" };
 `;
 
-export const CustomDropdownInput = ({ label,width, options , inverted, ...rest }) => {
-  console.log("first")
-  useEffect(()=>{
-    console.log("first")
-    // console.log("label : ",label)
-    // console.log("options : ",options)
-  },[])
+export const CustomDropdownInput = ({ label,width, options , inverted=false, ...rest }) => {
+
   return (
     <TextInputContainer width={width} >
-      {/* <Label inverted={inverted} >{label}</Label>
+      <Label inverted={inverted} >{label}</Label>
       <CustomPicker
         inverted={inverted}
         {...rest}
+        // selectedValue={selectedValue}
+        // onValueChange={(itemValue, itemIndex) =>
+        //   setSelectedValue(itemValue)
+        // }
       >
         {options.map((option)=>(
           <CustomPicker.Item key={option.label} label={option.label} value={option.value} />
         ))}
-      </CustomPicker> */}
+      </CustomPicker>
     </TextInputContainer>
   );
 };
