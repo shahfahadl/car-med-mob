@@ -1,5 +1,6 @@
 import { CommonUtility } from '../common';
 import { BaseService } from './base';
+import { APIPath } from '../constants/api';
 
 export class CRUDService {
   url = '';
@@ -22,6 +23,10 @@ export class CRUDService {
 
   add(data) {
     return BaseService.post(this.url, data, this.isSecure);
+  }
+
+  addWithoutProfile(data) {
+    return BaseService.post(this.url + APIPath.addWithoutProfile, data, this.isSecure);
   }
 
   update(id, data) {

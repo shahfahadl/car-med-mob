@@ -2,11 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components/native";
 import registrationImage from "../../assets/registration-bg.png";
 import arrowImage from "../../assets/arrow-down.png";
-import {
-  CustomTextInput,
-  CustomDropdownInput,
-  CustomPasswordInput,
-} from "../../elements/input";
 import { CustomButton } from "../../elements/button";
 import Toast from "react-native-toast-message";
 import { LoginSchema } from "../../utility/validationSchema";
@@ -15,6 +10,7 @@ import { useAuth } from "../../contexts/auth";
 import { useNavigation } from "@react-navigation/native";
 import { fonts } from "../../utility/theme";
 import { signInAsOptions } from "../../utility/common";
+import { CustomDropdownInput, CustomTextInput, CustomPasswordInput } from "../../elements/input"
 
 const SignupButton = styled.Text`
   display: flex;

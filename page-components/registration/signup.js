@@ -19,6 +19,9 @@ import {
   VendorSignupSchema,
 } from "../../utility/validationSchema";
 import { CustomButton } from "../../elements/button";
+import UserService from '../../utility/services/user'
+import VendorService from '../../utility/services/vendor'
+import { useAuth } from "../../contexts/auth";
 
 const SignupContainer = styled.View`
   min-height: 110vh;
@@ -104,6 +107,7 @@ const Form = () => {
     skill: "",
   });
 
+  const { login } = useAuth();
   const [mapOpen, setMapOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [image, setImage] = useState();
@@ -118,7 +122,7 @@ const Form = () => {
         .then(async () => {
           const data = new FormData();
           if (image) {
-            data.append("profile", Date.now() + image.name);
+            data.append("profile", image.name); 
             data.append("image", image);
           }
           data.append("name", values.name);
@@ -126,19 +130,18 @@ const Form = () => {
           data.append("email", values.email);
           data.append("password", values.password);
           data.append("gender", values.gender);
-
           try {
             let res = null;
-            // if (image) {
-            //   res = await UserService.add(payload);
-            // } else {
-            //   res = await UserService.addWithoutProfile(payload);
-            // }
-            // if (res.token) {
-            //   login();
-            //   UserService.storeUser(res);
-            //   navigation.navigate("User_order");
-            // }
+            if (image) {
+              res = await UserService.add(data);
+            } else {
+              res = await UserService.addWithoutProfile(data);
+            }
+            if (res.token) {
+              login();
+              UserService.storeUser(res);
+              navigation.navigate("User_order");
+            }
             Toast.show({
               type: "success",
               text1: "Creating Account",
@@ -153,7 +156,7 @@ const Form = () => {
         })
         .catch((validationErrors) => {
           const errors = {};
-          validationErrors.inner.forEach((error) => {
+          validationErrors?.inner?.forEach((error) => {
             errors[error.path] = error.message;
           });
           setErrors(errors);
@@ -169,7 +172,7 @@ const Form = () => {
       )
         .then(async () => {
           const payload = new FormData();
-          payload.append("profile", Date.now() + image.name);
+          payload.append("profile", image.name);
           payload.append("image", image);
           payload.append("name", values.name);
           payload.append("contact", values.contact);
@@ -195,7 +198,7 @@ const Form = () => {
         })
         .catch((validationErrors) => {
           const errors = {};
-          validationErrors.inner.forEach((error) => {
+          validationErrors?.inner?.forEach((error) => {
             errors[error.path] = error.message;
           });
           setErrors(errors);
@@ -247,7 +250,7 @@ const Form = () => {
         label="Password"
       />
       <View style={{ display: "flex", flexDirection: "row" }}>
-        <View>
+        <View style={{rowGap: "15px"}} >
           <CustomTextInput
             hint={errors.cnic}
             value={values.cnic}
@@ -270,7 +273,7 @@ const Form = () => {
           hint={errors.image}
           styling={"margin-top: 20px;margin-left: 30px;"}
           setImage={setImage}
-          image={values.image}
+          image={image}
           inverted={true}
         />
       </View>

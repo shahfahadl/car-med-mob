@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import { View } from 'react-native';
 import eyeBlack from '../assets/eye-black.png'
@@ -96,11 +96,16 @@ const CustomPicker = styled(Picker)`
   color: ${({ inverted }) => inverted? "black":"white" };
 `;
 
-export const CustomDropdownInput = ({ label,width, options , inverted=false, ...rest }) => {
-
+export const CustomDropdownInput = ({ label,width, options , inverted, ...rest }) => {
+  console.log("first")
+  useEffect(()=>{
+    console.log("first")
+    // console.log("label : ",label)
+    // console.log("options : ",options)
+  },[])
   return (
     <TextInputContainer width={width} >
-      <Label inverted={inverted} >{label}</Label>
+      {/* <Label inverted={inverted} >{label}</Label>
       <CustomPicker
         inverted={inverted}
         {...rest}
@@ -108,7 +113,7 @@ export const CustomDropdownInput = ({ label,width, options , inverted=false, ...
         {options.map((option)=>(
           <CustomPicker.Item key={option.label} label={option.label} value={option.value} />
         ))}
-      </CustomPicker>
+      </CustomPicker> */}
     </TextInputContainer>
   );
 };
@@ -142,11 +147,15 @@ export const CustomImageInput = ({image , setImage, inverted,styling}) => {
     });
 
     if (!result.cancelled) {
-      const fileName = result.uri.split('/').pop();
+      const regex = /data:(.*);base64,/;
+      const match = result.uri.match(regex);
+      const imageType = match[1];
+      const imageEnding = match[1].split("/")[1];
+      console.log(result)
       setImage({
         "uri": result.uri,
-        "name": fileName,
-        "type": result.type
+        "type": imageType,
+        "name": Date.now() + "." + imageEnding
       });
     }
   };

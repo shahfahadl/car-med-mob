@@ -44,12 +44,6 @@ export const VendorSignupSchema = yup.object().shape({
   image: yup
     .mixed()
     .required("Image is required")
-    .test("fileType", "Unsupported File Format", (value) => {
-      if (value) {
-        return ["image/jpeg", "image/png"].includes(value.type);
-      }
-      return true;
-    }),
 });
 
 export const UserSignupSchema = yup.object().shape({
@@ -77,11 +71,10 @@ export const UserSignupSchema = yup.object().shape({
     .string("Email is required")
     .required("password is required")
     .max(50),
+  contact: yup
+    .string(),
+  skill: yup
+    .string("Email is required"),
   gender: yup.string().required("Gender is required"),
-  image: yup.mixed().test("fileType", "Unsupported File Format", (value) => {
-    if (value) {
-      return ["image/jpeg", "image/png"].includes(value.type);
-    }
-    return true;
-  }),
+  image: yup.mixed()
 });

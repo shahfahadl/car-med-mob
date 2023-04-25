@@ -95,7 +95,6 @@ const LogoutButton = styled.TouchableOpacity`
     margin-top: auto;
     letter-spacing: 3px;
     font-size: 14;
-    color: ${colors.yellow};
     text-align: center;
 `
 
@@ -183,7 +182,9 @@ const Navigation = () => {
                 ))}
             </View>
             <LogoutButton onPress={handleLogout} >
-                LOGOUT
+                <Text style={{color : `${colors.yellow}`}} >
+                    LOGOUT
+                </Text>
             </LogoutButton>
         </NavContainer>
         <MenuContainer >

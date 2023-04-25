@@ -1,186 +1,137 @@
-import FirebaseService from '../utility/services/firebase';
-import { collection, query, where,doc, getDoc } from 'firebase/firestore';
-import { useMemo } from 'react';
-import { useCollection} from 'react-firebase-hooks/firestore';
+import { collection, query, where, doc, getDoc, getFirestore, onSnapshot } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
 import { useAuth } from "../contexts/auth";
+import { firebase } from '../utility/services/firebase';
 
-export const orderUserPending = () => {
+const firestore = getFirestore(firebase);
+
+export const orderUserPending = (status = 'pending') => {
     const { user } = useAuth();
-    const [value, loading, error] = (FirebaseService.firestore && user?.id)?
-        useCollection(
-            query(collection(FirebaseService.firestore, 'orders'), 
-                where("userId", "==", user.id),
-                where("status", "==", "pending")),
-            {
-                snapshotListenOptions: { includeMetadataChanges: true },
-            })
-        : [[], true, null]
+    const [collectionData, setCollectionData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const data = useMemo(() => {
-        const values = [];
-
-        if (value) {
-            value.forEach(doc => values.push({...doc.data() , id: doc.id }));
+    useEffect(() => {
+        if (!user || !user.id) {
+            return;
         }
 
-        return values;
-    }, [value]);
+        const orderQuery = query(collection(firestore, 'orders'), where("userId", "==", user.id), where("status", "==", status));
 
-    return { data, loading, error }
+        const unsubscribe = onSnapshot(orderQuery, (querySnapshot) => {
+            const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            setCollectionData(data);
+            setLoading(false);
+        }, (error) => {
+            console.error(error);
+            setError(error);
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, [user, firestore, status]);
+
+    return { data: collectionData, loading, error };
 }
 
-export const orderUser = async (id) => {
+export const orderUser = (id) => {
+    const [data, setCollectionData] = useState({});
+    const [loading, setLoading] = useState(true);
 
-    const [value, loading, error] = await (async () => {
-        if (FirebaseService.firestore && id) {
-          try {
-            const docRef = doc(FirebaseService.firestore, 'orders', id);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-              return [docSnap.data(), false, null];
-            } else {
-              return [{}, false, new Error('Document does not exist')];
+    useEffect(() => {
+        if (!id) {
+            return;
+        }
+
+        const ordersCollection = collection(firestore, 'orders');
+        const orderDocRef = doc(ordersCollection, id);
+
+        const unsubscribe = onSnapshot(orderDocRef, (docRef) => {
+            if (docRef.exists()) {
+                setCollectionData({...docRef.data(), id: docRef.id});
             }
-          } catch (error) {
-            return [{}, false, error];
-          }
-        }
-    })
-        console.log(value)
+            setLoading(false);
+        }, (error) => {
+            console.error(error);
+        });
 
-    const data = useMemo(() => {
-        if(value){
-            return { 
-                bid : 8888,
-                carType : "test",
-                location : "Not available for now",
-                problem : "Order",
-                rating : 0,
-                review : "",
-                status : "process",
-                userId : "63e3a4999fcab7170c1d2001",
-                userName : "shayan",
-                vendorId : "63f7eadd6988e41d9056e555",
-                vendorName : "shayan",
-             }
-        }else{
-            return {}
-        }
-    }, [value, loading, error]);
+        return () => {
+            unsubscribe();
+        };
+    }, [firestore, id]);
 
-    return { value }
-}
+    return { data, loading };
+};
 
-export const orderUserProcess = () => {
-    const { user } = useAuth();
-    const [value, loading, error] = (FirebaseService.firestore && user?.id)?
-        useCollection(
-            query(collection(FirebaseService.firestore, 'orders'), 
-                where("userId", "==", user.id),
-                where("status", "==", "process")),
-            {
-                snapshotListenOptions: { includeMetadataChanges: true },
-            })
-        : [[], true, null]
+export const orderUserProcess = () => orderUserPending("process")
 
-    const data = useMemo(() => {
-        const values = [];
-
-        if (value) {
-            value.forEach(doc => values.push({...doc.data() , id: doc.id }) );
-        }
-
-        return values;
-    }, [value]);
-
-    return { data, loading, error }
-}
-
-export const orderUserCompleted = () => {
-    const { user } = useAuth();
-    const [value, loading, error] = (FirebaseService.firestore && user?.id)?
-        useCollection(
-            query(collection(FirebaseService.firestore, 'orders'), 
-                where("userId", "==", user.id),
-                where("status", "==", "completed")),
-            {
-                snapshotListenOptions: { includeMetadataChanges: true },
-            })
-        : [[], true, null]
-
-    const data = useMemo(() => {
-        const values = [];
-
-        if (value) {
-            value.forEach(doc =>{
-                let order = doc.data()
-                order.id = doc.id
-                if(!order.rating){
-                    values.push(order)
-                }
-            });
-        }
-
-        return values;
-    }, [value]);
-
-    return { data, loading, error }
-}
+export const orderUserCompleted = () => orderUserPending("completed")
 
 export const orderVendorPending = () => {
     const { user } = useAuth();
-
-    const [value, loading, error] = (FirebaseService.firestore)?
-        useCollection(
-            query(collection(FirebaseService.firestore, 'orders'), 
-                where("status", "==", "pending")),
-            {
-                snapshotListenOptions: { includeMetadataChanges: true },
-            })
-        : [[], true, null]
-
-    const data = useMemo(() => {
-        const values = [];
-        if (value) {
-            value.forEach(doc => {
-                let order = doc.data()
-                order.id = doc.id
-                if(!order.requests || !order.requests.find((request => request.vendorId === user.id ))){
-                    values.push(order)
-                }
-            });
+    const [collectionData, setCollectionData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    
+    useEffect(() => {
+        if (!user || !user.id || !user.city) {
+            return;
         }
 
-        return values;
-    }, [value]);
+        const orderQuery = query(collection(firestore, 'orders'), where("status", "==", "pending"), where("location","==",user.city));
 
-    return { data, loading, error }
+        const unsubscribe = onSnapshot(orderQuery, (querySnapshot) => {
+            let data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            data = data.map(order => {
+                if(order.requests?.find(request => request.vendorId === user.id)){
+                    order.alreadyBid = true;
+                }
+                return order;
+            })
+            setCollectionData(data);
+            setLoading(false);
+        }, (error) => {
+            console.error(error);
+            setError(error);
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, [user, firestore]);
+
+    return { data: collectionData, loading, error }
 }
 
-export const orderVendorProcess = () => {
+export const orderVendorProcess = (status = 'process') => {
     const { user } = useAuth();
-    const [value, loading, error] = (FirebaseService.firestore && user?.id)?
-        useCollection(
-            query(collection(FirebaseService.firestore, 'orders'), 
-                where("vendorId", "==", user.id),
-                where("status", "==", "process")),
-            {
-                snapshotListenOptions: { includeMetadataChanges: true },
-            })
-        : [[], true, null]
+    const [collectionData, setCollectionData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const data = useMemo(() => {
-        const values = [];
-        if (value) {
-            value.forEach(doc => {
-                if(!doc.requests || !doc.requests.find((request => request.vendorId === user.id ))){
-                    values.push({...doc.data() , id: doc.id })
-                }
-            });
+    useEffect(() => {
+        if (!user || !user.id) {
+            return;
         }
 
-        return values;
-    }, [value]);
+        const orderQuery = query(collection(firestore, 'orders'), where("vendorId", "==", user.id), where("status", "==", status));
 
-    return { data, loading, error }
+        const unsubscribe = onSnapshot(orderQuery, (querySnapshot) => {
+            let data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            setCollectionData(data);
+            setLoading(false);
+        }, (error) => {
+            console.error(error);
+            setError(error);
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, [user, firestore, status]);
+
+    return { data: collectionData, loading, error };
 }
+
+export const orderVendorCompleted = () => orderVendorProcess("completed");

@@ -9,6 +9,7 @@ export const colors = {
     blue: "#0390fc",
     halfBlack: "#bfbfbf",
     navBg: "#11001C",
+    boxShadow: "#c9c9c9",
 }
 
 export const fonts = {
