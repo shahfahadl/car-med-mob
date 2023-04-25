@@ -146,17 +146,17 @@ This is not a deployable project
 
 -[] Add location
 -[] Add Orders
--[] Add Registration
 -[] Add available orders
 -[] Add completed orders
 -[] Add inProcessOrders
--[] Add orderNow
 -[] Add Process
+-[] Check User and vendor Signup Validations
 
 ### Errors
--[] No validations for forms at registration
 -[] Pages not Fully made
-
+-[] Cannot order
+-[] Cannot signup
+-[] Signup Image not uploading
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- CONTRIBUTING -->

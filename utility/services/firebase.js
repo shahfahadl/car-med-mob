@@ -1,6 +1,7 @@
-import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import "firebase/firestore"
 
+// Your web app's Firebase configuration
 const config = {
     apiKey: "AIzaSyCpenpS67MUjcNdVInUsbUta3T9omKQz8c",
     authDomain: "carmed-f6927.firebaseapp.com",
@@ -11,18 +12,5 @@ const config = {
     measurementId: "G-3ZL44F73YH"
 }
 
-export class FirebaseService {
-    
-    static initApp = () => {
-        if (!getApps().length) {
-            const db = initializeApp(config);
-            this.firestore = getFirestore(db);
-        }
-    }
-
-    static getFireStore = () => {
-        return this.firestore;
-    }
-}
-
-export default FirebaseService;
+// Initialize Firebase
+export const firebase = initializeApp(config);

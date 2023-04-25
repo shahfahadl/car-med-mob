@@ -9,15 +9,31 @@ const StyledButton = styled.TouchableOpacity`
 
 const CustomText = styled.Text`
   ${fonts.fontFamilyBold}
-  color: ${({ inverted }) => inverted? "black":"white" };
+  color: ${({ inverted, color }) => color || inverted? "black":"white" };
 `;
 
-export const CustomButton = ({inverted=false,children, ...rest }) => {
+export const CustomButton = ({inverted,children, ...rest }) => {
     return (
       <StyledButton {...rest} >
         <CustomText inverted={inverted} >
           {children}
         </CustomText>
       </StyledButton>
+    );
+  };
+
+const StyledOutlineButton = styled.TouchableOpacity`
+  padding: 10px 30px;
+  border: 2px solid ${({color})=>color};
+  border-radius: 15px;
+`
+
+export const CustomOutlineButton = ({color,children, ...rest }) => {
+    return (
+      <StyledOutlineButton color={color} {...rest} >
+        <CustomText color={color} >
+          {children}
+        </CustomText>
+      </StyledOutlineButton>
     );
   };
