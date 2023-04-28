@@ -66,3 +66,51 @@ export const skillOption = [
     label: "Battery",
   },
 ];
+
+export const carTypeOptions = [
+  {
+    value: "cars",
+    label: "Cars",
+  },
+  {
+    value: "bigCars",
+    label: "Big Cars",
+  },
+  {
+    value: "HighRoof",
+    label: "High Roof Cars",
+  },
+];
+
+export const cities = [
+  {
+    value: {
+      name: "Nowshera",
+      latLng: {
+        lat: 33.9956777,
+        lng: 71.9075292,
+      }
+    },
+    label: "Nowshera",
+  },
+  {
+    value: {
+      name: "Peshawar",
+      latLng:{
+        lat: 34.0151,
+        lng: 71.5249
+      }
+    },
+    label: "Peshawar",
+  },
+  {
+    value: {
+      name: "Islamabad",
+      latLng: {
+        lat: 33.6844,
+        lng: 73.0479
+      }
+    },
+    label: "Islamabad",
+  },
+];

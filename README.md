@@ -145,12 +145,14 @@ This is not a deployable project
 ### future-features
 
 
-### Errors
+### Others
+-[] Add Currency to all bid / Price
+-[] loading not handled
 
+### Errors
 -[] Cannot signup due to image not uploading
--[] Buttons not working
--[] Cards button and popup not handled
 -[] Booking not handled at all
+-[] Location not selected ( Instead a dropdown is used )
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- CONTRIBUTING -->

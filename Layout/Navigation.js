@@ -19,6 +19,7 @@ const DrawerContainer = styled.View`
     display: flex;
     z-index: 3;
     flex-direction: row;
+    pointer-events: none;
 `
 
 const NavContainer = styled.View`
@@ -30,6 +31,8 @@ const NavContainer = styled.View`
     flex-direction: column;
     align-items: center;
     background-color: ${colors.navBg};
+    pointer-events: all;
+
 `
 
 const ProfileContainer = styled.View`
@@ -84,6 +87,7 @@ const MenuContainer = styled.View`
     justify-content: center;
     display: ${({disable})=> disable? "none":"" };
     padding-left: 20px;
+    pointer-events: all;
 `
 
 const LogoutButton = styled.TouchableOpacity`

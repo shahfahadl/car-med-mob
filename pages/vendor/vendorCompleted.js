@@ -4,7 +4,7 @@ import Navigation from '../../Layout/Navigation'
 import styled from 'styled-components/native'
 import { colors, fonts } from "../../utility/theme";
 import { orderVendorCompleted } from "../../hooks/watchOrder";
-import { ImageContainer } from "../../elements/common";
+import { ImageContainer, StarElement } from "../../elements/common";
 import { CustomOutlineButton } from "../../elements/button";
 
 const Container = styled.View`
@@ -106,7 +106,7 @@ const OrderItem = ({ order }) => {
           <H4 bold>
             Rating &nbsp;
           </H4>
-          <H4>{!!order.rating? order.rating : "Not Rated Yet" }</H4>
+          <H4>{!!order.rating? <StarElement starValue={order.rating} /> : "Not Rated Yet" }</H4>
         </FlexRow>
       </OrderBottom>
     </OrderContainer>

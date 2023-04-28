@@ -178,17 +178,18 @@ const FlexRow = styled.View`
 `
 
 const StarContainer = styled.TouchableOpacity`
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
 `
 
 const IconContainer = styled.Image`
-  height: 30px;
+  height: 20px;
+  weight: 20px;
 `
 
-export const StarInput = ({starValue=0 , setStarValue}) =>{
+export const StarInput = ({starValue=0 , setStarValue , ...rest}) =>{
   return (
-    <FlexRow>
+    <FlexRow style={{columnGap: "5px"}} {...rest}>
       <StarContainer onPress={()=>setStarValue(1)} >
         <IconContainer source={ (starValue >= 1)? StarYellowIcon : StarIcon } />
       </StarContainer>

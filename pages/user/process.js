@@ -6,6 +6,8 @@ import { orderUserProcess } from "../../hooks/watchOrder";
 import { colors, fonts } from "../../utility/theme";
 import { CommonUtility } from "../../utility/common";
 import { CustomOutlineButton } from "../../elements/button";
+import UserService from "../../utility/services/user";
+import Toast from "react-native-toast-message";
 
 const Container = styled.View`
   padding-top: 50px;
@@ -62,6 +64,19 @@ const Bottom = styled.View`
 `;
 
 const OrderItem = ({ order }) => {
+
+  function cancelOrder(){
+    try{
+      UserService.cancelOrder({id:order.id});
+      Toast.show({
+        type: "success",
+        text1: "Order Canceled",
+      });
+    }catch(error){
+      console.log(error)
+    }
+  }
+
   return (
     <OrderContainer>
       <View>
@@ -92,7 +107,7 @@ const OrderItem = ({ order }) => {
           </H4>
           <H4 bold>PKR {CommonUtility.currencyFormat(order.bid)}</H4>
         </FlexRow>
-        <CustomOutlineButton color={colors.red}>Cancel</CustomOutlineButton>
+        <CustomOutlineButton color={colors.red} onPress={cancelOrder} >Cancel</CustomOutlineButton>
       </Bottom>
     </OrderContainer>
   );

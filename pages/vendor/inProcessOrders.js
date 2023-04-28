@@ -6,6 +6,8 @@ import { colors, fonts } from "../../utility/theme";
 import { orderVendorProcess } from "../../hooks/watchOrder";
 import { ImageContainer } from "../../elements/common";
 import { CustomOutlineButton } from "../../elements/button";
+import VendorService from '../../utility/services/vendor';
+import Toast from "react-native-toast-message";
 
 const Container = styled.View`
   padding-top: 50px;
@@ -75,6 +77,31 @@ const Buttons = styled.View`
 `;
 
 const OrderItem = ({ order }) => {
+
+  async function cancelOrder(){
+    try{
+      await VendorService.cancelOrder({id:order.id});
+      Toast.show({
+        type: "success",
+        text1: "Order Canceled",
+      });
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  async function completeOrder(){
+    try{
+      await VendorService.completeOrder({id:order.id});
+      Toast.show({
+        type: "success",
+        text1: "Order Completed",
+      });
+    }catch(error){
+      console.log(error)
+    }
+  }
+
   return (
     <OrderContainer>
       <OrderTop>
@@ -108,10 +135,10 @@ const OrderItem = ({ order }) => {
         </FlexRow>
       </OrderBid>
       <Buttons>
-        <CustomOutlineButton color={colors.red} >
+        <CustomOutlineButton color={colors.red} onPress={cancelOrder}>
           Cancel
         </CustomOutlineButton>
-        <CustomOutlineButton color={colors.green} >
+        <CustomOutlineButton color={colors.green} onPress={completeOrder}>
           Complete
         </CustomOutlineButton>
       </Buttons>
