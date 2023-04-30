@@ -41,9 +41,7 @@ export const VendorSignupSchema = yup.object().shape({
   gender: yup.string().required("Gender is required"),
   origin: yup.mixed().required("Origin is required"),
   skill: yup.string().required("skill is required"),
-  image: yup
-    .mixed()
-    .required("Image is required")
+  image: yup.mixed().required("Image is required"),
 });
 
 export const UserSignupSchema = yup.object().shape({
@@ -71,10 +69,23 @@ export const UserSignupSchema = yup.object().shape({
     .string("Email is required")
     .required("password is required")
     .max(50),
-  contact: yup
-    .string(),
-  skill: yup
-    .string("Email is required"),
+  contact: yup.string(),
+  skill: yup.string("Email is required"),
   gender: yup.string().required("Gender is required"),
-  image: yup.mixed()
+  image: yup.mixed(),
+});
+
+export const OrderSchema = yup.object().shape({
+  problem: yup.string("Problem is required").required("Problem is required"),
+  carType: yup.string("Car type is required").required("Car type is required"),
+  bid: yup
+    .string()
+    .typeError("Bid is required")
+    .required("Bid is required")
+    .test(
+      "is-number",
+      "Bid must be a number",
+      (value) => !isNaN(Number(value))
+    ),
+  location:  yup.string("Location is required").required("Location is required"),
 });

@@ -10,6 +10,8 @@ import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { colors } from '../utility/theme';
+import StarIcon from '../assets/star.svg'
+import StarYellowIcon from '../assets/starYellow.svg'
 
 const TextInputContainer = styled.View`
   max-width: 350px;
@@ -167,5 +169,42 @@ export const CustomImageInput = ({image , setImage, inverted,styling}) => {
         <Icon name='user' size={32} color={inverted? "white" : "black" } />
       )}
     </ImageContainer>
+  )
+}
+
+const FlexRow = styled.View`
+  display: flex;
+  flex-direction: row;
+`
+
+const StarContainer = styled.TouchableOpacity`
+  width: 20px;
+  height: 20px;
+`
+
+const IconContainer = styled.Image`
+  height: 20px;
+  weight: 20px;
+`
+
+export const StarInput = ({starValue=0 , setStarValue , ...rest}) =>{
+  return (
+    <FlexRow style={{columnGap: "5px"}} {...rest}>
+      <StarContainer onPress={()=>setStarValue(1)} >
+        <IconContainer source={ (starValue >= 1)? StarYellowIcon : StarIcon } />
+      </StarContainer>
+      <StarContainer onPress={()=>setStarValue(2)} >
+        <IconContainer source={ (starValue >= 2)? StarYellowIcon : StarIcon } />
+      </StarContainer>
+      <StarContainer onPress={()=>setStarValue(3)} >
+        <IconContainer source={ (starValue >= 3)? StarYellowIcon : StarIcon } />
+      </StarContainer>
+      <StarContainer onPress={()=>setStarValue(4)} >
+        <IconContainer source={ (starValue >= 4)? StarYellowIcon : StarIcon } />
+      </StarContainer>
+      <StarContainer onPress={()=>setStarValue(5)} >
+        <IconContainer source={ (starValue >= 5)? StarYellowIcon : StarIcon } />
+      </StarContainer>
+    </FlexRow>
   )
 }

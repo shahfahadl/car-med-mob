@@ -144,13 +144,13 @@ This is not a deployable project
 ## 🔭 Future Features <a name="future-features"></a>
 ### future-features
 
+### Others
+-[] loading not handled
+-[] Booking not handled at all
 
 ### Errors
-
 -[] Cannot signup due to image not uploading
--[] Buttons not working
--[] Cards button and popup not handled
--[] Booking not handled at all
+-[] Location not selected ( Instead a dropdown is used )
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- CONTRIBUTING -->
