@@ -8,6 +8,7 @@ import { ImageContainer } from "../../elements/common";
 import { CustomOutlineButton } from "../../elements/button";
 import VendorService from '../../utility/services/vendor';
 import Toast from "react-native-toast-message";
+import { CommonUtility } from '../../utility/common';
 
 const Container = styled.View`
   padding-top: 50px;
@@ -131,7 +132,7 @@ const OrderItem = ({ order }) => {
           <H4 light bold>
             Price &nbsp;
           </H4>
-          <H4 bold>PKR {order.bid}</H4>
+          <H4 bold>{CommonUtility.currencyFormat(order.bid)}</H4>
         </FlexRow>
       </OrderBid>
       <Buttons>

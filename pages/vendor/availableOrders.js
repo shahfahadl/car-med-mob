@@ -10,6 +10,7 @@ import { useAuth } from "../../contexts/auth";
 import VendorService from "../../utility/services/vendor";
 import Toast from "react-native-toast-message";
 import { CustomTextInput } from "../../elements/input";
+import { CommonUtility } from "../../utility/common";
 
 const Container = styled.View`
   padding-top: 50px;
@@ -147,7 +148,7 @@ const OrderItem = ({ order, user, setPopup, setValues, values }) => {
           <H4 light bold>
             Bid &nbsp;
           </H4>
-          <H4 bold>PKR {order.bid}</H4>
+          <H4 bold>{CommonUtility.currencyFormat(order.bid)}</H4>
         </FlexRow>
         <FlexRow>
           {myBid ? (
@@ -155,7 +156,7 @@ const OrderItem = ({ order, user, setPopup, setValues, values }) => {
               <H4 light bold>
                 My Bid &nbsp;
               </H4>
-              <H4 bold>PKR {myBid}</H4>
+              <H4 bold>{CommonUtility.currencyFormat(myBid)}</H4>
             </>
           ) : (
             <H4 light bold>

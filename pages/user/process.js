@@ -105,7 +105,7 @@ const OrderItem = ({ order }) => {
           <H4 light bold>
             Price &nbsp;
           </H4>
-          <H4 bold>PKR {CommonUtility.currencyFormat(order.bid)}</H4>
+          <H4 bold>{CommonUtility.currencyFormat(order.bid)}</H4>
         </FlexRow>
         <CustomOutlineButton color={colors.red} onPress={cancelOrder} >Cancel</CustomOutlineButton>
       </Bottom>

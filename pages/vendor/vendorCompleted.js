@@ -6,6 +6,7 @@ import { colors, fonts } from "../../utility/theme";
 import { orderVendorCompleted } from "../../hooks/watchOrder";
 import { ImageContainer, StarElement } from "../../elements/common";
 import { CustomOutlineButton } from "../../elements/button";
+import { CommonUtility } from '../../utility/common';
 
 const Container = styled.View`
   padding-top: 50px;
@@ -73,7 +74,7 @@ const OrderItem = ({ order }) => {
         <View>
           <FlexRow>
             <H4 bold>Price &nbsp;</H4>
-            <H4>PKR {order.bid}</H4>
+            <H4>{CommonUtility.currencyFormat(order.bid)}</H4>
           </FlexRow>
         </View>
       </OrderTop>

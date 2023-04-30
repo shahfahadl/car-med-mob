@@ -144,14 +144,12 @@ This is not a deployable project
 ## 🔭 Future Features <a name="future-features"></a>
 ### future-features
 
-
 ### Others
--[] Add Currency to all bid / Price
 -[] loading not handled
+-[] Booking not handled at all
 
 ### Errors
 -[] Cannot signup due to image not uploading
--[] Booking not handled at all
 -[] Location not selected ( Instead a dropdown is used )
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

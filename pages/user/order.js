@@ -8,7 +8,7 @@ import { arrowRight } from "../../Layout/importingImages";
 import plusCircle from '../../assets/plus-circle.svg'
 import { Popup } from "../../elements/common";
 import { CustomDropdownInput, CustomTextInput } from "../../elements/input"
-import { carTypeOptions, cities, skillOption } from "../../utility/common";
+import { CommonUtility, carTypeOptions, cities, skillOption } from "../../utility/common";
 import LocationSelector from "../../components/locationSelector";
 import { CustomOutlineButton } from "../../elements/button";
 import UserService from "../../utility/services/user";
@@ -152,7 +152,7 @@ const OrderItem = ({ order }) => {
           <H4 light bold>
             Bid &nbsp;
           </H4>
-          <H4 bold>PKR {order.bid}</H4>
+          <H4 bold>{CommonUtility.currencyFormat(order.bid)}</H4>
         </FlexRow>
       </OrderLeft>
       <OrderRight onPress={()=> navigation.navigate("User_singleOrder", { orderId: order.id }) } >
