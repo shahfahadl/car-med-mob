@@ -78,7 +78,6 @@ export const orderVendorPending = () => {
         if (!user || !user.id || !user.city) {
             return;
         }
-
         const orderQuery = query(collection(firestore, 'orders'), where("status", "==", "pending"), where("location","==",user.city));
 
         const unsubscribe = onSnapshot(orderQuery, (querySnapshot) => {

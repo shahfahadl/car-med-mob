@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import { View } from 'react-native';
 import eyeBlack from '../assets/eye-black.png'
@@ -9,10 +9,9 @@ import { TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { colors } from '../utility/theme';
-import StarIcon from '../assets/star.svg'
-import StarYellowIcon from '../assets/starYellow.svg'
-
+import { colors , borderRadius, fonts } from '../utility/theme';
+import StarIcon from '../assets/star.png'
+import StarYellowIcon from '../assets/starYellow.png'
 const TextInputContainer = styled.View`
   max-width: 350px;
   width: ${({ width }) => width };
@@ -27,23 +26,23 @@ const Hint = styled.Text`
 `;
 
 const Label = styled.Text`
-  color: ${({ inverted }) => inverted? "white":"black" };
+  color: ${({ inverted , labelColor }) => labelColor ? labelColor : inverted? "white":"black" };
   margin-bottom: 10px;
+  ${fonts.fontFamilyBold}
 `;
 
 const Input = styled.TextInput`
   border: none;
   padding: 10px;
-  border-radius: 5px;
-  background-color: ${({ inverted }) => inverted? "white":"black" };
+  ${borderRadius("5px")}
+  background-color: ${({ inverted }) => inverted? "#f1f3f5":"black" };
   color: ${({ inverted }) => inverted? "black":"white" };
-  placeholderTextColor: #8a8a8a;
 `;
 
-export const CustomTextInput = ({ label,hint,width, inverted, ...rest }) => {
+export const CustomTextInput = ({ label,labelColor=null,hint,width, inverted, ...rest }) => {
   return (
     <TextInputContainer width={width}  >
-      <Label inverted={inverted} >{label}</Label>
+      <Label inverted={inverted} labelColor={labelColor}>{label}</Label>
       <View>
         <Input {...rest} inverted={inverted} />
         {hint && <Hint>{hint}</Hint>}
@@ -54,8 +53,9 @@ export const CustomTextInput = ({ label,hint,width, inverted, ...rest }) => {
 
 const InputLeft = styled.View`
   position: absolute;
-  top: calc(50% - 8px );
   right: 20px;
+  top: 50%;
+  transform: translateY(-8px);
 `;
 
 const Images = styled.Image`
@@ -63,7 +63,7 @@ const Images = styled.Image`
   height: 16px;
 `;
 
-export const CustomPasswordInput = ({ label,hint, width,inverted, ...rest }) => {
+export const CustomPasswordInput = ({ label,hint,width,inverted, ...rest }) => {
 
   const [hide , setHide] = useState(true)
 
@@ -90,31 +90,44 @@ export const CustomPasswordInput = ({ label,hint, width,inverted, ...rest }) => 
   );
 };
 
+const CustomPickerContainer = styled.View`
+  border: 2px solid black;
+  ${borderRadius("5px")}
+`;
+
 const CustomPicker = styled(Picker)`
-  border: none;
+  border: 2px solid black;
   padding: 10px;
-  border-radius: 5px;
   background-color: ${({ inverted }) => inverted? "white":"black" };
   color: ${({ inverted }) => inverted? "black":"white" };
 `;
 
-export const CustomDropdownInput = ({ label,width, options , inverted=false, ...rest }) => {
+const IconContainer = styled.Image`
+  height: 20px;
+  width: 20px;
+`
+
+export const CustomDropdownInput = ({ label,width,hint,labelColor=null , style, options , inverted=false, ...rest }) => {
 
   return (
     <TextInputContainer width={width} >
-      <Label inverted={inverted} >{label}</Label>
-      <CustomPicker
-        inverted={inverted}
-        {...rest}
-        // selectedValue={selectedValue}
-        // onValueChange={(itemValue, itemIndex) =>
-        //   setSelectedValue(itemValue)
-        // }
-      >
-        {options.map((option)=>(
-          <CustomPicker.Item key={option.label} label={option.label} value={option.value} />
-        ))}
-      </CustomPicker>
+      <Label inverted={inverted} labelColor={labelColor} >{label}</Label>
+      <CustomPickerContainer style={style} >
+        <CustomPicker
+          inverted={inverted}
+          {...rest}
+          dropdownIconColor={inverted?"black":"white"}
+          // selectedValue={selectedValue}
+          // onValueChange={(itemValue, itemIndex) =>
+          //   setSelectedValue(itemValue)
+          // }
+        >
+          {options.map((option)=>(
+            <CustomPicker.Item key={option.label} label={option.label} value={option.value} />
+          ))}
+        </CustomPicker>
+      </CustomPickerContainer>
+      {hint && <Hint>{hint}</Hint>}
     </TextInputContainer>
   );
 };
@@ -122,7 +135,6 @@ export const CustomDropdownInput = ({ label,width, options , inverted=false, ...
 const ImageContainer = styled.TouchableOpacity`
   width: 100px;
   height: 100px;
-  border-radius: 50%;
   border: 4px solid ${({ inverted }) => inverted? "white":"black" };
   display: flex;
   align-items: center;
@@ -152,7 +164,6 @@ export const CustomImageInput = ({image , setImage, inverted,styling}) => {
       const match = result.uri.match(regex);
       const imageType = match[1];
       const imageEnding = match[1].split("/")[1];
-      console.log(result)
       setImage({
         "uri": result.uri,
         "type": imageType,
@@ -182,14 +193,9 @@ const StarContainer = styled.TouchableOpacity`
   height: 20px;
 `
 
-const IconContainer = styled.Image`
-  height: 20px;
-  weight: 20px;
-`
-
 export const StarInput = ({starValue=0 , setStarValue , ...rest}) =>{
   return (
-    <FlexRow style={{columnGap: "5px"}} {...rest}>
+    <FlexRow style={{gap: "5px"}} {...rest}>
       <StarContainer onPress={()=>setStarValue(1)} >
         <IconContainer source={ (starValue >= 1)? StarYellowIcon : StarIcon } />
       </StarContainer>

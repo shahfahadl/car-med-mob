@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import styled from "styled-components/native";
 import Navigation from "../../Layout/Navigation";
 import { orderUserCompleted } from "../../hooks/watchOrder";
-import { colors, fonts } from "../../utility/theme";
+import { borderRadius, colors, fonts } from "../../utility/theme";
 import { CommonUtility } from "../../utility/common";
 import { CustomOutlineButton } from "../../elements/button";
 import { Popup } from "../../elements/common";
@@ -11,9 +11,28 @@ import { CustomTextInput, StarInput } from "../../elements/input";
 import Toast from "react-native-toast-message";
 import UserService from "../../utility/services/user";
 import { StarElement } from "../../elements/common";
+import { Dimensions } from "react-native";
+import { ActivityIndicator } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const Container = styled.View`
-  padding-top: 50px;
+const Common = styled.View`
+  width: 100%;
+  height: 100%;
+  ${fonts.fontFamilyRegular}
+  padding-top: ${({ statusBarHeight }) => `${statusBarHeight}px`};
+`;
+
+const Container = styled.ScrollView`
+  margin-top: 60px;
+  width: 100%;
+  height: ${({ height }) => `${height - 60}px`};
+`;
+
+const ToastContainer = styled.View`
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 5;
 `;
 
 const OrdersContainer = styled.View`
@@ -21,17 +40,16 @@ const OrdersContainer = styled.View`
   margin-top: 10px;
   display: flex;
   align-items: center;
-  row-gap: 15px;
+  gap: 10px;
 `;
 
 const OrderContainer = styled.View`
-  border-radius: 5px;
-  over-flow: hidden;
-  box-shadow: 0px 0px 7px ${colors.boxShadow};
   display: flex;
   width: 95%;
   max-width: 400px;
   padding: 20px;
+  border: 2px solid ${colors.halfBlack};
+  ${borderRadius("5px")}
 `;
 
 const H4 = styled.Text`
@@ -66,9 +84,8 @@ const PopupContainer = styled.View`
 const Buttons = styled.View`
   display: flex;
   flex-direction: row;
-  justify-content: end;
   width: 100%;
-  column-gap: 10px;
+  gap: 10px;
   margin-top: 20px;
 `;
 
@@ -99,24 +116,28 @@ const OrderItem = ({ order, setPopup, setValues }) => {
         </FlexRow>
       </View>
       <Bottom>
-        <FlexRow style={{marginBottom: "5px"}} >
+        <FlexRow style={{ marginBottom: 15 }}>
           <H4 light bold>
             Price &nbsp;
           </H4>
           <H4 bold>{CommonUtility.currencyFormat(order.bid)}</H4>
         </FlexRow>
-        {order.rating?
-        <FlexRow>
-          <H4 light bold>
-            Rating &nbsp;
-          </H4>
-          <StarElement starValue={order.rating} />
-        </FlexRow>:
-        
-        <CustomOutlineButton onPress={handlePopup} color={colors.green} style={{width: "max-content"}} >
-          Rate Your Vendor
-        </CustomOutlineButton>
-        }
+        {order.rating ? (
+          <FlexRow>
+            <H4 light bold>
+              Rating &nbsp;
+            </H4>
+            <StarElement starValue={order.rating} />
+          </FlexRow>
+        ) : (
+          <CustomOutlineButton
+            onPress={handlePopup}
+            color={colors.green}
+            style={{ width: 140 }}
+          >
+            Rate Your Vendor
+          </CustomOutlineButton>
+        )}
       </Bottom>
     </OrderContainer>
   );
@@ -125,6 +146,9 @@ const OrderItem = ({ order, setPopup, setValues }) => {
 const Completed = () => {
   const { data: orders, loading } = orderUserCompleted();
   const [show, setShow] = useState(false);
+  const { height } = Dimensions.get("window");
+  const [apiLoading, setApiLoading] = useState(false);
+  const insets = useSafeAreaInsets();
   const [values, setValues] = useState({
     rating: 0,
     id: null,
@@ -132,34 +156,35 @@ const Completed = () => {
     vendorId: null,
     vendorName: "",
   });
+
   async function handleForm() {
     if (values.rating > 0) {
       try {
+        setApiLoading(true);
+        Toast.show({
+          type: "info",
+          text1: `Rating ${values.vendorName}`,
+        });
         const payload = {
           vendorId: values.vendorId,
           rating: values.rating,
           id: values.id,
           review: values.review,
         };
-        try {
-          UserService.rateVendor(payload);
-          Toast.show({
-            type: "success",
-            text1: "Thanks for your feedback!",
-          });
-        } catch (error) {
-          Toast.show({
-            type: "error",
-            text1: "Invalid credentials",
-          });
-        } finally {
-          setShow(false)
-        }
+
+        UserService.rateVendor(payload);
+        Toast.show({
+          type: "success",
+          text1: "Thanks for your feedback!",
+        });
       } catch (error) {
         Toast.show({
           type: "error",
           text1: "Some error occurred",
         });
+      } finally {
+        setApiLoading(false);
+        setShow(false);
       }
     } else {
       Toast.show({
@@ -170,35 +195,48 @@ const Completed = () => {
   }
 
   return (
-    <Container>
+    <Common statusBarHeight={insets.top}>
+      <Container height={height}>
+        {loading ? (
+          <ActivityIndicator size="large" color={"black"} />
+        ) : (
+          <>
+            {orders.length > 0 ? (
+              <OrdersContainer>
+                {orders?.map((order) => (
+                  <OrderItem
+                    key={order.id}
+                    order={order}
+                    setPopup={setShow}
+                    setValues={setValues}
+                  />
+                ))}
+              </OrdersContainer>
+            ) : (
+              <Center>
+                <H4 bold>No Orders Yet</H4>
+              </Center>
+            )}
+          </>
+        )}
+      </Container>
       <Navigation />
-      {orders.length > 0 ? (
-        <OrdersContainer>
-          {orders?.map((order) => (
-            <OrderItem
-              key={order.id}
-              order={order}
-              setPopup={setShow}
-              setValues={setValues}
-            />
-          ))}
-        </OrdersContainer>
-      ) : (
-        <Center>
-          <H4 bold>No Orders Yet</H4>
-        </Center>
-      )}
+      <ToastContainer>
+        <Toast />
+      </ToastContainer>
       <Popup show={show} setShow={setShow}>
         <PopupContainer>
-          <H4 style={{ fontSize: "20px", marginBottom: "10px" }}>
+          <H4 bold style={{ fontSize: 25, marginBottom: 10 }}>
             Rate {values.vendorName}
           </H4>
           <StarInput
-            style={{ margin: "10px 0" }}
+            style={{ margin: 10 }}
             starValue={values.rating}
             setStarValue={(value) => setValues({ ...values, rating: value })}
           />
           <CustomTextInput
+            inverted
+            labelColor={"black"}
             label="Review"
             width="60%"
             value={values.review}
@@ -207,7 +245,12 @@ const Completed = () => {
           />
         </PopupContainer>
         <Buttons>
-          <CustomOutlineButton color={colors.green} onPress={handleForm}>
+          <CustomOutlineButton
+            style={{ marginLeft: "auto" }}
+            color={colors.green}
+            onPress={handleForm}
+            loading={apiLoading}
+          >
             Rate
           </CustomOutlineButton>
           <CustomOutlineButton
@@ -218,7 +261,7 @@ const Completed = () => {
           </CustomOutlineButton>
         </Buttons>
       </Popup>
-    </Container>
+    </Common>
   );
 };
 

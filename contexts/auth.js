@@ -9,11 +9,10 @@ export function useAuth() {
 
     const setData = async () => {
         const user = await UserService.getUser();
-        const authenticated = user.token
-        setIsAuthenticated(authenticated);
-        if (authenticated) {
+        if(user && user.token){
             setUser(user);
             setIsVendor(user.type === 'vendor');
+            setIsAuthenticated(true);
         }
     }
 
@@ -25,7 +24,7 @@ export function useAuth() {
         loadToken()
     }, [])
 
-    const logout = () => {
+    const logout = async () => {
         UserService.logout();
         setIsAuthenticated(false)
     }

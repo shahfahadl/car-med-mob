@@ -1,16 +1,35 @@
 import { View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
 import Navigation from "../../Layout/Navigation";
 import { orderUserProcess } from "../../hooks/watchOrder";
-import { colors, fonts } from "../../utility/theme";
+import { borderRadius, colors, fonts } from "../../utility/theme";
 import { CommonUtility } from "../../utility/common";
 import { CustomOutlineButton } from "../../elements/button";
 import UserService from "../../utility/services/user";
 import Toast from "react-native-toast-message";
+import { Dimensions } from "react-native";
+import { ActivityIndicator } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const Container = styled.View`
-  padding-top: 50px;
+const Common = styled.View`
+  width: 100%;
+  height: 100%;
+  ${fonts.fontFamilyRegular}
+  padding-top: ${({ statusBarHeight }) => `${statusBarHeight}px`};
+`;
+
+const Container = styled.ScrollView`
+  margin-top: 60px;
+  width: 100%;
+  height: ${({ height }) => `${height - 60}px`};
+`;
+
+const ToastContainer = styled.View`
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 5;
 `;
 
 const OrdersContainer = styled.View`
@@ -18,25 +37,22 @@ const OrdersContainer = styled.View`
   margin-top: 10px;
   display: flex;
   align-items: center;
-  row-gap: 15px;
 `;
 
 const OrderContainer = styled.View`
-  border-radius: 5px;
-  over-flow: hidden;
-  box-shadow: 0px 0px 7px ${colors.boxShadow};
   display: flex;
   width: 95%;
-  max-width: 400px;
+  max-width: 600px;
   padding: 20px;
+  border: 2px solid ${colors.halfBlack};
+  ${borderRadius("5px")}
 `;
 
 const ShowMaps = styled.TouchableOpacity`
   padding: 0px 5px;
   border: 2px solid black;
   background-color: ${colors.yellowLight};
-  width: max-content;
-  border-radius: 15px;
+  ${borderRadius("15px")}
 `;
 
 const H4 = styled.Text`
@@ -64,23 +80,33 @@ const Bottom = styled.View`
 `;
 
 const OrderItem = ({ order }) => {
-
-  function cancelOrder(){
-    try{
-      UserService.cancelOrder({id:order.id});
+  const [apiLoading, setApiLoading] = useState(false);
+  function cancelOrder() {
+    try {
+      setApiLoading(true);
+      Toast.show({
+        type: "info",
+        text1: "Canceling Order",
+      });
+      UserService.cancelOrder({ id: order.id });
       Toast.show({
         type: "success",
         text1: "Order Canceled",
       });
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "An Error Ocurred",
+      });
+    } finally {
+      setApiLoading(false);
     }
   }
 
   return (
     <OrderContainer>
       <View>
-        <FlexRow style={{marginBottom: "10px"}} >
+        <FlexRow style={{ marginBottom: 10 }}>
           <H4 bold>Vendor Name &nbsp;</H4>
           <H4>{order.vendorName}</H4>
         </FlexRow>
@@ -100,14 +126,20 @@ const OrderItem = ({ order }) => {
           <H4>{order.problem}</H4>
         </FlexRow>
       </View>
-      <Bottom style={{ marginTop: "20px" }}>
+      <Bottom style={{ marginTop: 20 }}>
         <FlexRow>
           <H4 light bold>
             Price &nbsp;
           </H4>
           <H4 bold>{CommonUtility.currencyFormat(order.bid)}</H4>
         </FlexRow>
-        <CustomOutlineButton color={colors.red} onPress={cancelOrder} >Cancel</CustomOutlineButton>
+        <CustomOutlineButton
+          loading={apiLoading}
+          color={colors.red}
+          onPress={cancelOrder}
+        >
+          Cancel
+        </CustomOutlineButton>
       </Bottom>
     </OrderContainer>
   );
@@ -115,22 +147,34 @@ const OrderItem = ({ order }) => {
 
 const Process = () => {
   const { data: orders, loading } = orderUserProcess();
-
+  const { height } = Dimensions.get("window");
+  const insets = useSafeAreaInsets();
   return (
-    <Container>
+    <Common statusBarHeight={insets.top}>
+      <Container height={height}>
+        {loading ? (
+          <ActivityIndicator size="large" color={"black"} />
+        ) : (
+          <>
+            {orders.length > 0 ? (
+              <OrdersContainer>
+                {orders?.map((order) => (
+                  <OrderItem key={order.id} order={order} />
+                ))}
+              </OrdersContainer>
+            ) : (
+              <Center>
+                <H4 bold>No Orders Yet</H4>
+              </Center>
+            )}
+          </>
+        )}
+      </Container>
       <Navigation />
-      {orders.length > 0 ? (
-        <OrdersContainer>
-          {orders?.map((order) => (
-            <OrderItem key={order.id} order={order} />
-          ))}
-        </OrdersContainer>
-      ) : (
-        <Center>
-          <H4 bold>No Orders Yet</H4>
-        </Center>
-      )}
-    </Container>
+      <ToastContainer>
+        <Toast />
+      </ToastContainer>
+    </Common>
   );
 };
 

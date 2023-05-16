@@ -145,8 +145,10 @@ This is not a deployable project
 ### future-features
 
 ### Others
--[] loading not handled
+
 -[] Booking not handled at all
+-[] Cannot update order
+-[] Dropdown change
 
 ### Errors
 -[] Cannot signup due to image not uploading

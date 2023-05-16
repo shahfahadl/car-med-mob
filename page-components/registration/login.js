@@ -11,26 +11,34 @@ import { useAuth } from "../../contexts/auth";
 import { useNavigation } from "@react-navigation/native";
 import { fonts } from "../../utility/theme";
 import { signInAsOptions } from "../../utility/common";
-import { CustomDropdownInput, CustomTextInput, CustomPasswordInput } from "../../elements/input"
+import {
+  CustomDropdownInput,
+  CustomTextInput,
+  CustomPasswordInput,
+} from "../../elements/input";
+import { Dimensions } from "react-native";
 
-const SignupButton = styled.Text`
+const SignupButton = styled.View`
   display: flex;
   align-items: center;
   flex-direction: column;
   position: absolute;
   bottom: 30px;
+`;
+
+const SignupButtonText = styled.Text`
   ${fonts.fontFamilyBold}
   ${fonts.fontSizeLarge}
 `;
 
 const LoginContainer = styled.View`
   width: 100%;
-  min-height: 100vh;
+  height: ${({ height }) => `${100 * height}px`};
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  row-gap: 15px;
+  gap: 15px;
 `;
 
 const RegistrationImage = styled.Image`
@@ -50,15 +58,23 @@ export default function Login() {
   const [role, setRole] = useState("user");
   const navigation = useNavigation();
   const { login } = useAuth();
+  const { height } = Dimensions.get("window");
+  const [loading, setLoading] = useState(false);
 
   const [values, setValues] = useState({
     email: "",
     password: "",
   });
   const handleLogin = () => {
+    setErrors({});
     LoginSchema.validate(values, { abortEarly: false })
       .then(async () => {
         try {
+          setLoading(true);
+          Toast.show({
+            type: "info",
+            text1: "Finding User",
+          });
           let res = null;
           if (role === "user") {
             res = await UserService.login(values);
@@ -68,21 +84,23 @@ export default function Login() {
           UserService.storeUser(res);
           if (res.token) {
             login();
+            Toast.show({
+              type: "success",
+              text1: "Welcome",
+            });
             if (role === "user") {
               navigation.navigate("User_order");
             } else {
               navigation.navigate("Vendor_availableOrders");
             }
           }
-          Toast.show({
-            type: "success",
-            text1: "Logging In",
-          });
         } catch (error) {
           Toast.show({
             type: "error",
             text1: "User not available",
           });
+        } finally {
+          setLoading(false);
         }
       })
       .catch((validationErrors) => {
@@ -99,7 +117,7 @@ export default function Login() {
   };
 
   return (
-    <LoginContainer>
+    <LoginContainer height={Math.round(height / 100)}>
       <RegistrationImage source={registrationImage} />
       <CustomTextInput
         value={values.email}
@@ -124,9 +142,11 @@ export default function Login() {
         onValueChange={(value) => setRole(value)}
         label="Sign-in As"
       />
-      <CustomButton onPress={handleLogin}>Log In</CustomButton>
+      <CustomButton loading={loading} onPress={handleLogin}>
+        Log In
+      </CustomButton>
       <SignupButton>
-        Signup
+        <SignupButtonText>Signup</SignupButtonText>
         <ArrowImage source={arrowImage} />
       </SignupButton>
     </LoginContainer>

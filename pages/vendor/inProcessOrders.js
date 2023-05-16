@@ -1,17 +1,36 @@
-import { View } from 'react-native'
-import React from 'react'
-import Navigation from '../../Layout/Navigation'
-import styled from 'styled-components/native'
-import { colors, fonts } from "../../utility/theme";
+import { View } from "react-native";
+import React from "react";
+import Navigation from "../../Layout/Navigation";
+import styled from "styled-components/native";
+import { borderRadius, colors, fonts } from "../../utility/theme";
 import { orderVendorProcess } from "../../hooks/watchOrder";
 import { ImageContainer } from "../../elements/common";
 import { CustomOutlineButton } from "../../elements/button";
-import VendorService from '../../utility/services/vendor';
+import VendorService from "../../utility/services/vendor";
 import Toast from "react-native-toast-message";
-import { CommonUtility } from '../../utility/common';
+import { CommonUtility } from "../../utility/common";
+import { Dimensions } from "react-native";
+import { ActivityIndicator } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const Container = styled.View`
-  padding-top: 50px;
+const Common = styled.View`
+  padding-top: ${({ statusBarHeight }) => `${statusBarHeight}px`};
+  width: 100%;
+  height: 100%;
+  ${fonts.fontFamilyRegular}
+`;
+
+const Container = styled.ScrollView`
+  margin-top: 60px;
+  width: 100%;
+  height: ${({ height }) => `${height - 60}px`};
+`;
+
+const ToastContainer = styled.View`
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 5;
 `;
 
 const OrdersContainer = styled.View`
@@ -19,23 +38,21 @@ const OrdersContainer = styled.View`
   margin-top: 10px;
   display: flex;
   align-items: center;
-  row-gap: 15px;
+  gap: 10px;
 `;
 
 const OrderContainer = styled.View`
-  border-radius: 5px;
-  box-shadow: 0px 0px 7px ${colors.boxShadow};
+  border: 2px solid ${colors.halfBlack};
   padding: 20px;
   width: 95%;
-  max-width: 400px;
+  max-width: 600px;
 `;
 
 const ShowMaps = styled.TouchableOpacity`
   padding: 0px 5px;
   border: 2px solid black;
   background-color: ${colors.yellowLight};
-  width: max-content;
-  border-radius: 15px;
+  ${borderRadius("15px")}
 `;
 
 const H4 = styled.Text`
@@ -59,7 +76,7 @@ const OrderTop = styled.View`
   width: 100%;
   display: flex;
   flex-direction: row;
-  column-gap: 20px;
+  gap: 20px;
 `;
 
 const OrderBid = styled.View`
@@ -72,34 +89,54 @@ const OrderBid = styled.View`
 const Buttons = styled.View`
   display: flex;
   flex-direction: row;
-  justify-content: end;
-  width:100%;
-  column-gap: 10px;
+  width: 100%;
+  gap: 10px;
 `;
 
 const OrderItem = ({ order }) => {
+  const [apiLoading, setApiLoading] = useState(false);
 
-  async function cancelOrder(){
-    try{
-      await VendorService.cancelOrder({id:order.id});
+  async function cancelOrder() {
+    try {
+      setApiLoading(true);
+      Toast.show({
+        type: "info",
+        text1: "Canceling Order",
+      });
+      await VendorService.cancelOrder({ id: order.id });
       Toast.show({
         type: "success",
         text1: "Order Canceled",
       });
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      Toast.show({
+        type: "info",
+        text1: "An Error Ocurred",
+      });
+    } finally {
+      setApiLoading(false);
     }
   }
 
-  async function completeOrder(){
-    try{
-      await VendorService.completeOrder({id:order.id});
+  async function completeOrder() {
+    try {
+      setApiLoading(true);
+      Toast.show({
+        type: "info",
+        text1: "Completing Order",
+      });
+      await VendorService.completeOrder({ id: order.id });
       Toast.show({
         type: "success",
         text1: "Order Completed",
       });
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "An Error Ocurred",
+      });
+    } finally {
+      setApiLoading(false);
     }
   }
 
@@ -136,10 +173,19 @@ const OrderItem = ({ order }) => {
         </FlexRow>
       </OrderBid>
       <Buttons>
-        <CustomOutlineButton color={colors.red} onPress={cancelOrder}>
+        <CustomOutlineButton
+          style={{ marginLeft: "auto" }}
+          color={colors.red}
+          onPress={cancelOrder}
+          loading={apiLoading}
+        >
           Cancel
         </CustomOutlineButton>
-        <CustomOutlineButton color={colors.green} onPress={completeOrder}>
+        <CustomOutlineButton
+          color={colors.green}
+          onPress={completeOrder}
+          loading={apiLoading}
+        >
           Complete
         </CustomOutlineButton>
       </Buttons>
@@ -148,24 +194,36 @@ const OrderItem = ({ order }) => {
 };
 
 const InProcessOrders = () => {
-  const { data: orders } = orderVendorProcess();
-  console.log(orders);
+  const { height } = Dimensions.get("window");
+  const insets = useSafeAreaInsets();
+  const { data: orders, loading } = orderVendorProcess();
   return (
-    <Container>
+    <Common statusBarHeight={insets.top}>
+      <Container height={height}>
+        {loading ? (
+          <ActivityIndicator size="large" color={"black"} />
+        ) : (
+          <>
+            {orders.length > 0 ? (
+              <OrdersContainer>
+                {orders?.map((order) => (
+                  <OrderItem key={order.id} order={order} />
+                ))}
+              </OrdersContainer>
+            ) : (
+              <Center>
+                <H4 bold>No Orders Yet</H4>
+              </Center>
+            )}
+          </>
+        )}
+      </Container>
       <Navigation />
-      {orders.length > 0 ? (
-        <OrdersContainer>
-          {orders?.map((order) => (
-            <OrderItem key={order.id} order={order} />
-          ))}
-        </OrdersContainer>
-      ) : (
-        <Center>
-          <H4 bold>No Orders Yet</H4>
-        </Center>
-      )}
-    </Container>
+      <ToastContainer>
+        <Toast />
+      </ToastContainer>
+    </Common>
   );
-}
+};
 
-export default InProcessOrders
+export default InProcessOrders;

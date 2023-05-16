@@ -1,35 +1,47 @@
-// ----------------------------- Example default code ------------------
+// ----------------------------- Starting a page template ------------------
 
-// import React from 'react';
+// import React from 'react'
 // import styled from 'styled-components/native';
+// import Toast from "react-native-toast-message";
+// import { fonts } from '../utility/theme';
 
-// const TextInputContainer = styled.View`
-//   background-color: red;
+// const Common = styled.View`
+//   width: 100%;
+//   height: 100%;
+//   ${fonts.fontFamilyRegular}
 // `;
 
-// const Label = styled.Text`
-//   font-size: 16px;
-//   font-weight: bold;
+// const Container = styled.ScrollView`
+//   width: 100%;
+//   height: 100%;
 // `;
 
-// const Input = styled.TextInput`
-//   border: 1px solid black;
-//   padding: 10px;
-//   font-size: 16px;
+// const PositionFixed = styled.View`
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   z-index: 1;
 // `;
 
-// const CustomTextInput = ({ label, ...rest }) => {
+// function App() {
+
 //   return (
-//     <TextInputContainer>
-//       <Label>{label}</Label>
-//       <Input {...rest} />
-//     </TextInputContainer>
-//   );
-// };
+//     <Common>
+//       <PositionFixed>
+//           <Toast />
+//           Place any thing you want to make position fixed 
+//       </PositionFixed>
+//       <Container>
+//         All components go here
+//       </Container>
+//     </Common>
+//   )
+// }
 
-// export default CustomTextInput;
+// export default App
 
-// ------------------------------------- Example common file ------------------------------
+// ------------------------------------- Component Template ------------------------------
 
 // import React from 'react';
 // import styled from 'styled-components/native';

@@ -1,5 +1,5 @@
 const process = {
-    API_PATH : "http://localhost:4500",
+    API_PATH : "https://api-carmed.onrender.com",
     IMAGE_PATH: "http://localhost:4500/images/",
     API_GOOGLE : "AIzaSyD2N-yXRMJCZoNUsjJBlgwpH90NjjNWowI",
     type : "service_account",
