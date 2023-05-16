@@ -1,26 +1,27 @@
 import { CommonUtility } from "../utility/common";
 import styled from "styled-components/native";
-import userIcon from "../assets/user.svg";
-import StarIcon from "../assets/star.svg";
-import StarYellowIcon from "../assets/starYellow.svg";
-import Close from "../assets/close.svg";
+import userIcon from "../assets/user.png";
+import StarIcon from "../assets/star.png";
+import StarYellowIcon from "../assets/starYellow.png";
+import Close from "../assets/close.png";
 import { Text } from "react-native";
+import { borderRadius } from "../utility/theme";
 
 const Container = styled.View`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
   overflow: hidden;
   border: 2px solid white;
   width: ${({ width }) => width}px;
   height: ${({ height }) => height}px;
+  ${({ width }) => borderRadius(`${width}px`)}
 `;
 
 const Image = styled.Image`
   height: 100%;
   width: 100%;
-  resizemode: cover;
+  resizeMode: cover;
 `;
 
 const IconContainer = styled.Image`
@@ -39,6 +40,7 @@ export const ImageContainer = ({ image, width = 65, height = 65 }) => {
 const FlexRow = styled.View`
   display: flex;
   flex-direction: row;
+  gap: 5px;
 `;
 
 const StarContainer = styled.TouchableOpacity`
@@ -53,7 +55,7 @@ const StarIconContainer = styled.Image`
 
 export const StarElement = ({ starValue = 0 }) => {
   return (
-    <FlexRow style={{columnGap: "2px"}} >
+    <FlexRow >
       <StarContainer>
         <StarIconContainer source={ (starValue >= 1)? StarYellowIcon : StarIcon } />
       </StarContainer>
@@ -74,13 +76,12 @@ export const StarElement = ({ starValue = 0 }) => {
 };
 
 const PopupOuterContainer = styled.TouchableOpacity`
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,20 +90,22 @@ const PopupOuterContainer = styled.TouchableOpacity`
 `;
 
 const PopupInnerContainer = styled.TouchableOpacity`
-  width: 80%;
-  max-height: 80vh;
+  width: 90%;
+  max-height: 80%;
   padding: 10px;
-  border-radius: 10px;
   background-color: white;
   min-height: 50px;
+  ${borderRadius("5px")}
 `;
 
 const CloseButton = styled.TouchableOpacity`
   width: 20px;
   height: 20px;
-  background-image: url(${Close});
-  background-size: cover;
-  background-position: center;
+`;
+
+const CloseButtonIcon = styled.Image`
+  width: 20px;
+  height: 20px;
   opacity: 0.5;
 `;
 
@@ -116,7 +119,9 @@ export const Popup = ({ show, setShow, children, ...rest }) => {
       <PopupInnerContainer activeOpacity={1} {...rest} show={show}>
         <CloseButton
           onPress={close}
-        />
+        >
+          <CloseButtonIcon source={Close} />
+        </CloseButton>
         {children}
       </PopupInnerContainer>
     </PopupOuterContainer>

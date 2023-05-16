@@ -19,13 +19,11 @@ import {
   VendorSignupSchema,
 } from "../../utility/validationSchema";
 import { CustomButton } from "../../elements/button";
-import UserService from '../../utility/services/user'
-import VendorService from '../../utility/services/vendor'
+import UserService from "../../utility/services/user";
+import VendorService from "../../utility/services/vendor";
 import { useAuth } from "../../contexts/auth";
 
 const SignupContainer = styled.View`
-  min-height: 110vh;
-  width: calc(100% -40px);
   padding: 20px;
   padding-bottom: 50px;
   background-color: black;
@@ -45,7 +43,7 @@ const FullNameAndGender = styled.View`
   display: flex;
   width: 100%;
   flex-direction: row;
-  column-gap: 10px;
+  gap: 10px;
 `;
 
 const HeadingTop = styled.Text`
@@ -78,22 +76,20 @@ const SignupForm = styled.View`
   width: 100%;
   display: flex;
   flex-direction: column;
-  row-gap: 10px;
   margin-bottom: 30px;
 `;
 
 const CreateAccountButtonContainer = styled.View`
   width: 100%;
   display: flex;
-  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
 `;
 const YellowText = styled.Text`
   color: ${colors.yellow};
 `;
 
-const SignupButton = styled(CustomButton)`
-    width: max-content;
-`
+const SignupButton = styled(CustomButton)``;
 
 const Form = () => {
   const [values, setValues] = useState({
@@ -112,8 +108,10 @@ const Form = () => {
   const [errors, setErrors] = useState({});
   const [image, setImage] = useState();
   const [role, setRole] = useState("user");
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
+    setErrors({});
     if (role === "user") {
       UserSignupSchema.validate(
         { ...values, image: image },
@@ -122,7 +120,7 @@ const Form = () => {
         .then(async () => {
           const data = new FormData();
           if (image) {
-            data.append("profile", image.name); 
+            data.append("profile", image.name);
             data.append("image", image);
           }
           data.append("name", values.name);
@@ -131,6 +129,11 @@ const Form = () => {
           data.append("password", values.password);
           data.append("gender", values.gender);
           try {
+            setLoading(true);
+            Toast.show({
+              type: "info",
+              text1: "Creating Account",
+            });
             let res = null;
             if (image) {
               res = await UserService.add(data);
@@ -139,19 +142,20 @@ const Form = () => {
             }
             if (res.token) {
               login();
+              Toast.show({
+                type: "success",
+                text1: "Welcome",
+              });
               UserService.storeUser(res);
               navigation.navigate("User_order");
             }
-            Toast.show({
-              type: "success",
-              text1: "Creating Account",
-            });
           } catch (error) {
-            console.error(error);
             Toast.show({
               type: "error",
               text1: "Some error occurred",
             });
+          } finally {
+            setLoading(false);
           }
         })
         .catch((validationErrors) => {
@@ -182,18 +186,28 @@ const Form = () => {
           payload.append("skill", values.skill);
           payload.append("gender", values.gender);
           try {
+            setLoading(true);
+            Toast.show({
+              type: "success",
+              text1: "Creating Account",
+            });
             const res = await VendorService.add(payload);
             if (res.token) {
               login();
+              Toast.show({
+                type: "success",
+                text1: "Welcome",
+              });
               VendorService.storeVendor(res);
               navigation.navigate("Vendor_availableOrders");
             }
           } catch (error) {
-            console.log(error);
             Toast.show({
               type: "error",
               text1: "Some error occurred",
             });
+          } finally {
+            setLoading(false);
           }
         })
         .catch((validationErrors) => {
@@ -250,7 +264,7 @@ const Form = () => {
         label="Password"
       />
       <View style={{ display: "flex", flexDirection: "row" }}>
-        <View style={{rowGap: "15px"}} >
+        <View>
           <CustomTextInput
             hint={errors.cnic}
             value={values.cnic}
@@ -278,7 +292,7 @@ const Form = () => {
         />
       </View>
       {role === "vendor" && (
-        <View style={{ rowGap: "10px" }}>
+        <View>
           <CustomTextInput
             hint={errors.contact}
             value={values.contact}
@@ -300,7 +314,7 @@ const Form = () => {
         </View>
       )}
       <CreateAccountButtonContainer>
-        <SignupButton inverted={true} onPress={handleSignup}>
+        <SignupButton inverted={true} loading={loading} onPress={handleSignup}>
           Create Account
         </SignupButton>
       </CreateAccountButtonContainer>

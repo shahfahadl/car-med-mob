@@ -24,7 +24,6 @@ const onError = async (error) => {
 }
 
 const request = async (options, isSecure) => {
-  console.log("options : ",options)
   const headers = {};
 
   if (isSecure) {

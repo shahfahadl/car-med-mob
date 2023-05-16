@@ -1,14 +1,20 @@
-import { View, Text } from "react-native";
+import { View, ActivityIndicator, Dimensions } from "react-native";
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import Navigation from "../../Layout/Navigation";
 import { orderUserPending } from "../../hooks/watchOrder";
-import { colors, fonts } from "../../utility/theme";
+import { borderRadius, colors, fonts } from "../../utility/theme";
 import { arrowRight } from "../../Layout/importingImages";
-import plusCircle from '../../assets/plus-circle.svg'
+import plusCircle from "../../assets/plus-circle.png";
 import { Popup } from "../../elements/common";
-import { CustomDropdownInput, CustomTextInput } from "../../elements/input"
-import { CommonUtility, carTypeOptions, cities, skillOption } from "../../utility/common";
+import { CustomDropdownInput, CustomTextInput } from "../../elements/input";
+import {
+  CommonUtility,
+  carTypeOptions,
+  cities,
+  skillOption,
+} from "../../utility/common";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import LocationSelector from "../../components/locationSelector";
 import { CustomOutlineButton } from "../../elements/button";
 import UserService from "../../utility/services/user";
@@ -17,10 +23,17 @@ import { OrderSchema } from "../../utility/validationSchema";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 
-const Container = styled.View`
-  padding-top: 50px;
+const Common = styled.View`
   width: 100%;
-  min-height: calc(100vh - 60px);
+  height: 100%;
+  padding-top: ${({ statusBarHeight }) => `${statusBarHeight}px`};
+  ${fonts.fontFamilyRegular}
+`;
+
+const Container = styled.ScrollView`
+  margin-top: 60px;
+  width: 100%;
+  height: ${({ height }) => `${height - 60}px`};
 `;
 
 const OrdersContainer = styled.View`
@@ -28,22 +41,22 @@ const OrdersContainer = styled.View`
   margin-top: 10px;
   display: flex;
   align-items: center;
-  row-gap: 15px;
+  gap: 10px;
 `;
 
 const OrderContainer = styled.View`
-  border-radius: 5px;
-  over-flow: hidden;
-  box-shadow: 0px 0px 7px ${colors.boxShadow};
+  border: 2px solid ${colors.halfBlack};
+  ${borderRadius("5px")}
   display: flex;
   flex-direction: row;
   width: 95%;
-  max-width: 400px;
+  max-width: 600px;
+  justify-content: space-between;
 `;
 
 const OrderLeft = styled.View`
   padding: 20px;
-  width: calc(100% - 30px);
+  height: 100%;
 `;
 
 const OrderRight = styled.TouchableOpacity`
@@ -57,8 +70,7 @@ const ShowMaps = styled.TouchableOpacity`
   padding: 0px 5px;
   border: 2px solid black;
   background-color: ${colors.yellowLight};
-  width: max-content;
-  border-radius: 15px;
+  ${borderRadius("15px")}
 `;
 
 const H4 = styled.Text`
@@ -72,9 +84,9 @@ const FlexRow = styled.View`
   flex-direction: row;
 `;
 
-const IconContainer = styled.Image`
-  height: 20px;
+const Images = styled.Image`
   width: 20px;
+  height: 20px;
 `;
 
 const Center = styled.View`
@@ -83,7 +95,7 @@ const Center = styled.View`
   margin-top: 20px;
 `;
 
-const RequestCount = styled.Text`
+const RequestCount = styled.View`
   position: absolute;
   width: 30px;
   height: 30px;
@@ -92,41 +104,57 @@ const RequestCount = styled.Text`
   justify-content: center;
   top: -8px;
   right: -5px;
-  border-radius: 50%;
   background-color: ${colors.red};
   color: white;
+  ${borderRadius("20px")}
 `;
 
 const OrderNowContainer = styled.TouchableOpacity`
-  position: fixed;
+  position: absolute;
   bottom: 20px;
-  left: calc(50% - 60px );
+  left: 50%;
+  transform: translateX(-100px);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  gap: 10px;
+  background-color: ${colors.box};
+  padding: 10px 20px;
+  ${borderRadius("30px")}
+  border: 2px solid ${colors.green};
 `;
 
 const Buttons = styled.View`
   display: flex;
   flex-direction: row;
-  justify-content: end;
   width: 100%;
-  column-gap: 10px;
   margin-top: 20px;
+  gap: 10px;
 `;
 
-const OrderNow = ({setPopup}) => {
-  return(
-    <OrderNowContainer onPress={()=>setPopup(true)} >
-      <IconContainer source={plusCircle} />
-      <H4 style={{color: colors.green }} >Get Your Car Fixed!</H4>
+const ToastContainer = styled.View`
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 5;
+`;
+
+const IconContainer = styled.Image`
+  height: 20px;
+  width: 20px;
+`;
+
+const OrderNow = ({ setPopup }) => {
+  return (
+    <OrderNowContainer onPress={() => setPopup(true)}>
+      <H4 style={{ color: colors.green }}>Get Your Car Fixed!</H4>
+      <Images source={plusCircle} />
     </OrderNowContainer>
-  )
-}
+  );
+};
 
 const OrderItem = ({ order }) => {
-
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   return (
     <OrderContainer>
@@ -148,16 +176,22 @@ const OrderItem = ({ order }) => {
             <H4>{order.problem}</H4>
           </FlexRow>
         </View>
-        <FlexRow style={{ marginTop: "20px" }}>
+        <FlexRow style={{ marginTop: 20 }}>
           <H4 light bold>
             Bid &nbsp;
           </H4>
           <H4 bold>{CommonUtility.currencyFormat(order.bid)}</H4>
         </FlexRow>
       </OrderLeft>
-      <OrderRight onPress={()=> navigation.navigate("User_singleOrder", { orderId: order.id }) } >
+      <OrderRight
+        onPress={() =>
+          navigation.navigate("User_singleOrder", { orderId: order.id })
+        }
+      >
         {order.requests.length > 0 && (
-          <RequestCount>{order.requests.length}</RequestCount>
+          <RequestCount>
+            <H4 style={{ color: "white" }}>{order.requests.length}</H4>
+          </RequestCount>
         )}
         <IconContainer source={arrowRight} />
       </OrderRight>
@@ -167,10 +201,13 @@ const OrderItem = ({ order }) => {
 
 const Order = () => {
   const { data: orders, loading } = orderUserPending();
-  const [ show, setShow ] = useState(false)
-  const [ errors, setErrors ] = useState({})
-  const { user } = useAuth()
-  const [ values , setValues ] = useState({
+  const [show, setShow] = useState(false);
+  const [errors, setErrors] = useState({});
+  const { user } = useAuth();
+  const { height } = Dimensions.get("window");
+  const [apiLoading, setApiLoading] = useState(false);
+  const insets = useSafeAreaInsets();
+  const [values, setValues] = useState({
     problem: "dentAndPaint",
     carType: "cars",
     location: "Nowshera",
@@ -179,104 +216,146 @@ const Order = () => {
       lng: 71.9075292,
     },
     bid: null,
-  })
+  });
 
   const handleForm = async () => {
     OrderSchema.validate(values, { abortEarly: false })
-    .then(async () => {
-      const payload = {
-        problem: values.problem,
-        bid: parseInt(values.bid),
-        carType: values.carType,
-        location: values.location,
-        userId: user.id,
-        userName: user.name,
-        userProfile: user.profile,
-        latLng: values.latLng,
-        requests: []
-      }
-      try {
-        UserService.order(payload);
-        Toast.show({
-          type: "success",
-          text1: "Order Placed",
+      .then(async () => {
+        const payload = {
+          problem: values.problem,
+          bid: parseInt(values.bid),
+          carType: values.carType,
+          location: values.location,
+          userId: user.id,
+          userName: user.name,
+          userProfile: user.profile,
+          latLng: values.latLng,
+          requests: [],
+        };
+        try {
+          setApiLoading(true);
+          Toast.show({
+            type: "info",
+            text1: "Creating Order",
+          });
+          UserService.order(payload);
+          Toast.show({
+            type: "success",
+            text1: "Order Placed",
+          });
+        } catch (error) {
+          Toast.show({
+            type: "error",
+            text1: "Invalid Credentials",
+          });
+        } finally {
+          setShow(false);
+          setApiLoading(false);
+        }
+      })
+      .catch((validationErrors) => {
+        const errors = {};
+        validationErrors.inner.forEach((error) => {
+          errors[error.path] = error.message;
         });
-      } catch (error) {
+        setErrors(errors);
         Toast.show({
           type: "error",
-          text1: "Invalid Credentials",
+          text1: "Form Values Incorrect",
         });
-      } finally {
-        setShow(false)
-      }
-    })
-    .catch((validationErrors) => {
-      const errors = {};
-      validationErrors.inner.forEach((error) => {
-        errors[error.path] = error.message;
       });
-      console.log(errors)
-      setErrors(errors);
-      Toast.show({
-        type: "error",
-        text1: "Form Values Incorrect",
-      });
-    });
-  }
+  };
 
   return (
-    <Container>
+    <Common statusBarHeight={insets.top}>
+      <Container height={height}>
+        {loading ? (
+          <ActivityIndicator size="large" color={"black"} />
+        ) : (
+          <>
+            {orders.length > 0 ? (
+              <OrdersContainer>
+                {orders?.map((order) => (
+                  <OrderItem key={order.id} order={order} />
+                ))}
+              </OrdersContainer>
+            ) : (
+              <Center>
+                <H4 bold>No Orders Yet</H4>
+              </Center>
+            )}
+          </>
+        )}
+      </Container>
       <Navigation />
-      {orders.length > 0 ? (
-        <OrdersContainer>
-          {orders?.map((order) => (
-            <OrderItem key={order.id} order={order} />
-          ))}
-        </OrdersContainer>
-      ) : (
-        <Center>
-          <H4 bold>No Orders Yet</H4>
-        </Center>
-      )}
       <OrderNow setPopup={setShow} />
-      <Popup show={show} setShow={setShow} >
+      <Popup show={show} setShow={setShow}>
         <Center>
-          <H4 style={{fontSize: "20px"}} >Order Now</H4>
+          <H4 bold style={{ fontSize: 25, marginBottom: 20 }}>
+            Order Now
+          </H4>
         </Center>
-        <FlexRow style={{columnGap: "10px"}} >
-          <CustomDropdownInput 
+        <FlexRow style={{ gap: 10, marginBottom: 10 }}>
+          <CustomDropdownInput
+            inverted
+            labelColor={"black"}
             label="Problem"
-            width="40%"
+            width="55%"
             options={skillOption}
             selectedValue={values.problem}
-            onValueChange={(value) => setValues((prev)=>({...prev,problem:value}))}
+            onValueChange={(value) =>
+              setValues((prev) => ({ ...prev, problem: value }))
+            }
+            hint={errors.problem}
           />
-          <CustomDropdownInput 
+          <CustomDropdownInput
+            inverted
+            labelColor={"black"}
             label="Car Type"
             width="40%"
             options={carTypeOptions}
             selectedValue={values.carType}
-            onValueChange={(value) => setValues((prev)=>({...prev,carType:value}))}
+            onValueChange={(value) =>
+              setValues((prev) => ({ ...prev, carType: value }))
+            }
+            hint={errors.carType}
           />
         </FlexRow>
-        <FlexRow style={{columnGap: "10px", margin: "0 10px"}} >
-          <CustomDropdownInput 
+        <FlexRow style={{ gap: 10, marginBottom: 10 }}>
+          <CustomDropdownInput
+            inverted
+            labelColor={"black"}
             label="Location"
-            width="40%"
+            width="55%"
             options={cities}
             selectedValue={values.location}
-            onValueChange={(value) => setValues((prev)=>({...prev,location:value.name , latLng: value.latLng}))}
+            onValueChange={(value) =>
+              setValues((prev) => ({
+                ...prev,
+                location: value.name,
+                latLng: value.latLng,
+              }))
+            }
+            hint={errors.location}
           />
           <CustomTextInput
+            labelColor={"black"}
+            inverted={true}
             value={values.bid}
-            onChangeText={(e) => setValues((prev)=>({...prev,bid:e}))}
+            onChangeText={(e) => setValues((prev) => ({ ...prev, bid: e }))}
             width="40%"
             placeholder="PKR"
             label="My Bid"
+            hint={errors.bid}
           />
         </FlexRow>
         <Buttons>
-          <CustomOutlineButton color={colors.green} onPress={handleForm}>
+          <CustomOutlineButton
+            style={{ marginLeft: "auto" }}
+            color={colors.green}
+            onPress={handleForm}
+            loading={apiLoading}
+          >
             Place Order
           </CustomOutlineButton>
           <CustomOutlineButton
@@ -287,7 +366,10 @@ const Order = () => {
           </CustomOutlineButton>
         </Buttons>
       </Popup>
-    </Container>
+      <ToastContainer>
+        <Toast />
+      </ToastContainer>
+    </Common>
   );
 };
 

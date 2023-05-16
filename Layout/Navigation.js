@@ -6,20 +6,21 @@ import { useAuth } from '../contexts/auth'
 import { TouchableOpacity } from 'react-native';
 import { useNavigation , useRoute } from '@react-navigation/native';
 import { ImageContainer } from '../elements/common';
-import { colors } from '../utility/theme';
-import { View, Text } from 'react-native';
+import { borderRadius, colors } from '../utility/theme';
+import { View, Text , StatusBar  } from 'react-native';
+import { useSafeAreaInsets  } from 'react-native-safe-area-context';
 
 const DrawerContainer = styled.View`
     position: absolute;
     top: 0;
     left: ${({isOpen})=>isOpen? "0px":"-280px"};
-    transition: 0.3s ease-in-out;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     display: flex;
     z-index: 3;
     flex-direction: row;
-    pointer-events: none;
+    pointer-events: box-none;
+    margin-top: ${({statusBarHeight})=>`${statusBarHeight}px`}
 `
 
 const NavContainer = styled.View`
@@ -27,19 +28,16 @@ const NavContainer = styled.View`
     width: 280px;
     height: 100%;
     display: flex;
-    justify-content: start;
     flex-direction: column;
     align-items: center;
     background-color: ${colors.navBg};
-    pointer-events: all;
-
 `
 
 const ProfileContainer = styled.View`
     display: flex;
     flex-direction: row;
     align-items: center;
-    column-gap: 30px;
+    gap: 30px;
     margin-top: 40px;
     margin-bottom: 50px;
 `
@@ -74,32 +72,32 @@ const MenuItem = styled.TouchableOpacity`
     justify-content: space-between;
     padding: 10px;
     flex-direction: row;
-    background-color: ${({selected})=> selected? colors.yellow:"" }
-    border-radius: 5px;
+    background-color: ${({selected})=> selected? colors.yellow:"" };
     margin: 10px 0;
+    ${borderRadius('5px')}
 `
 
 const MenuContainer = styled.View`
     width: 100%;
     background-color: ${colors.navBg};
     height: 50px;
-    display: flex;
     justify-content: center;
-    display: ${({disable})=> disable? "none":"" };
+    display: ${({disable})=> disable? "none":"flex" };
     padding-left: 20px;
-    pointer-events: all;
 `
 
 const LogoutButton = styled.TouchableOpacity`
     width: 220px;
     padding: 10px;
     border: 2px solid ${colors.yellow};
-    border-radius: 5px;
     margin: 10px 0;
     margin-top: auto;
     letter-spacing: 3px;
-    font-size: 14;
+    font-size: 14px;
     text-align: center;
+    display: flex;
+    align-items: center;
+    ${borderRadius('5px')}
 `
 
 const Navigation = () => {
@@ -108,7 +106,7 @@ const Navigation = () => {
     const { isVendor , user, logout} = useAuth()
     const route = useRoute();
     const routeName = route.name
-
+    const insets = useSafeAreaInsets();
     const menuItems = useMemo(()=>{
         if(isVendor){
             return [
@@ -159,20 +157,21 @@ const Navigation = () => {
         closeDrawer()
         setTimeout(()=>{
             navigation.navigate(name)
-        },[400])
+        },400)
     }
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         logout()
         closeDrawer()
         setTimeout(()=>{
             navigation.navigate("Registration")
-        },[400])
+        },400)
     }
 
     return (<>{ user && 
-    <DrawerContainer isOpen={isOpen}>
-         <NavContainer>
+    <DrawerContainer statusBarHeight={insets.top} isOpen={isOpen}>
+        <StatusBar backgroundColor={colors.navBg} />
+        <NavContainer>
             <ProfileContainer>
                 <ImageContainer image={user.profile} />
                 <View>
@@ -197,7 +196,7 @@ const Navigation = () => {
                 </Text>
             </LogoutButton>
         </NavContainer>
-        <MenuContainer >
+        <MenuContainer disable={false} >
             { isOpen? 
                 <TouchableOpacity onPress={closeDrawer} >
                     <IconContainer source={closeWhite} />
@@ -206,7 +205,7 @@ const Navigation = () => {
                     <IconContainer source={listWhite} />
                 </TouchableOpacity>
             }
-        </MenuContainer> 
+        </MenuContainer>  
       </DrawerContainer>
     }</>
     )

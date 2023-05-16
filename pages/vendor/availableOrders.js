@@ -1,8 +1,8 @@
-import { View } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import Navigation from "../../Layout/Navigation";
 import styled from "styled-components/native";
-import { colors, fonts } from "../../utility/theme";
+import { borderRadius, colors, fonts } from "../../utility/theme";
 import { orderVendorPending } from "../../hooks/watchOrder";
 import { ImageContainer, Popup } from "../../elements/common";
 import { CustomOutlineButton } from "../../elements/button";
@@ -11,9 +11,21 @@ import VendorService from "../../utility/services/vendor";
 import Toast from "react-native-toast-message";
 import { CustomTextInput } from "../../elements/input";
 import { CommonUtility } from "../../utility/common";
+import { Dimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const Container = styled.View`
-  padding-top: 50px;
+const Common = styled.View`
+  padding-top: ${({ statusBarHeight }) => `${statusBarHeight}px`};
+  width: 100%;
+  height: 100%;
+  ${fonts.fontFamilyRegular}
+`;
+
+const Container = styled.ScrollView`
+  margin-top: 60px;
+  width: 100%;
+  height: ${({ height }) => `${height - 60}px`};
+  margin-bottom: 10px;
 `;
 
 const OrdersContainer = styled.View`
@@ -21,23 +33,29 @@ const OrdersContainer = styled.View`
   margin-top: 10px;
   display: flex;
   align-items: center;
-  row-gap: 15px;
+  gap: 10px;
 `;
 
 const OrderContainer = styled.View`
-  border-radius: 5px;
-  box-shadow: 0px 0px 7px ${colors.boxShadow};
+  border: 2px solid ${colors.halfBlack};
+  ${borderRadius("5px")}
   padding: 20px;
   width: 95%;
   max-width: 400px;
+`;
+
+const ToastContainer = styled.View`
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 5;
 `;
 
 const ShowMaps = styled.TouchableOpacity`
   padding: 0px 5px;
   border: 2px solid black;
   background-color: ${colors.yellowLight};
-  width: max-content;
-  border-radius: 15px;
+  ${borderRadius("15px")}
 `;
 
 const H4 = styled.Text`
@@ -61,7 +79,7 @@ const OrderTop = styled.View`
   width: 100%;
   display: flex;
   flex-direction: row;
-  column-gap: 20px;
+  gap: 20px;
 `;
 
 const OrderBids = styled.View`
@@ -75,17 +93,28 @@ const OrderBids = styled.View`
 const Buttons = styled.View`
   display: flex;
   flex-direction: row;
-  justify-content: end;
   width: 100%;
-  column-gap: 10px;
+  gap: 10px;
 `;
 
-const OrderItem = ({ order, user, setPopup, setValues, values }) => {
+const OrderItem = ({
+  order,
+  user,
+  setPopup,
+  setValues,
+  apiLoading,
+  setApiLoading,
+}) => {
   const myBid =
     order.requests.find((request) => request.vendorId === user.id)?.bid || null;
 
   async function acceptOrder() {
     try {
+      setApiLoading(true);
+      Toast.show({
+        type: "info",
+        text1: "Accepting Order",
+      });
       const payload = {
         vendorId: user.id,
         vendorName: user.name,
@@ -103,18 +132,23 @@ const OrderItem = ({ order, user, setPopup, setValues, values }) => {
         text1: "Order Accepted",
       });
     } catch (error) {
-      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "An Error Ocurred",
+      });
+    } finally {
+      setApiLoading(false);
     }
   }
 
   function handlePopup() {
     setValues({
       id: order.id,
-      request:{
+      request: {
         vendorId: user.id,
         vendorName: user.name,
         vendorProfile: user.profile,
-      }
+      },
     });
     setPopup(true);
   }
@@ -166,10 +200,18 @@ const OrderItem = ({ order, user, setPopup, setValues, values }) => {
         </FlexRow>
       </OrderBids>
       <Buttons>
-        <CustomOutlineButton color={colors.green} onPress={acceptOrder}>
+        <CustomOutlineButton
+          color={colors.green}
+          loading={apiLoading}
+          onPress={acceptOrder}
+        >
           Accept
         </CustomOutlineButton>
-        <CustomOutlineButton color={colors.blue} onPress={handlePopup}>
+        <CustomOutlineButton
+          color={colors.blue}
+          loading={apiLoading}
+          onPress={handlePopup}
+        >
           {myBid ? "Update Bid" : "Bid"}
         </CustomOutlineButton>
       </Buttons>
@@ -179,8 +221,11 @@ const OrderItem = ({ order, user, setPopup, setValues, values }) => {
 
 const AvailableOrders = () => {
   const { user } = useAuth();
-  const { data: orders } = orderVendorPending();
+  const { data: orders, loading } = orderVendorPending();
   const [show, setShow] = useState(false);
+  const { height } = Dimensions.get("window");
+  const insets = useSafeAreaInsets();
+  const [apiLoading, setApiLoading] = useState(false);
   const [values, setValues] = useState({
     id: null,
     request: {
@@ -191,25 +236,29 @@ const AvailableOrders = () => {
     },
   });
 
-  console.log(orders)
-
   const handleForm = async () => {
-    if(values.request.bid){
+    if (values.request.bid) {
       try {
-        await VendorService.placeBid(values);
-      } catch (error) {
+        setApiLoading(true);
         Toast.show({
-          type: "success",
-          text1: "Invalid Credentials",
+          type: "info",
+          text1: "Placing Bid",
         });
-      } finally {
+        await VendorService.placeBid(values);
         Toast.show({
           type: "success",
           text1: "Bid Placed",
         });
-        setShow(false)
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "Invalid Credentials",
+        });
+      } finally {
+        setApiLoading(false);
+        setShow(false);
       }
-    }else{
+    } else {
       Toast.show({
         type: "error",
         text1: "Bid not placed",
@@ -218,31 +267,48 @@ const AvailableOrders = () => {
   };
 
   return (
-    <Container>
+    <Common statusBarHeight={insets.top}>
+      <Container height={height}>
+        {loading ? (
+          <ActivityIndicator size="large" color={"black"} />
+        ) : (
+          <>
+            {orders.length > 0 ? (
+              <OrdersContainer>
+                {orders?.map((order) => (
+                  <OrderItem
+                    key={order.id}
+                    order={order}
+                    user={user}
+                    setValues={setValues}
+                    values={values}
+                    setPopup={setShow}
+                    apiLoading={apiLoading}
+                    setApiLoading={setApiLoading}
+                  />
+                ))}
+              </OrdersContainer>
+            ) : (
+              <Center>
+                <H4 bold>No Orders Yet</H4>
+              </Center>
+            )}
+          </>
+        )}
+      </Container>
       <Navigation />
-      {orders.length > 0 ? (
-        <OrdersContainer>
-          {orders?.map((order) => (
-            <OrderItem
-              key={order.id}
-              order={order}
-              user={user}
-              setValues={setValues}
-              values={values}
-              setPopup={setShow}
-            />
-          ))}
-        </OrdersContainer>
-      ) : (
-        <Center>
-          <H4 bold>No Orders Yet</H4>
-        </Center>
-      )}
+      <ToastContainer>
+        <Toast />
+      </ToastContainer>
       <Popup show={show} setShow={setShow}>
         <Center>
-          <H4 bold style={{ fontSize: "20px" }}>Place Your Bid</H4>
+          <H4 bold style={{ fontSize: 25 }}>
+            Place Your Bid
+          </H4>
         </Center>
         <CustomTextInput
+          inverted
+          labelColor={"black"}
           label={"Your Bid"}
           placeholder="3000"
           value={values.request.bid}
@@ -254,16 +320,23 @@ const AvailableOrders = () => {
           }
           width="70%"
         />
-        <Buttons style={{marginTop: "10px"}} >
-          <CustomOutlineButton color={colors.green} onPress={handleForm}>
+        <Buttons style={{ marginTop: 10 }}>
+          <CustomOutlineButton
+            color={colors.green}
+            loading={apiLoading}
+            onPress={handleForm}
+          >
             Place Bid
           </CustomOutlineButton>
-          <CustomOutlineButton color={colors.red} onPress={()=>setShow(false)} >
+          <CustomOutlineButton
+            color={colors.red}
+            onPress={() => setShow(false)}
+          >
             Close
           </CustomOutlineButton>
         </Buttons>
       </Popup>
-    </Container>
+    </Common>
   );
 };
 

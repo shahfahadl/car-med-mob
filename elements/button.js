@@ -1,10 +1,12 @@
 import styled from "styled-components/native";
-import { colors, fonts } from "../utility/theme";
+import { borderRadius, colors, fonts } from "../utility/theme";
+import { ActivityIndicator } from 'react-native';
 
 const StyledButton = styled.TouchableOpacity`
   background-color: ${({ bgColor }) => bgColor || colors.yellow};
-  border-radius: 5px;
+  ${borderRadius("5px")}
   padding: 10px 30px;
+  ${ ({loading})=> loading && "pointer-events: none;"}
 `;
 
 const CustomText = styled.Text`
@@ -12,10 +14,13 @@ const CustomText = styled.Text`
   color: ${({ inverted, color }) => color || (inverted ? "black" : "white")};
 `;
 
-export const CustomButton = ({ inverted,color, children, ...rest }) => {
+export const CustomButton = ({ inverted,color, children, loading=false, ...rest }) => {
   return (
-    <StyledButton {...rest}>
-      <CustomText color={color} inverted={inverted}>{children}</CustomText>
+    <StyledButton {...rest} loading={loading} >
+      {loading?
+        <ActivityIndicator size="small" color={inverted? "black":"white"} />:
+        <CustomText color={color} inverted={inverted}>{children}</CustomText>
+      }
     </StyledButton>
   );
 };
@@ -23,14 +28,17 @@ export const CustomButton = ({ inverted,color, children, ...rest }) => {
 const StyledOutlineButton = styled.TouchableOpacity`
   padding: 5px 10px;
   border: 3px solid ${({ color }) => color};
-  border-radius: 10px;
-  width: ${({ width }) => width};
+  ${borderRadius("5px")}
+  ${ ({loading})=> loading && "pointer-events: none;"}
 `;
 
-export const CustomOutlineButton = ({ color, children, ...rest }) => {
+export const CustomOutlineButton = ({ color,loading=false, children, ...rest }) => {
   return (
-    <StyledOutlineButton color={color} {...rest}>
-      <CustomText color={color}>{children}</CustomText>
+    <StyledOutlineButton loading={loading} color={color} {...rest}>
+      {loading?
+        <ActivityIndicator size="small" color={inverted? "black":"white"} />:
+        <CustomText color={color}>{children}</CustomText>
+      }
     </StyledOutlineButton>
   );
 };
@@ -55,7 +63,7 @@ export const CustomOutlineButton = ({ color, children, ...rest }) => {
 
 // const IconContainer = styled.Image`
 //   height: 20px;
-//   weight: 20px;
+//   width: 20px;
 // `
 
 // export const CustomLocationPicker = ({
