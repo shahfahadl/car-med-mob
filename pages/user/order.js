@@ -1,5 +1,5 @@
 import { View, ActivityIndicator, Dimensions } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import Navigation from "../../Layout/Navigation";
 import { orderUserPending } from "../../hooks/watchOrder";
@@ -7,7 +7,7 @@ import { borderRadius, colors, fonts } from "../../utility/theme";
 import { arrowRight } from "../../Layout/importingImages";
 import plusCircle from "../../assets/plus-circle.png";
 import { Popup } from "../../elements/common";
-import { CustomDropdownInput, CustomTextInput } from "../../elements/input";
+import { CustomDatePicker, CustomDropdownInput, CustomTextInput } from "../../elements/input";
 import {
   CommonUtility,
   carTypeOptions,
@@ -22,6 +22,7 @@ import { useAuth } from "../../contexts/auth";
 import { OrderSchema } from "../../utility/validationSchema";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
+import Map from "../../components/map";
 
 const Common = styled.View`
   width: 100%;
@@ -207,29 +208,33 @@ const Order = () => {
   const { height } = Dimensions.get("window");
   const [apiLoading, setApiLoading] = useState(false);
   const insets = useSafeAreaInsets();
+  const [mapVisible, setMapVisible] = useState(false);
+  const [location, setLocation] = useState({
+    name: null,
+    latitude: null,
+    longitude: null
+  });
   const [values, setValues] = useState({
     problem: "dentAndPaint",
     carType: "cars",
-    location: "Nowshera",
-    latLng: {
-      lat: 33.9956777,
-      lng: 71.9075292,
-    },
     bid: null,
   });
 
   const handleForm = async () => {
-    OrderSchema.validate(values, { abortEarly: false })
+    OrderSchema.validate({...values, location: location.name}, { abortEarly: false })
       .then(async () => {
         const payload = {
           problem: values.problem,
           bid: parseInt(values.bid),
           carType: values.carType,
-          location: values.location,
+          location: location.location,
           userId: user.id,
           userName: user.name,
           userProfile: user.profile,
-          latLng: values.latLng,
+          latLng: {
+            lat: location.latitude , 
+            lng: location.longitude
+          },
           requests: [],
         };
         try {
@@ -322,20 +327,12 @@ const Order = () => {
           />
         </FlexRow>
         <FlexRow style={{ gap: 10, marginBottom: 10 }}>
-          <CustomDropdownInput
-            inverted
+          <LocationSelector
+            setMapVisible={setMapVisible}
+            location={location}
+            setLocation={setLocation}
             labelColor={"black"}
-            label="Location"
-            width="55%"
-            options={cities}
-            selectedValue={values.location}
-            onValueChange={(value) =>
-              setValues((prev) => ({
-                ...prev,
-                location: value.name,
-                latLng: value.latLng,
-              }))
-            }
+            inverted={true}
             hint={errors.location}
           />
           <CustomTextInput
@@ -348,6 +345,9 @@ const Order = () => {
             label="My Bid"
             hint={errors.bid}
           />
+        </FlexRow>
+        <FlexRow style={{ gap: 10, marginBottom: 10 }} >
+            <CustomDatePicker/>
         </FlexRow>
         <Buttons>
           <CustomOutlineButton
@@ -366,6 +366,11 @@ const Order = () => {
           </CustomOutlineButton>
         </Buttons>
       </Popup>
+      <Map
+        mapVisible={mapVisible}
+        setMapVisible={setMapVisible}
+        setLocation={setLocation}
+      />
       <ToastContainer>
         <Toast />
       </ToastContainer>

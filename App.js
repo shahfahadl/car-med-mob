@@ -13,12 +13,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import VendorCompleted from "./pages/vendor/vendorCompleted";
 import { ActivityIndicator } from 'react-native';
+import Geocoder from 'react-native-geocoding';
+import process from "./env";
 
 const Stack = createStackNavigator();
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
-
   useEffect(() => {
     async function loadFonts() {
       await loadAsync({
@@ -27,8 +28,8 @@ export default function App() {
       });
       setFontsLoaded(true);
     }
-
     loadFonts();
+    Geocoder.init(process.GOOGLE_MAPS_KEY);
   }, []);
 
   return (

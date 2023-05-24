@@ -1,91 +1,91 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, Button } from 'react-native';
-// import Geolocation from '@react-native-community/geolocation';
-// // import Geocoder from 'react-native-geocoding';
+import React, { useState, useEffect } from "react";
+import { Platform, Text } from "react-native";
+import styled from "styled-components/native";
+import Geocoder from "react-native-geocoding";
+import * as Location from "expo-location";
+import { borderRadius, colors, fonts } from "../utility/theme";
 
-// const LocationSelector = () => {
-//   const [location, setLocation] = useState(null);
-//   const [locationName, setLocationName] = useState(null);
+const LocationContainer = styled.TouchableOpacity`
+  border: 2px solid black;
+  ${borderRadius("5px")}
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+`;
 
-//   useEffect(() => {
-//     // Geolocation.requestAuthorization('whenInUse').then((permission) => {
-//     //   if (permission === 'granted') {
-//     //     Geolocation.getCurrentPosition({
-//     //       timeout: 5000,
-//     //     }).then((position) => {
-//     //       setLocation({
-//     //         latitude: position.coords.latitude,
-//     //         longitude: position.coords.longitude,
-//     //       });
-//     //       console.log({
-//     //           latitude: position.coords.latitude,
-//     //           longitude: position.coords.longitude,
-//     //         })
+const Container = styled.View`
+  max-width: 350px;
+  width: ${({ width }) => width};
+`;
 
-//     //       // Geocoder.from(position.coords.latitude, position.coords.longitude)
-//     //       //   .then((json) => {
-//     //       //     const addressComponent = json.results[0].address_components[0];
-//     //       //     setLocationName(addressComponent.short_name);
-//     //       //   })
-//     //       //   .catch((error) => console.warn(error));
-//     //     });
-//     //   }
-//     // });
-//     async function ok (){
-//       const lctn = await Geolocation.getCurrentPosition()
-//       console.log(lctn)
-//     }
-//     ok()
-//     // .then((position) => {
-//             // setLocation({
-//             //   latitude: position.coords.latitude,
-//             //   longitude: position.coords.longitude,
-//             // });
-//             // console.log({
-//             //     latitude: position.coords.latitude,
-//             //     longitude: position.coords.longitude,
-//             //   })
-  
-//             // Geocoder.from(position.coords.latitude, position.coords.longitude)
-//             //   .then((json) => {
-//             //     const addressComponent = json.results[0].address_components[0];
-//             //     setLocationName(addressComponent.short_name);
-//             //   })
-//             //   .catch((error) => console.warn(error));
-//           // });
-//   }, []);
+const Label = styled.Text`
+  color: ${({ inverted, labelColor }) =>
+    labelColor ? labelColor : inverted ? "white" : "black"};
+  margin-bottom: 10px;
+  ${fonts.fontFamilyBold}
+`;
 
-//   const handlePress = () => {
-//     // Geolocation.requestAuthorization('whenInUse').then((permission) => {
-//     //   if (permission === 'granted') {
-//     //     Geolocation.getCurrentPosition({
-//     //       timeout: 5000,
-//     //     }).then((position) => {
-//     //       setLocation({
-//     //         latitude: position.coords.latitude,
-//     //         longitude: position.coords.longitude,
-//     //       });
+const Hint = styled.Text`
+  position: absolute;
+  bottom: -12px;
+  left: 0;
+  font-size: 10px;
+  color: ${colors.red};
+`;
 
-//     //       // Geocoder.from(position.coords.latitude, position.coords.longitude)
-//     //       //   .then((json) => {
-//     //       //     const addressComponent = json.results[0].address_components[0];
-//     //       //     setLocationName(addressComponent.short_name);
-//     //       //   })
-//     //       //   .catch((error) => console.warn(error));
-//     //     });
-//     //   }
-//     // });
-//   };
+export default function LocationSelector({
+  setMapVisible,
+  location,
+  setLocation,
+  hint,
+  width = "130px",
+  labelColor = null,
+  inverted = false,
+}) {
+  const [errorMsg, setErrorMsg] = useState(null);
 
-//   return (
-//     <View>
-//       <Button 
-//       // onPress={handlePress} 
-//       >
-//         Get Location
-//       </Button>
-//     </View>
-//   );
-// };
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
 
-// export default LocationSelector;
+      let location = await Location.getCurrentPositionAsync({});
+      Geocoder.from(location.coords.latitude, location.coords.longitude)
+        .then((json) => {
+          const cityComponent = json.results.find((component) =>
+            component.types.includes("administrative_area_level_2")
+          );
+          const cityName = cityComponent
+            ? cityComponent.address_components[0].long_name
+            : "";
+          setLocation({
+            name: cityName,
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          });
+        })
+        .catch((error) => console.warn(error));
+    })();
+  }, []);
+
+  function selectLocation() {
+    setMapVisible(true);
+  }
+
+  return (
+    <Container width={width}>
+      <Label inverted={inverted} labelColor={labelColor}>
+        Location
+      </Label>
+      <LocationContainer onPress={selectLocation}>
+        <Text>
+          {errorMsg || location.name ? location.name : "Select Location"}
+        </Text>
+      </LocationContainer>
+      {hint && <Hint>{hint}</Hint>}
+    </Container>
+  );
+}
