@@ -12,6 +12,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { colors , borderRadius, fonts } from '../utility/theme';
 import StarIcon from '../assets/star.png'
 import StarYellowIcon from '../assets/starYellow.png'
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 const TextInputContainer = styled.View`
   max-width: 350px;
   width: ${({ width }) => width };
@@ -213,4 +215,31 @@ export const StarInput = ({starValue=0 , setStarValue , ...rest}) =>{
       </StarContainer>
     </FlexRow>
   )
+}
+
+export const CustomDatePicker = ({}) =>{
+  const [showPicker , setShowPicker] = useState(false)
+  const [date , setDate] = useState(false)
+
+  const showDatePicker = () => {
+    setShowPicker(true);
+  };
+
+  const handleDateChange = (event) => {
+    console.log(event)
+  }
+  
+  return (
+    <View>
+      <Button onPress={showDatePicker} title="Select Date" />
+      {showPicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display="default"
+          onChange={handleDateChange}
+        />
+      )}
+    </View>
+  );
 }
