@@ -7,7 +7,7 @@ import { borderRadius, colors, fonts } from "../../utility/theme";
 import { arrowRight } from "../../Layout/importingImages";
 import plusCircle from "../../assets/plus-circle.png";
 import { Popup } from "../../elements/common";
-import { CustomDatePicker, CustomDropdownInput, CustomTextInput } from "../../elements/input";
+import { CustomDatePicker, CustomDropdownInput, CustomTextInput, CustomTimePicker } from "../../elements/input";
 import {
   CommonUtility,
   carTypeOptions,
@@ -23,6 +23,7 @@ import { OrderSchema } from "../../utility/validationSchema";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import Map from "../../components/map";
+import { use } from "react-devtools-core";
 
 const Common = styled.View`
   width: 100%;
@@ -83,6 +84,10 @@ const H4 = styled.Text`
 const FlexRow = styled.View`
   display: flex;
   flex-direction: row;
+`;
+
+const StyledSwitch = styled.Switch`
+
 `;
 
 const Images = styled.Image`
@@ -209,6 +214,8 @@ const Order = () => {
   const [apiLoading, setApiLoading] = useState(false);
   const insets = useSafeAreaInsets();
   const [mapVisible, setMapVisible] = useState(false);
+  const [appointment, setAppointment] = useState(false);
+
   const [location, setLocation] = useState({
     name: null,
     latitude: null,
@@ -218,6 +225,8 @@ const Order = () => {
     problem: "dentAndPaint",
     carType: "cars",
     bid: null,
+    date: null,
+    time: null
   });
 
   const handleForm = async () => {
@@ -227,7 +236,7 @@ const Order = () => {
           problem: values.problem,
           bid: parseInt(values.bid),
           carType: values.carType,
-          location: location.location,
+          location: location.name,
           userId: user.id,
           userName: user.name,
           userProfile: user.profile,
@@ -236,6 +245,8 @@ const Order = () => {
             lng: location.longitude
           },
           requests: [],
+          date: appointment? values.date : "",
+          time: appointment? values.time : ""
         };
         try {
           setApiLoading(true);
@@ -243,7 +254,7 @@ const Order = () => {
             type: "info",
             text1: "Creating Order",
           });
-          UserService.order(payload);
+          await UserService.order(payload);
           Toast.show({
             type: "success",
             text1: "Order Placed",
@@ -346,9 +357,24 @@ const Order = () => {
             hint={errors.bid}
           />
         </FlexRow>
-        <FlexRow style={{ gap: 10, marginBottom: 10 }} >
-            <CustomDatePicker/>
+        <FlexRow style={{ alignItems: "center" }} >
+            <H4>
+              Appointment
+            </H4>
+            <StyledSwitch value={appointment} onValueChange={(value)=> setAppointment(value) } />
         </FlexRow>
+        { appointment && 
+        <FlexRow style={{ gap: 10, marginBottom: 10 }} >
+            <CustomDatePicker
+              value={values.date}
+              setValue={(data)=> setValues({...values, date: data})}
+            />
+            <CustomTimePicker
+              value={values.time}
+              setValue={(data)=> setValues({...values, time: data})}
+            />
+        </FlexRow>
+        }
         <Buttons>
           <CustomOutlineButton
             style={{ marginLeft: "auto" }}
