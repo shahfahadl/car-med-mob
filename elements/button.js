@@ -36,7 +36,7 @@ export const CustomOutlineButton = ({ color,loading=false, children, ...rest }) 
   return (
     <StyledOutlineButton loading={loading} color={color} {...rest}>
       {loading?
-        <ActivityIndicator size="small" color={inverted? "black":"white"} />:
+        <ActivityIndicator size="small" color={color} />:
         <CustomText color={color}>{children}</CustomText>
       }
     </StyledOutlineButton>
