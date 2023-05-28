@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components/native";
 import Navigation from "../../Layout/Navigation";
 import { orderUser } from "../../hooks/watchOrder";
@@ -13,6 +13,7 @@ import Toast from "react-native-toast-message";
 import { Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Map from "../../components/map";
 
 const Common = styled.View`
   width: 100%;
@@ -74,6 +75,13 @@ const RequestContainer = styled.View`
   flex-direction: row;
   gap: 10px;
   ${borderRadius("5px")}
+`;
+
+const ShowMaps = styled.TouchableOpacity`
+  padding: 0px 5px;
+  border: 2px solid black;
+  background-color: ${colors.yellowLight};
+  ${borderRadius("15px")}
 `;
 
 const Request = ({ request, id }) => {
@@ -168,11 +176,28 @@ const SingleOrder = ({ route }) => {
   const navigation = useNavigation();
   const { height } = Dimensions.get("window");
   const insets = useSafeAreaInsets();
-  const [ apiLoading , setApiLoading ] = useState(false)
+  const [apiLoading, setApiLoading] = useState(false);
+  const [mapVisible, setMapVisible] = useState(false);
+  const [latLng, setLatLng] = useState({
+    lat: null,
+    lng: null,
+  });
+
+  
+
+  useEffect(() => {
+    if (order) {
+      setLatLng({
+        lat: order.latLng?.lat,
+        lng: order.latLng?.lng,
+      });
+    }
+  }, [order]);
+
 
   async function cancelOrder() {
     try {
-      setApiLoading(true)
+      setApiLoading(true);
       Toast.show({
         type: "info",
         text1: "Canceling Order",
@@ -189,8 +214,16 @@ const SingleOrder = ({ route }) => {
         text1: "Some error ocurred",
       });
     } finally {
-      setApiLoading(false)
+      setApiLoading(false);
     }
+  }
+
+  function handleClose() {
+    setMapVisible(false);
+  }
+
+  function handleMapClick() {
+    setMapVisible(true);
   }
 
   return (
@@ -212,16 +245,36 @@ const SingleOrder = ({ route }) => {
                 <H4 bold>Problem &nbsp;</H4>
                 <H4>{order.problem}</H4>
               </FlexRow>
-              <FlexRow>
+              <FlexRow style={{ alignItems: "center" }}>
                 <H4 bold>Location &nbsp;</H4>
-                <H4>{order.location}</H4>
+                <H4 light>{order.location} &nbsp;</H4>
+                <ShowMaps onPress={handleMapClick}>
+                  <H4>Show maps</H4>
+                </ShowMaps>
               </FlexRow>
               <FlexRow>
                 <H4 bold>Car Type &nbsp;</H4>
                 <H4>{order.carType}</H4>
               </FlexRow>
+              {order.date && (
+                <>
+                  <H4 bold>Appointment &nbsp;</H4>
+                  <FlexRow>
+                    <H4 bold>Date &nbsp;</H4>
+                    <H4>{order.date}</H4>
+                  </FlexRow>
+                  <FlexRow>
+                    <H4 bold>Time &nbsp;</H4>
+                    <H4>{order.time}</H4>
+                  </FlexRow>
+                </>
+              )}
               <FlexRow style={{ gap: 10, marginTop: 10 }}>
-                <CustomOutlineButton color={colors.red} loading={apiLoading} onPress={cancelOrder}>
+                <CustomOutlineButton
+                  color={colors.red}
+                  loading={apiLoading}
+                  onPress={cancelOrder}
+                >
                   Cancel
                 </CustomOutlineButton>
                 <CustomOutlineButton loading={apiLoading} color={colors.blue}>
@@ -250,6 +303,7 @@ const SingleOrder = ({ route }) => {
         <Toast />
       </ToastContainer>
       <Navigation />
+      <Map mapVisible={mapVisible} handleClose={handleClose} lat={latLng.lat} lng={latLng.lng} />
     </Common>
   );
 };
