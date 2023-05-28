@@ -11,6 +11,7 @@ import Toast from "react-native-toast-message";
 import { Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Map from "../../components/map";
 
 const Common = styled.View`
   width: 100%;
@@ -79,7 +80,7 @@ const Bottom = styled.View`
   justify-content: space-between;
 `;
 
-const OrderItem = ({ order }) => {
+const OrderItem = ({ order , setMapVisible , setLatLng}) => {
   const [apiLoading, setApiLoading] = useState(false);
   function cancelOrder() {
     try {
@@ -103,6 +104,14 @@ const OrderItem = ({ order }) => {
     }
   }
 
+  function handleShowMaps(){
+    setLatLng({
+      lat: order.latLng.lat ,
+      lng: order.latLng.lng
+    })
+    setMapVisible(true)
+  } 
+
   return (
     <OrderContainer>
       <View>
@@ -117,14 +126,28 @@ const OrderItem = ({ order }) => {
         <FlexRow style={{ alignItems: "center" }}>
           <H4 bold>Location &nbsp;</H4>
           <H4 light>{order.location} &nbsp;</H4>
-          <ShowMaps>
-            <H4>Mechanic Location</H4>
+          <ShowMaps onPress={handleShowMaps} >
+            <H4>Show Map</H4>
           </ShowMaps>
         </FlexRow>
         <FlexRow>
           <H4 bold>Problem &nbsp;</H4>
           <H4>{order.problem}</H4>
         </FlexRow>
+        {
+            order.date &&
+            <>
+              <H4 bold>Appointment &nbsp;</H4>
+            <FlexRow>
+              <H4 bold>Date &nbsp;</H4>
+              <H4>{order.date}</H4>
+            </FlexRow>
+            <FlexRow>
+              <H4 bold>Time &nbsp;</H4>
+              <H4>{order.time}</H4>
+            </FlexRow>
+            </>
+          }
       </View>
       <Bottom style={{ marginTop: 20 }}>
         <FlexRow>
@@ -148,6 +171,16 @@ const OrderItem = ({ order }) => {
 const Process = () => {
   const { data: orders, loading } = orderUserProcess();
   const { height } = Dimensions.get("window");
+  const [mapVisible, setMapVisible] = useState(false);
+  const [latLng, setLatLng] = useState({
+    lat: null,
+    lng: null,
+  });
+
+  function handleClose (){
+    setMapVisible(false)
+  }
+
   const insets = useSafeAreaInsets();
   return (
     <Common statusBarHeight={insets.top}>
@@ -159,7 +192,7 @@ const Process = () => {
             {orders.length > 0 ? (
               <OrdersContainer>
                 {orders?.map((order) => (
-                  <OrderItem key={order.id} order={order} />
+                  <OrderItem key={order.id} order={order} setLatLng={setLatLng} setMapVisible={setMapVisible} />
                 ))}
               </OrdersContainer>
             ) : (
@@ -171,6 +204,7 @@ const Process = () => {
         )}
       </Container>
       <Navigation />
+      <Map mapVisible={mapVisible} handleClose={handleClose} lat={latLng.lat} lng={latLng.lng} />
       <ToastContainer>
         <Toast />
       </ToastContainer>

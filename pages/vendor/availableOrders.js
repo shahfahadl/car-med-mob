@@ -13,6 +13,7 @@ import { CustomTextInput } from "../../elements/input";
 import { CommonUtility } from "../../utility/common";
 import { Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Map from "../../components/map";
 
 const Common = styled.View`
   padding-top: ${({ statusBarHeight }) => `${statusBarHeight}px`};
@@ -104,6 +105,8 @@ const OrderItem = ({
   setValues,
   apiLoading,
   setApiLoading,
+  setLatLng,
+  setMapVisible
 }) => {
   const myBid =
     order.requests.find((request) => request.vendorId === user.id)?.bid || null;
@@ -153,6 +156,14 @@ const OrderItem = ({
     setPopup(true);
   }
 
+  function handleShowMaps(){
+    setLatLng({
+      lat: order.latLng.lat,
+      lng: order.latLng.lng
+    })
+    setMapVisible(true)
+  }
+
   return (
     <OrderContainer>
       <OrderTop>
@@ -167,7 +178,7 @@ const OrderItem = ({
           <FlexRow style={{ alignItems: "center" }}>
             <H4 bold>Location &nbsp;</H4>
             <H4 light>{order.location} &nbsp;</H4>
-            <ShowMaps>
+            <ShowMaps onPress={handleShowMaps} >
               <H4>Show maps</H4>
             </ShowMaps>
           </FlexRow>
@@ -175,6 +186,20 @@ const OrderItem = ({
             <H4 bold>Problem &nbsp;</H4>
             <H4>{order.problem}</H4>
           </FlexRow>
+          {
+            order.date &&
+            <>
+              <H4 bold>Appointment &nbsp;</H4>
+            <FlexRow>
+              <H4 bold>Date &nbsp;</H4>
+              <H4>{order.date}</H4>
+            </FlexRow>
+            <FlexRow>
+              <H4 bold>Time &nbsp;</H4>
+              <H4>{order.time}</H4>
+            </FlexRow>
+            </>
+          }
         </View>
       </OrderTop>
       <OrderBids>
@@ -224,6 +249,11 @@ const AvailableOrders = () => {
   const { data: orders, loading } = orderVendorPending();
   const [show, setShow] = useState(false);
   const { height } = Dimensions.get("window");
+  const [mapVisible, setMapVisible] = useState(false);
+  const [latLng, setLatLng] = useState({
+    lat: null,
+    lng: null,
+  });
   const insets = useSafeAreaInsets();
   const [apiLoading, setApiLoading] = useState(false);
   const [values, setValues] = useState({
@@ -266,6 +296,10 @@ const AvailableOrders = () => {
     }
   };
 
+  function handleClose (){
+    setMapVisible(false)
+  }
+
   return (
     <Common statusBarHeight={insets.top}>
       <Container height={height}>
@@ -285,6 +319,8 @@ const AvailableOrders = () => {
                     setPopup={setShow}
                     apiLoading={apiLoading}
                     setApiLoading={setApiLoading}
+                    setLatLng={setLatLng}
+                    setMapVisible={setMapVisible}
                   />
                 ))}
               </OrdersContainer>
@@ -336,6 +372,7 @@ const AvailableOrders = () => {
           </CustomOutlineButton>
         </Buttons>
       </Popup>
+      <Map mapVisible={mapVisible} handleClose={handleClose} lat={latLng.lat} lng={latLng.lng} />
     </Common>
   );
 };

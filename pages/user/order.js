@@ -41,6 +41,7 @@ const Container = styled.ScrollView`
 const OrdersContainer = styled.View`
   width: 100%;
   margin-top: 10px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -159,9 +160,15 @@ const OrderNow = ({ setPopup }) => {
   );
 };
 
-const OrderItem = ({ order }) => {
+const OrderItem = ({ order , setLatLng, setMapVisible }) => {
   const navigation = useNavigation();
-
+  const handleMapClick = () =>{
+    setLatLng({
+      lat: order.latLng.lat,
+      lng: order.latLng.lng
+    })
+    setMapVisible(true)
+  }
   return (
     <OrderContainer>
       <OrderLeft>
@@ -173,7 +180,7 @@ const OrderItem = ({ order }) => {
           <FlexRow style={{ alignItems: "center" }}>
             <H4 bold>Location &nbsp;</H4>
             <H4 light>{order.location} &nbsp;</H4>
-            <ShowMaps>
+            <ShowMaps onPress={handleMapClick} >
               <H4>Show maps</H4>
             </ShowMaps>
           </FlexRow>
@@ -181,6 +188,20 @@ const OrderItem = ({ order }) => {
             <H4 bold>Problem &nbsp;</H4>
             <H4>{order.problem}</H4>
           </FlexRow>
+          {
+            order.date &&
+            <>
+              <H4 bold>Appointment &nbsp;</H4>
+            <FlexRow>
+              <H4 bold>Date &nbsp;</H4>
+              <H4>{order.date}</H4>
+            </FlexRow>
+            <FlexRow>
+              <H4 bold>Time &nbsp;</H4>
+              <H4>{order.time}</H4>
+            </FlexRow>
+            </>
+          }
         </View>
         <FlexRow style={{ marginTop: 20 }}>
           <H4 light bold>
@@ -215,6 +236,10 @@ const Order = () => {
   const insets = useSafeAreaInsets();
   const [mapVisible, setMapVisible] = useState(false);
   const [appointment, setAppointment] = useState(false);
+  const [latLng, setLatLng] = useState({
+    lat: null,
+    lng: null
+  });
 
   const [location, setLocation] = useState({
     name: null,
@@ -282,6 +307,14 @@ const Order = () => {
       });
   };
 
+  function handleClose(){
+    setLatLng({
+      lat: null,
+      lng: null
+    })
+    setMapVisible(false)
+  }
+
   return (
     <Common statusBarHeight={insets.top}>
       <Container height={height}>
@@ -292,7 +325,7 @@ const Order = () => {
             {orders.length > 0 ? (
               <OrdersContainer>
                 {orders?.map((order) => (
-                  <OrderItem key={order.id} order={order} />
+                  <OrderItem key={order.id} order={order} setLatLng={setLatLng} setMapVisible={setMapVisible} />
                 ))}
               </OrdersContainer>
             ) : (
@@ -367,11 +400,11 @@ const Order = () => {
         <FlexRow style={{ gap: 10, marginBottom: 10 }} >
             <CustomDatePicker
               value={values.date}
-              setValue={(data)=> setValues({...values, date: data})}
+              setValue={(data)=> setValues((prev)=>({...prev, date: data}))}
             />
             <CustomTimePicker
               value={values.time}
-              setValue={(data)=> setValues({...values, time: data})}
+              setValue={(data)=> setValues((prev)=> ({...prev, time: data}))}
             />
         </FlexRow>
         }
@@ -394,8 +427,10 @@ const Order = () => {
       </Popup>
       <Map
         mapVisible={mapVisible}
-        setMapVisible={setMapVisible}
         setLocation={setLocation}
+        lat={latLng.lat}
+        lng={latLng.lng}
+        handleClose={handleClose}
       />
       <ToastContainer>
         <Toast />

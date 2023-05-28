@@ -35,11 +35,12 @@ const CloseButtonIcon = styled.Image`
   opacity: 0.8;
 `;
 
-export default function Map({ mapVisible, setMapVisible, setLocation }) {
+export default function Map({ mapVisible, setLocation , lat=null , lng=null, handleClose }) {
   const [latitude, setLatitude] = useState(34.0105);
   const [longitude, setLongitude] = useState(71.9876);
 
   function handleMapPress(event) {
+    if( lat || lng ) return null
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setLatitude(latitude);
     setLongitude(longitude);
@@ -88,8 +89,8 @@ export default function Map({ mapVisible, setMapVisible, setLocation }) {
           <MapView
             style={{ flex: 1 }}
             initialRegion={{
-              latitude: latitude,
-              longitude: longitude,
+              latitude: lat? lat : latitude,
+              longitude: lng? lng : longitude,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
@@ -97,39 +98,41 @@ export default function Map({ mapVisible, setMapVisible, setLocation }) {
           >
             <Marker
               coordinate={{
-                latitude: latitude,
-                longitude: longitude,
+                latitude: lat? lat : latitude,
+                longitude: lng? lng : longitude,
               }}
             />
           </MapView>
-          <SearchBar activeOpacity={1} >
-            <CloseButton onPress={()=>setMapVisible(false)}>
-              <CloseButtonIcon source={Close} />
-            </CloseButton>
-            <GooglePlacesAutocomplete
-              placeholder="Search"
-              fetchDetails={true}
-              onPress={handleLocationSelect}
-              styles={{
-                container: {
-                  flex: 1,
-                },
-                textInput: {
-                  height: 38,
-                  color: "#5d5d5d",
-                  fontSize: 16,
-                  borderWidth: 1,
-                  borderColor: "#ddd",
-                  borderRadius: 5,
-                  backgroundColor: "#fff",
-                },
-              }}
-              query={{
-                key: process.GOOGLE_MAPS_KEY,
-                language: "en",
-              }}
-            />
-          </SearchBar>
+            <SearchBar activeOpacity={1} >
+              <CloseButton onPress={handleClose}>
+                <CloseButtonIcon source={Close} />
+              </CloseButton>
+              { !lat && !lng && 
+              <GooglePlacesAutocomplete
+                placeholder="Search"
+                fetchDetails={true}
+                onPress={handleLocationSelect}
+                styles={{
+                  container: {
+                    flex: 1,
+                  },
+                  textInput: {
+                    height: 38,
+                    color: "#5d5d5d",
+                    fontSize: 16,
+                    borderWidth: 1,
+                    borderColor: "#ddd",
+                    borderRadius: 5,
+                    backgroundColor: "#fff",
+                  },
+                }}
+                query={{
+                  key: process.GOOGLE_MAPS_KEY,
+                  language: "en",
+                }}
+              />
+            }
+            </SearchBar>
         </MapContainer>
       )}
 

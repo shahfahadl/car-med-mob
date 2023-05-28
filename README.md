@@ -146,13 +146,11 @@ This is not a deployable project
 
 ### Others
 
--[] Booking not handled at all
 -[] Cannot update order
--[] Dropdown change
+-[] Dropdown change in ios
 
 ### Errors
 -[] Cannot signup due to image not uploading
--[] Location not selected ( Instead a dropdown is used )
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- CONTRIBUTING -->
