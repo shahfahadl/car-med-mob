@@ -146,7 +146,6 @@ This is not a deployable project
 
 ### Others
 
--[] Cannot update order
 -[] Dropdown change in ios
 
 ### Errors

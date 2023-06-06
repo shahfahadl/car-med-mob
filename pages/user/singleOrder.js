@@ -7,13 +7,16 @@ import { CustomOutlineButton } from "../../elements/button";
 import { borderRadius, colors, fonts } from "../../utility/theme";
 import UserService from "../../utility/services/user";
 import { useNavigation } from "@react-navigation/native";
-import { ImageContainer, StarElement } from "../../elements/common";
-import { CommonUtility } from "../../utility/common";
+import { ImageContainer, Popup, StarElement } from "../../elements/common";
+import { CommonUtility, carTypeOptions, skillOption } from "../../utility/common";
 import Toast from "react-native-toast-message";
 import { Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Map from "../../components/map";
+import { CustomDatePicker, CustomDropdownInput, CustomTextInput, CustomTimePicker } from "../../elements/input";
+import LocationSelector from "../../components/locationSelector";
+import { OrderSchema } from "../../utility/validationSchema";
 
 const Common = styled.View`
   width: 100%;
@@ -68,6 +71,10 @@ const RequestsContainer = styled.ScrollView`
   width: 95%;
 `;
 
+const StyledSwitch = styled.Switch`
+
+`;
+
 const RequestContainer = styled.View`
   background-color: white;
   padding: 10px;
@@ -75,6 +82,14 @@ const RequestContainer = styled.View`
   flex-direction: row;
   gap: 10px;
   ${borderRadius("5px")}
+`;
+
+const Buttons = styled.View`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-top: 20px;
+  gap: 10px;
 `;
 
 const ShowMaps = styled.TouchableOpacity`
@@ -178,22 +193,45 @@ const SingleOrder = ({ route }) => {
   const insets = useSafeAreaInsets();
   const [apiLoading, setApiLoading] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
+  const [appointment, setAppointment] = useState(false);
+  const [show, setShow] = useState(false);
+  const [location, setLocation] = useState({
+    name: null,
+    latitude: null,
+    longitude: null
+  });
+  const [errors, setErrors] = useState({});
   const [latLng, setLatLng] = useState({
     lat: null,
     lng: null,
   });
 
-  
+  const [values, setValues] = useState({
+    problem: "dentAndPaint",
+    carType: "cars",
+    bid: null,
+    date: null,
+    time: null
+  });
 
   useEffect(() => {
     if (order) {
-      setLatLng({
-        lat: order.latLng?.lat,
-        lng: order.latLng?.lng,
-      });
+      setLocation({
+        name: order.location,
+        latitude: order.latLng?.lat,
+        longitude: order.latLng?.lng
+      })
+      setValues({
+        problem: order.problem,
+        carType: order.carType,
+        location: order.location,
+        latLng: order.latLng,
+        bid: order.bid,
+        date: order.date,
+        time: order.time
+      })
     }
   }, [order]);
-
 
   async function cancelOrder() {
     try {
@@ -218,13 +256,71 @@ const SingleOrder = ({ route }) => {
     }
   }
 
-  function handleClose() {
-    setMapVisible(false);
+  function handleClose(){
+    setLatLng({
+      lat: null,
+      lng: null
+    })
+    setMapVisible(false)
   }
 
   function handleMapClick() {
+    setLatLng({
+      lat: order.latLng?.lat,
+      lng: order.latLng?.lng,
+    })
     setMapVisible(true);
   }
+
+  const handleForm = async () => {
+    OrderSchema.validate({...values, location: location.name}, { abortEarly: false })
+      .then(async () => {
+        const payload = {
+          problem: values.problem,
+          bid: parseInt(values.bid),
+          carType: values.carType,
+          location: location.name,
+          latLng: {
+            lat: location.latitude , 
+            lng: location.longitude
+          },
+          id : orderId,
+          date: appointment? values.date : "",
+          time: appointment? values.time : ""
+        };
+        try {
+          setApiLoading(true);
+          Toast.show({
+            type: "info",
+            text1: "Updating Order",
+          });
+          await UserService.updateOrder(payload);
+          Toast.show({
+            type: "success",
+            text1: "Order Placed",
+          });
+        } catch (error) {
+          Toast.show({
+            type: "error",
+            text1: "Invalid Credentials",
+          });
+        } finally {
+          setShow(false);
+          setApiLoading(false);
+        }
+      })
+      .catch((validationErrors) => {
+        const errors = {};
+        validationErrors.inner.forEach((error) => {
+          errors[error.path] = error.message;
+        });
+        setErrors(errors);
+        Toast.show({
+          type: "error",
+          text1: "Form Values Incorrect",
+        });
+      });
+  };
 
   return (
     <Common statusBarHeight={insets.top}>
@@ -277,7 +373,7 @@ const SingleOrder = ({ route }) => {
                 >
                   Cancel
                 </CustomOutlineButton>
-                <CustomOutlineButton loading={apiLoading} color={colors.blue}>
+                <CustomOutlineButton loading={apiLoading} color={colors.blue} onPress={()=>setShow(true)} >
                   Update
                 </CustomOutlineButton>
               </FlexRow>
@@ -299,11 +395,105 @@ const SingleOrder = ({ route }) => {
           </>
         )}
       </Container>
+      <Popup show={show} setShow={setShow}>
+        <Center>
+          <H4 bold style={{ fontSize: 25, marginBottom: 20 }}>
+            Order Now
+          </H4>
+        </Center>
+        <FlexRow style={{ gap: 10, marginBottom: 10 }}>
+          <CustomDropdownInput
+            inverted
+            labelColor={"black"}
+            label="Problem"
+            width="55%"
+            options={skillOption}
+            selectedValue={values.problem}
+            onValueChange={(value) =>
+              setValues((prev) => ({ ...prev, problem: value }))
+            }
+            hint={errors.problem}
+          />
+          <CustomDropdownInput
+            inverted
+            labelColor={"black"}
+            label="Car Type"
+            width="40%"
+            options={carTypeOptions}
+            selectedValue={values.carType}
+            onValueChange={(value) =>
+              setValues((prev) => ({ ...prev, carType: value }))
+            }
+            hint={errors.carType}
+          />
+        </FlexRow>
+        <FlexRow style={{ gap: 10, marginBottom: 10 }}>
+          <LocationSelector
+            setMapVisible={setMapVisible}
+            location={location}
+            setLocation={setLocation}
+            labelColor={"black"}
+            inverted={true}
+            hint={errors.location}
+            autoSelect={false}
+          />
+          <CustomTextInput
+            labelColor={"black"}
+            inverted={true}
+            value={values.bid}
+            onChangeText={(e) => setValues((prev) => ({ ...prev, bid: e }))}
+            width="40%"
+            placeholder="PKR"
+            label="My Bid"
+            hint={errors.bid}
+          />
+        </FlexRow>
+        <FlexRow style={{ alignItems: "center" }} >
+            <H4>
+              Appointment
+            </H4>
+            <StyledSwitch value={appointment} onValueChange={(value)=> setAppointment(value) } />
+        </FlexRow>
+        { appointment && 
+        <FlexRow style={{ gap: 10, marginBottom: 10 }} >
+            <CustomDatePicker
+              value={values.date}
+              setValue={(data)=> setValues((prev)=>({...prev, date: data}))}
+            />
+            <CustomTimePicker
+              value={values.time}
+              setValue={(data)=> setValues((prev)=> ({...prev, time: data}))}
+            />
+        </FlexRow>
+        }
+        <Buttons>
+          <CustomOutlineButton
+            style={{ marginLeft: "auto" }}
+            color={colors.blue}
+            onPress={handleForm}
+            loading={apiLoading}
+          >
+            Update Order
+          </CustomOutlineButton>
+          <CustomOutlineButton
+            color={colors.red}
+            onPress={() => setShow(false)}
+          >
+            Close
+          </CustomOutlineButton>
+        </Buttons>
+      </Popup>
       <ToastContainer>
         <Toast />
       </ToastContainer>
       <Navigation />
-      <Map mapVisible={mapVisible} handleClose={handleClose} lat={latLng.lat} lng={latLng.lng} />
+      <Map
+        mapVisible={mapVisible}
+        setLocation={setLocation}
+        lat={latLng.lat}
+        lng={latLng.lng}
+        handleClose={handleClose}
+      />
     </Common>
   );
 };

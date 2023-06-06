@@ -37,6 +37,9 @@ class User extends CRUDService {
     BaseService.post(APIPath.order, data)
   }
 
+  updateOrder = (data) => 
+    BaseService.post(APIPath.updateOrder, data)
+
   cancelOrder = (data) => {
     BaseService.post(APIPath.cancelOrderUser, data)
   }
