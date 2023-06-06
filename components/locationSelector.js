@@ -41,34 +41,38 @@ export default function LocationSelector({
   width = "130px",
   labelColor = null,
   inverted = false,
+  autoSelect = true
 }) {
   const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      Geocoder.from(location.coords.latitude, location.coords.longitude)
-        .then((json) => {
-          const cityComponent = json.results.find((component) =>
-            component.types.includes("administrative_area_level_2")
-          );
-          const cityName = cityComponent
-            ? cityComponent.address_components[0].long_name
-            : "";
-          setLocation({
-            name: cityName,
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          });
-        })
-        .catch((error) => console.warn(error));
-    })();
+    {
+      autoSelect &&
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          return;
+        }
+  
+        let location = await Location.getCurrentPositionAsync({});
+        Geocoder.from(location.coords.latitude, location.coords.longitude)
+          .then((json) => {
+            const cityComponent = json.results.find((component) =>
+              component.types.includes("administrative_area_level_2")
+            );
+            const cityName = cityComponent
+              ? cityComponent.address_components[0].long_name
+              : "";
+            setLocation({
+              name: cityName,
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            });
+          })
+          .catch((error) => console.warn(error));
+      })();
+    }
   }, []);
 
   function selectLocation() {
