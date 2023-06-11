@@ -22,6 +22,8 @@ import { CustomButton } from "../../elements/button";
 import UserService from "../../utility/services/user";
 import VendorService from "../../utility/services/vendor";
 import { useAuth } from "../../contexts/auth";
+import UploadMediaService from "../../utility/services/upload-service";
+import axios from "axios";
 
 const SignupContainer = styled.View`
   padding: 20px;
@@ -118,17 +120,16 @@ const Form = () => {
         { abortEarly: false }
       )
         .then(async () => {
-          const data = new FormData();
-          if (image) {
-            data.append("profile", image.name);
-            data.append("image", image);
-          }
-          data.append("name", values.name);
-          data.append("cnic", values.cnic);
-          data.append("email", values.email);
-          data.append("password", values.password);
-          data.append("gender", values.gender);
+          const data = {
+            ...values,
+          };
           try {
+            const imageObject = {
+              type: 'image/png',
+              name: 'blabla'
+            }
+            const signedUrl = await UploadMediaService.getSignedUrl(imageObject);
+            axios.put(signedUrl, image);
             setLoading(true);
             Toast.show({
               type: "info",
@@ -137,8 +138,6 @@ const Form = () => {
             let res = null;
             if (image) {
               res = await UserService.add(data);
-            } else {
-              res = await UserService.addWithoutProfile(data);
             }
             if (res.token) {
               login();
