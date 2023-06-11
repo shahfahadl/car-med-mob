@@ -125,11 +125,13 @@ const Form = () => {
           };
           try {
             const imageObject = {
-              type: 'image/png',
-              name: 'blabla'
+              type: 'image/png', //type of image must be dynamic
+              name: 'blabla' //name of image must be dynamic
             }
             const signedUrl = await UploadMediaService.getSignedUrl(imageObject);
-            axios.put(signedUrl, image);
+            await axios.put(signedUrl, imageObject);
+            const imageUrl = url.split('?')[0];
+            data.profile = imageUrl;
             setLoading(true);
             Toast.show({
               type: "info",
