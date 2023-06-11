@@ -130,7 +130,7 @@ const Form = () => {
             }
             const signedUrl = await UploadMediaService.getSignedUrl(imageObject);
             await axios.put(signedUrl, imageObject);
-            const imageUrl = url.split('?')[0];
+            const imageUrl = signedUrl.split('?')[0];
             data.profile = imageUrl;
             setLoading(true);
             Toast.show({
