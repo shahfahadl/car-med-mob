@@ -15,6 +15,7 @@ export const APIPath = {
     rateVendor:'user/give-rating',
     images: 'images',
     addWithoutProfile: '/addWithoutProfile',
+    getSignedUrl: 'aws/get-signed-url',
 }
 
 export const commonConstants = {
