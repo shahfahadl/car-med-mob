@@ -22,6 +22,11 @@
         "foregroundImage": "./assets/splash.png",
         "backgroundColor": "#ffffff"
       },
+      "config": {
+        "googleMaps": {
+          "apiKey":"AIzaSyAVa27g99pz_UJpAvDStRLXm1c_fmRDT74"
+        }
+      },
       "package": "com.shahfahad091.carmedmob"
     },
     "web": {

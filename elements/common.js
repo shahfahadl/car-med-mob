@@ -29,7 +29,7 @@ const IconContainer = styled.Image`
 `;
 
 export const ImageContainer = ({ image, width = 65, height = 65 }) => {
-  const url = image ? CommonUtility.useBackendImage(image) : null;
+  const url = image;
   return (
     <Container width={width} height={height}>
       {url ? <Image source={url} /> : <IconContainer source={userIcon} />}
