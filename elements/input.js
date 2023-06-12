@@ -186,7 +186,6 @@ const ImageContainer = styled.TouchableOpacity`
 const Image = styled.Image`
   width: 100%;
   height: 100%;
-  resizemode: "cover";
 `;
 
 export const CustomImageInput = ({ image, setImage, inverted, styling }) => {
@@ -196,18 +195,10 @@ export const CustomImageInput = ({ image, setImage, inverted, styling }) => {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      base64: true
     });
-
-    if (!result.cancelled) {
-      const regex = /data:(.*);base64,/;
-      const match = result.uri.match(regex);
-      const imageType = match[1];
-      const imageEnding = match[1].split("/")[1];
-      setImage({
-        uri: result.uri,
-        type: imageType,
-        name: Date.now() + "." + imageEnding,
-      });
+    if (!result.canceled) {
+      setImage(result.assets[0]);
     }
   };
 

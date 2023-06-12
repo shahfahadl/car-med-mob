@@ -3,6 +3,7 @@ import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { fonts, colors } from "../../utility/theme";
 import styled from "styled-components/native";
+import { Buffer } from 'buffer';
 import {
   CustomDropdownInput,
   CustomImageInput,
@@ -24,6 +25,7 @@ import VendorService from "../../utility/services/vendor";
 import { useAuth } from "../../contexts/auth";
 import UploadMediaService from "../../utility/services/upload-service";
 import axios from "axios";
+import * as FileSystem from 'expo-file-system';
 
 const SignupContainer = styled.View`
   padding: 20px;
@@ -93,6 +95,12 @@ const YellowText = styled.Text`
 
 const SignupButton = styled(CustomButton)``;
 
+const fetchImageFromUri = async (uri) => {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  return blob;
+};
+
 const Form = () => {
   const [values, setValues] = useState({
     name: "",
@@ -124,23 +132,27 @@ const Form = () => {
             ...values,
           };
           try {
-            const imageObject = {
-              type: 'image/png', //type of image must be dynamic
-              name: 'blabla' //name of image must be dynamic
-            }
-            const signedUrl = await UploadMediaService.getSignedUrl(imageObject);
-            await axios.put(signedUrl, imageObject);
-            const imageUrl = signedUrl.split('?')[0];
-            data.profile = imageUrl;
-            setLoading(true);
             Toast.show({
               type: "info",
               text1: "Creating Account",
             });
-            let res = null;
-            if (image) {
-              res = await UserService.add(data);
+            const imgBlob = await fetchImageFromUri(image.uri);
+            const fileName = imgBlob._data.name.slice(-10);
+            const imageObject = {
+              type: imgBlob._data.type,
+              name: fileName
             }
+            const signedUrl = await UploadMediaService.getSignedUrl(imageObject);
+            await axios.put(signedUrl, Buffer.from(image.base64, 'base64'), {
+              headers: {
+                'Content-Type': imgBlob._data.type
+              }
+            });
+            const imageUrl = signedUrl.split('?')[0];
+            data.profile = imageUrl;
+            setLoading(true);
+            
+            let res = await UserService.add(data);
             if (res.token) {
               login();
               Toast.show({
@@ -176,22 +188,29 @@ const Form = () => {
         { abortEarly: false }
       )
         .then(async () => {
-          const payload = new FormData();
-          payload.append("profile", image.name);
-          payload.append("image", image);
-          payload.append("name", values.name);
-          payload.append("contact", values.contact);
-          payload.append("email", values.email);
-          payload.append("password", values.password);
-          payload.append("cnic", values.cnic);
-          payload.append("skill", values.skill);
-          payload.append("gender", values.gender);
+          const payload = {
+            ...values
+          };
           try {
             setLoading(true);
             Toast.show({
               type: "success",
               text1: "Creating Account",
             });
+            const imgBlob = await fetchImageFromUri(image.uri);
+            const fileName = imgBlob._data.name.slice(-10);
+            const imageObject = {
+              type: imgBlob._data.type,
+              name: fileName
+            }
+            const signedUrl = await UploadMediaService.getSignedUrl(imageObject);
+            await axios.put(signedUrl, Buffer.from(image.base64, 'base64'), {
+              headers: {
+                'Content-Type': imgBlob._data.type
+              }
+            });
+            const imageUrl = signedUrl.split('?')[0];
+            payload.profile = imageUrl;
             const res = await VendorService.add(payload);
             if (res.token) {
               login();
