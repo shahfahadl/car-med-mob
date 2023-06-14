@@ -9,14 +9,14 @@ import Process from "./pages/user/process";
 import SingleOrder from "./pages/user/singleOrder";
 import AvailableOrders from "./pages/vendor/availableOrders";
 import InProcessOrders from "./pages/vendor/inProcessOrders";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import VendorCompleted from "./pages/vendor/vendorCompleted";
 import { ActivityIndicator } from 'react-native';
 import Geocoder from 'react-native-geocoding';
 import process from "./env";
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();;
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
