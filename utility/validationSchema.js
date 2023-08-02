@@ -39,7 +39,9 @@ export const VendorSignupSchema = yup.object().shape({
     .max(50),
   password: yup.string().required("password is required").max(50),
   gender: yup.string().required("Gender is required"),
-  origin: yup.mixed().required("Origin is required"),
+  city: yup.string().required("City is required"),
+  lat: yup.mixed().required("City is required"),
+  lng: yup.mixed().required("City is required"),
   skill: yup.string().required("skill is required"),
   image: yup.mixed().required("Image is required"),
 });
@@ -72,7 +74,7 @@ export const UserSignupSchema = yup.object().shape({
   contact: yup.string(),
   skill: yup.string("Email is required"),
   gender: yup.string().required("Gender is required"),
-  image: yup.mixed(),
+  profile: yup.mixed(),
 });
 
 export const OrderSchema = yup.object().shape({

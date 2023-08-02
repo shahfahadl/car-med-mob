@@ -32,7 +32,7 @@ export const ImageContainer = ({ image, width = 65, height = 65 }) => {
   const url = image;
   return (
     <Container width={width} height={height}>
-      {url ? <Image source={url} /> : <IconContainer source={userIcon} />}
+      {(url.length > 1) ? <Image source={{uri:url}} /> : <IconContainer source={userIcon} />}
     </Container>
   );
 };

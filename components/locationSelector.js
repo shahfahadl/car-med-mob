@@ -11,6 +11,7 @@ const LocationContainer = styled.TouchableOpacity`
   display: flex;
   justify-content: center;
   padding: 10px;
+  ${({ inverted }) =>  inverted && "background-color: white; color: black;" }
 `;
 
 const Container = styled.View`
@@ -41,7 +42,8 @@ export default function LocationSelector({
   width = "130px",
   labelColor = null,
   inverted = false,
-  autoSelect = true
+  autoSelect = true,
+  ...rest
 }) {
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -80,11 +82,11 @@ export default function LocationSelector({
   }
 
   return (
-    <Container width={width}>
+    <Container width={width} {...rest} >
       <Label inverted={inverted} labelColor={labelColor}>
         Location
       </Label>
-      <LocationContainer onPress={selectLocation}>
+      <LocationContainer inverted={inverted} onPress={selectLocation}>
         <Text>
           {errorMsg || location.name ? location.name : "Select Location"}
         </Text>

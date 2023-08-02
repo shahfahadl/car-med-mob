@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -20,14 +20,15 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/splash.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#000000"
       },
       "config": {
         "googleMaps": {
           "apiKey":"AIzaSyAQPXEOb5Ga3vhsZR55Ih7ORNtoydqK3pI"
         }
       },
-      "package": "com.shahfahad091.carmedmob"
+      "package": "com.carmed.app",
+      "publishBundlePath": "android/app/build/outputs/apk/app-release.apk"
     },
     "web": {
       "favicon": "./assets/favicon.png"
