@@ -146,10 +146,6 @@ This is not a deployable project
 
 ### Others
 
--[] Dropdown change in ios
-
-### Errors
--[] Cannot signup due to image not uploading
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- CONTRIBUTING -->

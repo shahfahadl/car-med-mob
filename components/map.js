@@ -88,6 +88,12 @@ export default function Map({ mapVisible, setLocation , lat=null , lng=null, han
         <MapContainer>
           <MapView
             style={{ flex: 1 }}
+            region={{
+              latitude: lat? lat : latitude,
+              longitude: lng? lng : longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
             initialRegion={{
               latitude: lat? lat : latitude,
               longitude: lng? lng : longitude,

@@ -3,7 +3,7 @@ import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { fonts, colors } from "../../utility/theme";
 import styled from "styled-components/native";
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 import {
   CustomDropdownInput,
   CustomImageInput,
@@ -25,7 +25,8 @@ import VendorService from "../../utility/services/vendor";
 import { useAuth } from "../../contexts/auth";
 import UploadMediaService from "../../utility/services/upload-service";
 import axios from "axios";
-import * as FileSystem from 'expo-file-system';
+import LocationSelector from "../../components/locationSelector";
+import { useNavigation } from "@react-navigation/native";
 
 const SignupContainer = styled.View`
   padding: 20px;
@@ -101,7 +102,7 @@ const fetchImageFromUri = async (uri) => {
   return blob;
 };
 
-const Form = () => {
+const Form = ({ setMapVisible, location, setLocation }) => {
   const [values, setValues] = useState({
     name: "",
     cnic: "",
@@ -109,50 +110,64 @@ const Form = () => {
     password: "",
     gender: "male",
     contact: "",
-    origin: "",
-    skill: "",
+    city: "",
+    lat: "",
+    lng: "",
+    skill: "dentAndPaint",
   });
 
   const { login } = useAuth();
-  const [mapOpen, setMapOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [image, setImage] = useState();
   const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
   const handleSignup = async () => {
     setErrors({});
     if (role === "user") {
+      const payload = {
+        email : values.email,
+        name: values.name,
+        password: values.password,
+        gender: values.gender,
+        cnic: values.cnic,
+        profile: image
+      }
       UserSignupSchema.validate(
-        { ...values, image: image },
+        payload,
         { abortEarly: false }
       )
         .then(async () => {
-          const data = {
-            ...values,
-          };
           try {
             Toast.show({
               type: "info",
               text1: "Creating Account",
             });
-            const imgBlob = await fetchImageFromUri(image.uri);
-            const fileName = imgBlob._data.name.slice(-10);
-            const imageObject = {
-              type: imgBlob._data.type,
-              name: fileName
-            }
-            const signedUrl = await UploadMediaService.getSignedUrl(imageObject);
-            await axios.put(signedUrl, Buffer.from(image.base64, 'base64'), {
-              headers: {
-                'Content-Type': imgBlob._data.type
-              }
-            });
-            const imageUrl = signedUrl.split('?')[0];
-            data.profile = imageUrl;
             setLoading(true);
-            
-            let res = await UserService.add(data);
+            if(image){
+              const imgBlob = await fetchImageFromUri(image.uri);
+              const fileName = imgBlob._data.name.slice(-10);
+              const imageObject = {
+                type: imgBlob._data.type,
+                name: fileName,
+              };
+              const signedUrl = await UploadMediaService.getSignedUrl(
+                imageObject
+              );
+              await axios.put(signedUrl, Buffer.from(image.base64, "base64"), {
+                headers: {
+                  "Content-Type": imgBlob._data.type,
+                },
+              });
+              const imageUrl = signedUrl.split("?")[0];
+              payload.profile = imageUrl;
+            }else{
+              payload.profile = "";
+            }       
+
+            let res = await UserService.add(payload);
+
             if (res.token) {
               login();
               Toast.show({
@@ -163,6 +178,7 @@ const Form = () => {
               navigation.navigate("User_order");
             }
           } catch (error) {
+            console.log(error)
             Toast.show({
               type: "error",
               text1: "Some error occurred",
@@ -176,7 +192,6 @@ const Form = () => {
           validationErrors?.inner?.forEach((error) => {
             errors[error.path] = error.message;
           });
-          setErrors(errors);
           Toast.show({
             type: "error",
             text1: "Form Values Incorrect",
@@ -184,32 +199,43 @@ const Form = () => {
         });
     } else {
       VendorSignupSchema.validate(
-        { ...values, image: image },
+        {
+          ...values,
+          image: image,
+          city: location.name,
+          lat: location.latitude,
+          lng: location.longitude,
+        },
         { abortEarly: false }
       )
         .then(async () => {
           const payload = {
-            ...values
+            ...values,
+            city: location.name,
+            lat: location.latitude,
+            lng: location.longitude
           };
           try {
             setLoading(true);
             Toast.show({
-              type: "success",
+              type: "info",
               text1: "Creating Account",
             });
             const imgBlob = await fetchImageFromUri(image.uri);
             const fileName = imgBlob._data.name.slice(-10);
             const imageObject = {
               type: imgBlob._data.type,
-              name: fileName
-            }
-            const signedUrl = await UploadMediaService.getSignedUrl(imageObject);
-            await axios.put(signedUrl, Buffer.from(image.base64, 'base64'), {
+              name: fileName,
+            };
+            const signedUrl = await UploadMediaService.getSignedUrl(
+              imageObject
+            );
+            await axios.put(signedUrl, Buffer.from(image.base64, "base64"), {
               headers: {
-                'Content-Type': imgBlob._data.type
-              }
+                "Content-Type": imgBlob._data.type,
+              },
             });
-            const imageUrl = signedUrl.split('?')[0];
+            const imageUrl = signedUrl.split("?")[0];
             payload.profile = imageUrl;
             const res = await VendorService.add(payload);
             if (res.token) {
@@ -330,7 +356,14 @@ const Form = () => {
             options={skillOption}
             label="Skills"
           />
-          <Location hint={errors.origin}> Select Origin </Location>
+          <LocationSelector
+            setMapVisible={setMapVisible}
+            location={location}
+            setLocation={setLocation}
+            inverted={true}
+            hint={errors.city}
+            width={"350px"}
+          />
         </View>
       )}
       <CreateAccountButtonContainer>
@@ -342,7 +375,7 @@ const Form = () => {
   );
 };
 
-export default function Signup() {
+export default function Signup({ setMapVisible, location, setLocation }) {
   return (
     <SignupContainer>
       <Heading>
@@ -353,7 +386,11 @@ export default function Signup() {
           Create new account <YellowText>.</YellowText>
         </HeadingBottom>
       </Heading>
-      <Form />
+      <Form
+        setMapVisible={setMapVisible}
+        location={location}
+        setLocation={setLocation}
+      />
       <BottomTag>
         Already a member? <YellowText>Log In</YellowText>
       </BottomTag>
