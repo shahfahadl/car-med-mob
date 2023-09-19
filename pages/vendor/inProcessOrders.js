@@ -170,6 +170,10 @@ const OrderItem = ({ order ,   setLatLng, setMapVisible }) => {
             <H4 bold>Problem &nbsp;</H4>
             <H4>{order.problem}</H4>
           </FlexRow>
+          <FlexRow>
+            <H4 bold>Contact &nbsp;</H4>
+            <H4>{order.contact}</H4>
+          </FlexRow>
           {
             order.date &&
             <>

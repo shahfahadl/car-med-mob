@@ -121,6 +121,7 @@ const OrderItem = ({
       const payload = {
         vendorId: user.id,
         vendorName: user.name,
+        vendorContact: user.contact,
         price: order.bid,
         id: order.id,
         carType: order.carType,
@@ -151,6 +152,7 @@ const OrderItem = ({
         vendorId: user.id,
         vendorName: user.name,
         vendorProfile: user.profile,
+        vendorContact: user.contact,
       },
     });
     setPopup(true);
@@ -185,6 +187,10 @@ const OrderItem = ({
           <FlexRow>
             <H4 bold>Problem &nbsp;</H4>
             <H4>{order.problem}</H4>
+          </FlexRow>
+          <FlexRow>
+            <H4 bold>Contact &nbsp;</H4>
+            <H4>{order.contact}</H4>
           </FlexRow>
           {
             order.date &&

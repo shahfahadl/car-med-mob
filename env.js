@@ -2,7 +2,7 @@ const process = {
     API_PATH : "https://api-carmed.onrender.com",
     IMAGE_PATH: "http://localhost:4500/images/",
     API_GOOGLE : "AIzaSyD2N-yXRMJCZoNUsjJBlgwpH90NjjNWowI",
-    GOOGLE_MAPS_KEY: "AIzaSyAVa27g99pz_UJpAvDStRLXm1c_fmRDT74",
+    GOOGLE_MAPS_KEY: "AIzaSyAQPXEOb5Ga3vhsZR55Ih7ORNtoydqK3pI",
     type : "service_account",
     project_id : "carmed-f6927",
     private_key_id : "92902c3fcfad8d91a4fc8c9d96f1c8147547931b",

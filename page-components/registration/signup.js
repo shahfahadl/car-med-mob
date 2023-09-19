@@ -127,17 +127,15 @@ const Form = ({ setMapVisible, location, setLocation }) => {
     setErrors({});
     if (role === "user") {
       const payload = {
-        email : values.email,
+        email: values.email,
         name: values.name,
         password: values.password,
         gender: values.gender,
         cnic: values.cnic,
-        profile: image
-      }
-      UserSignupSchema.validate(
-        payload,
-        { abortEarly: false }
-      )
+        contact: values.contact,
+        profile: image,
+      };
+      UserSignupSchema.validate(payload, { abortEarly: false })
         .then(async () => {
           try {
             Toast.show({
@@ -145,7 +143,7 @@ const Form = ({ setMapVisible, location, setLocation }) => {
               text1: "Creating Account",
             });
             setLoading(true);
-            if(image){
+            if (image) {
               const imgBlob = await fetchImageFromUri(image.uri);
               const fileName = imgBlob._data.name.slice(-10);
               const imageObject = {
@@ -162,23 +160,22 @@ const Form = ({ setMapVisible, location, setLocation }) => {
               });
               const imageUrl = signedUrl.split("?")[0];
               payload.profile = imageUrl;
-            }else{
+            } else {
               payload.profile = "";
-            }       
+            }
 
             let res = await UserService.add(payload);
 
             if (res.token) {
+              UserService.storeUser(res);
               login();
               Toast.show({
                 type: "success",
                 text1: "Welcome",
               });
-              UserService.storeUser(res);
               navigation.navigate("User_order");
             }
           } catch (error) {
-            console.log(error)
             Toast.show({
               type: "error",
               text1: "Some error occurred",
@@ -213,7 +210,7 @@ const Form = ({ setMapVisible, location, setLocation }) => {
             ...values,
             city: location.name,
             lat: location.latitude,
-            lng: location.longitude
+            lng: location.longitude,
           };
           try {
             setLoading(true);
@@ -239,12 +236,12 @@ const Form = ({ setMapVisible, location, setLocation }) => {
             payload.profile = imageUrl;
             const res = await VendorService.add(payload);
             if (res.token) {
+              VendorService.storeVendor(res);
               login();
               Toast.show({
                 type: "success",
                 text1: "Welcome",
               });
-              VendorService.storeVendor(res);
               navigation.navigate("Vendor_availableOrders");
             }
           } catch (error) {
@@ -320,14 +317,6 @@ const Form = ({ setMapVisible, location, setLocation }) => {
             placeholder="----*---------*-"
             label="CNIC"
           />
-          <CustomDropdownInput
-            width="150px"
-            inverted={true}
-            options={signInAsOptions}
-            selectedValue={role}
-            onValueChange={(value) => setRole(value)}
-            label="Create Account As"
-          />
         </View>
         <CustomImageInput
           hint={errors.image}
@@ -337,17 +326,25 @@ const Form = ({ setMapVisible, location, setLocation }) => {
           inverted={true}
         />
       </View>
+      <CustomTextInput
+        hint={errors.contact}
+        value={values.contact}
+        onChangeText={(e) => setValues((prev) => ({ ...prev, contact: e }))}
+        width="100%"
+        inverted={true}
+        placeholder="+92 XXXXXXXXXXX"
+        label="Contact"
+      />
+      <CustomDropdownInput
+        width="150px"
+        inverted={true}
+        options={signInAsOptions}
+        selectedValue={role}
+        onValueChange={(value) => setRole(value)}
+        label="Create Account As"
+      />
       {role === "vendor" && (
         <View>
-          <CustomTextInput
-            hint={errors.contact}
-            value={values.contact}
-            onChangeText={(e) => setValues((prev) => ({ ...prev, contact: e }))}
-            width="100%"
-            inverted={true}
-            placeholder="+92 XXXXXXXXXXX"
-            label="Contact"
-          />
           <CustomDropdownInput
             width="100%"
             selectedValue={values.skill}

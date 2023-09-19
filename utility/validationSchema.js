@@ -71,7 +71,7 @@ export const UserSignupSchema = yup.object().shape({
     .string("Email is required")
     .required("password is required")
     .max(50),
-  contact: yup.string(),
+  contact: yup.string().required("contact is required"),
   skill: yup.string("Email is required"),
   gender: yup.string().required("Gender is required"),
   profile: yup.mixed(),

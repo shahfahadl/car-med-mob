@@ -38,6 +38,7 @@ const OrdersContainer = styled.View`
   margin-top: 10px;
   display: flex;
   align-items: center;
+  gap: 10px;
 `;
 
 const OrderContainer = styled.View`
@@ -118,6 +119,10 @@ const OrderItem = ({ order , setMapVisible , setLatLng}) => {
         <FlexRow style={{ marginBottom: 10 }}>
           <H4 bold>Vendor Name &nbsp;</H4>
           <H4>{order.vendorName}</H4>
+        </FlexRow>
+        <FlexRow style={{ marginBottom: 10 }}>
+          <H4 bold>Vendor Contact &nbsp;</H4>
+          <H4>{order.vendorContact}</H4>
         </FlexRow>
         <FlexRow>
           <H4 bold>Car Type &nbsp;</H4>

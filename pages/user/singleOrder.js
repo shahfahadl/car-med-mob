@@ -124,6 +124,7 @@ const Request = ({ request, id }) => {
       const payload = {
         vendorId: request.vendorId,
         vendorName: request.vendorName,
+        vendorContact: request.vendorContact,
         bid: request.bid,
         id: id,
         vendorProfile: request.vendorProfile,
@@ -153,7 +154,7 @@ const Request = ({ request, id }) => {
         </FlexRow>
         <FlexRow>
           <H4 bold>Contact &nbsp;</H4>
-          <H4 light>Not Available</H4>
+          <H4 >{request.vendorContact}</H4>
         </FlexRow>
         <FlexRow style={{ marginBottom: 10 }}>
           <H4 bold>Ratings &nbsp;</H4>
