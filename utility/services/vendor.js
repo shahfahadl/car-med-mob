@@ -49,6 +49,12 @@ class Vendor extends CRUDService {
     return BaseService.post(APIPath.placeBid, data)
   }
 
+  generateOTP = (data) => 
+    BaseService.post(APIPath.generateOTP, data)
+
+  resetPassword = (data) => 
+    BaseService.post(APIPath.resetPassword, data)
+
 }
 
 const VendorService = new Vendor();

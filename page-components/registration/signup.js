@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useRef , useEffect } from "react";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { fonts, colors } from "../../utility/theme";
@@ -16,6 +16,7 @@ import {
   skillOption,
 } from "../../utility/common";
 import {
+  EmailSchema,
   UserSignupSchema,
   VendorSignupSchema,
 } from "../../utility/validationSchema";
@@ -90,6 +91,7 @@ const CreateAccountButtonContainer = styled.View`
   align-items: center;
   margin-top: 30px;
 `;
+
 const YellowText = styled.Text`
   color: ${colors.yellow};
 `;
@@ -106,6 +108,7 @@ const Form = ({ setMapVisible, location, setLocation }) => {
   const [values, setValues] = useState({
     name: "",
     cnic: "",
+    otp: "",
     email: "",
     password: "",
     gender: "male",
@@ -116,6 +119,11 @@ const Form = ({ setMapVisible, location, setLocation }) => {
     skill: "dentAndPaint",
   });
 
+  const [submitCount, setSubmitCount] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [onceClicked, setOnceClicked] = useState(false)
+  const [otpLoading, setOtpLoading] = useState(false)
+  const intervalRef = useRef();
   const { login } = useAuth();
   const [errors, setErrors] = useState({});
   const [image, setImage] = useState();
@@ -128,6 +136,7 @@ const Form = ({ setMapVisible, location, setLocation }) => {
     if (role === "user") {
       const payload = {
         email: values.email,
+        otp: values.otp,
         name: values.name,
         password: values.password,
         gender: values.gender,
@@ -189,6 +198,7 @@ const Form = ({ setMapVisible, location, setLocation }) => {
           validationErrors?.inner?.forEach((error) => {
             errors[error.path] = error.message;
           });
+          setErrors(errors)
           Toast.show({
             type: "error",
             text1: "Form Values Incorrect",
@@ -267,6 +277,60 @@ const Form = ({ setMapVisible, location, setLocation }) => {
     }
   };
 
+  const generateOTP = () => {
+    EmailSchema.validate(values.email)
+    .then(async ()=> {
+      setOtpLoading(true)
+      setOnceClicked(true);
+      try {
+        await UserService.generateOTP({email: values.email})
+        Toast.show({
+          type: "info",
+          text1: "Please check email for OTP",
+        });
+        setSubmitCount(prev => prev + 1);
+        setSeconds(60);
+      } catch (error) {
+        console.log(error)
+        Toast.show({
+          type: "error",
+          text1: "There was error generating OTP",
+        });
+        setOnceClicked(false);
+      }finally {
+        setOtpLoading(false)
+      }
+    })
+    .catch((validationErrors) => {
+      const errors = {};
+      validationErrors?.inner?.forEach((error) => {
+        errors[error.path] = error.message;
+      });
+      setErrors(errors)
+      Toast.show({
+        type: "error",
+        text1: "Invalid Email",
+      });
+    });
+  }
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSeconds(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    intervalRef.current = timer;
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  }, [submitCount]);
+
+  useEffect(() => {
+    if (seconds < 1) {
+      clearInterval(intervalRef.current);
+      setOnceClicked(false)
+    }
+  }, [seconds]);
+
   return (
     <SignupForm>
       <FullNameAndGender>
@@ -297,6 +361,28 @@ const Form = ({ setMapVisible, location, setLocation }) => {
         placeholder="jone.doe@gmail.com"
         label="Email"
       />
+       <CustomButton
+        style={{marginTop: 10}}
+        inverted={true}
+        onPress={generateOTP}
+        disabled={onceClicked && seconds > 0} 
+        loading={otpLoading}
+      >
+        {onceClicked ? `Resend OTP (${seconds}s)` : "Generate OTP"}
+      </CustomButton>
+      {
+        onceClicked &&
+        <CustomTextInput
+          hint={errors.otp}
+          value={values.otp}
+          onChangeText={(e) => setValues((prev) => ({ ...prev, otp: e }))}
+          width="100%"
+          inverted={true}
+          placeholder="Your OTP here"
+          label="Input OTP"
+        />
+      }
+      
       <CustomPasswordInput
         hint={errors.password}
         value={values.password}

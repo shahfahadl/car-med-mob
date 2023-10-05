@@ -4,7 +4,7 @@ import registrationImage from "../../assets/registration-bg.png";
 import arrowImage from "../../assets/arrow-down.png";
 import { CustomButton } from "../../elements/button";
 import Toast from "react-native-toast-message";
-import { LoginSchema } from "../../utility/validationSchema";
+import { EmailSchema, LoginSchema } from "../../utility/validationSchema";
 import UserService from "../../utility/services/user";
 import VendorService from "../../utility/services/vendor";
 import { useAuth } from "../../contexts/auth";
@@ -16,7 +16,8 @@ import {
   CustomTextInput,
   CustomPasswordInput,
 } from "../../elements/input";
-import { Dimensions } from "react-native";
+import { Dimensions, Linking } from "react-native";
+import { Popup } from "../../elements/common";
 
 const SignupButton = styled.View`
   display: flex;
@@ -41,6 +42,19 @@ const LoginContainer = styled.View`
   gap: 15px;
 `;
 
+const H4 = styled.Text`
+  opacity: ${({ light }) => (light ? "0.5" : "1")};
+  text-transform: capitalize;
+  ${({ bold }) => bold && fonts.fontFamilyBold}
+`;
+
+const ForgotPassword = styled.TouchableOpacity`
+`;
+
+const ForgotPasswordText = styled.Text`
+  color: blue;
+`;
+
 const RegistrationImage = styled.Image`
   position: absolute;
   top: 0;
@@ -54,6 +68,8 @@ const ArrowImage = styled.Image`
 `;
 
 export default function Login() {
+  const [forgotPassword, setForgotPassword] = useState(false);
+  const [show, setShow] = useState(false);
   const [errors, setErrors] = useState({});
   const [role, setRole] = useState("user");
   const navigation = useNavigation();
@@ -65,6 +81,46 @@ export default function Login() {
     email: "",
     password: "",
   });
+
+  const handleForgotPassword = async () => {
+    setErrors({})
+    EmailSchema.validate(values.email)
+    .then(async ()=> {
+      setLoading(true);
+      const payload = {
+        email: values.email,
+      };
+      try {
+        const res = await UserService.resetPassword(payload);
+        if(res){
+          Toast.show({
+            type: "error",
+            text1: "Password resetted, kindly check your e-mail",
+          });
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "There was Issue resetting",
+          });
+        }
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: "There was Issue resetting",
+        });
+      } finally {
+        setLoading(false);
+      }
+    })
+    .catch(() => {
+      setErrors({email: "Must be type email"})
+      Toast.show({
+        type: "error",
+        text1: "Invalid Email",
+      });
+    });
+  };
+
   const handleLogin = () => {
     setErrors({});
     LoginSchema.validate(values, { abortEarly: false })
@@ -82,16 +138,20 @@ export default function Login() {
             res = await VendorService.login(values);
           }
           UserService.storeUser(res);
-          if (res.token) {
-            login();
-            Toast.show({
-              type: "success",
-              text1: "Welcome",
-            });
-            if (role === "user") {
-              navigation.navigate("User_order");
-            } else {
-              navigation.navigate("Vendor_availableOrders");
+          if(res.response?.status === 405){
+            setShow(true)
+          }else{
+            if (res.token) {
+              login();
+              Toast.show({
+                type: "success",
+                text1: "Welcome",
+              });
+              if (role === "user") {
+                navigation.navigate("User_order");
+              } else {
+                navigation.navigate("Vendor_availableOrders");
+              }
             }
           }
         } catch (error) {
@@ -116,39 +176,90 @@ export default function Login() {
       });
   };
 
+  const handlePress = () => {
+    if(forgotPassword){
+      handleForgotPassword()
+    }else{
+      handleLogin()
+    }
+  };
+
+  const handleEmailPress = async () => {
+    const url = `mailto:carmed.contact4@gmail.com?subject=Why am I blocked`;
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error('Error opening email:', error);
+    }
+  };
+
+
   return (
     <LoginContainer height={Math.round(height / 100)}>
       <RegistrationImage source={registrationImage} />
-      <CustomTextInput
-        value={values.email}
-        onChangeText={(e) => setValues((prev) => ({ ...prev, email: e }))}
-        width="80%"
-        placeholder="example@gmail.com"
-        label="Email"
-        hint={errors.email}
-      />
-      <CustomPasswordInput
-        value={values.password}
-        onChangeText={(e) => setValues((prev) => ({ ...prev, password: e }))}
-        width="80%"
-        placeholder="***************"
-        label="Password"
-        hint={errors.password}
-      />
-      <CustomDropdownInput
-        width="80%"
-        options={signInAsOptions}
-        selectedValue={role}
-        onValueChange={(value) => setRole(value)}
-        label="Sign-in As"
-      />
-      <CustomButton loading={loading} onPress={handleLogin}>
-        Log In
+      {
+        forgotPassword ? 
+        <>
+          <CustomTextInput
+            value={values.email}
+            onChangeText={(e) => setValues((prev) => ({ ...prev, email: e }))}
+            width="80%"
+            placeholder="example@gmail.com"
+            label="Email"
+            hint={errors.email}
+          />
+        </>
+        :
+        <>
+          <CustomTextInput
+            value={values.email}
+            onChangeText={(e) => setValues((prev) => ({ ...prev, email: e }))}
+            width="80%"
+            placeholder="example@gmail.com"
+            label="Email"
+            hint={errors.email}
+          />
+          <CustomPasswordInput
+            value={values.password}
+            onChangeText={(e) => setValues((prev) => ({ ...prev, password: e }))}
+            width="80%"
+            placeholder="***************"
+            label="Password"
+            hint={errors.password}
+          />
+          <CustomDropdownInput
+            width="80%"
+            options={signInAsOptions}
+            selectedValue={role}
+            onValueChange={(value) => setRole(value)}
+            label="Sign-in As"
+          />
+        </>
+      }
+      <ForgotPassword onPress={()=> setForgotPassword(!forgotPassword)} >
+        <ForgotPasswordText>
+          {forgotPassword ? "Back To Login":"Forgot Password? Click here"}
+        </ForgotPasswordText>
+      </ForgotPassword>
+      <CustomButton loading={loading} onPress={handlePress}>
+        {forgotPassword? "Reset Password" : "Login"}
       </CustomButton>
       <SignupButton>
         <SignupButtonText>Signup</SignupButtonText>
         <ArrowImage source={arrowImage} />
       </SignupButton>
+      <Popup show={show} setShow={setShow} >
+        <H4 style={{fontSize : 24 , height: 50 }} >
+          You've been blocked
+        </H4>
+        <H4>
+          Please contact
+        </H4>
+        <H4 onPress={handleEmailPress} style={{ color: 'blue' , height: 50 }} >
+          carmed.contact4@gmail.com
+        </H4>
+
+      </Popup>
     </LoginContainer>
   );
 }

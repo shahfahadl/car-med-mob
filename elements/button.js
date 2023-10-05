@@ -6,7 +6,9 @@ const StyledButton = styled.TouchableOpacity`
   background-color: ${({ bgColor }) => bgColor || colors.yellow};
   ${borderRadius("5px")}
   padding: 10px 30px;
-  ${ ({loading})=> loading && "pointer-events: none;"}
+  display: flex;
+  align-items: center;
+  ${ ({loading , disabled})=> (loading || disabled) && "pointer-events: none;"}
 `;
 
 const CustomText = styled.Text`
@@ -14,9 +16,9 @@ const CustomText = styled.Text`
   color: ${({ inverted, color }) => color || (inverted ? "black" : "white")};
 `;
 
-export const CustomButton = ({ inverted,color, children, loading=false, ...rest }) => {
+export const CustomButton = ({ inverted,color, children, disabled=false, loading=false, ...rest }) => {
   return (
-    <StyledButton {...rest} loading={loading} >
+    <StyledButton {...rest} loading={loading} disabled={disabled} >
       {loading?
         <ActivityIndicator size="small" color={inverted? "black":"white"} />:
         <CustomText color={color} inverted={inverted}>{children}</CustomText>

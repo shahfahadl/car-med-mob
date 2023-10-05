@@ -16,6 +16,8 @@ export const APIPath = {
     images: 'images',
     addWithoutProfile: '/addWithoutProfile',
     getSignedUrl: 'aws/get-signed-url',
+    generateOTP:'user/generate-otp',
+    resetPassword:'user/reset-password',
 }
 
 export const commonConstants = {

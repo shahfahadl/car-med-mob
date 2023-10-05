@@ -53,7 +53,7 @@ export const CustomTextInput = ({
   ...rest
 }) => {
   return (
-    <TextInputContainer width={width}>
+    <TextInputContainer width={width} style={{marginBottom : hint && 20}}>
       <Label inverted={inverted} labelColor={labelColor}>
         {label}
       </Label>
