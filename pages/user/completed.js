@@ -14,6 +14,7 @@ import { StarElement } from "../../elements/common";
 import { Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BlockedComponent } from "../../components/blocked"; 
 
 const Common = styled.View`
   width: 100%;
@@ -149,6 +150,7 @@ const Completed = () => {
   const { height } = Dimensions.get("window");
   const [apiLoading, setApiLoading] = useState(false);
   const insets = useSafeAreaInsets();
+  const [blockedShow, setBlockedShow] = useState(false);
   const [values, setValues] = useState({
     rating: 0,
     id: null,
@@ -172,11 +174,15 @@ const Completed = () => {
           review: values.review,
         };
 
-        UserService.rateVendor(payload);
-        Toast.show({
-          type: "success",
-          text1: "Thanks for your feedback!",
-        });
+        let res = await UserService.rateVendor(payload);
+        if(res.response?.status === 405){
+          setBlockedShow(true)
+        }else{
+          Toast.show({
+            type: "success",
+            text1: "Thanks for your feedback!",
+          });
+        }
       } catch (error) {
         Toast.show({
           type: "error",
@@ -261,6 +267,7 @@ const Completed = () => {
           </CustomOutlineButton>
         </Buttons>
       </Popup>
+      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
     </Common>
   );
 };

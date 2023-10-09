@@ -14,6 +14,7 @@ import { CommonUtility } from "../../utility/common";
 import { Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Map from "../../components/map";
+import { BlockedComponent } from "../../components/blocked"; 
 
 const Common = styled.View`
   padding-top: ${({ statusBarHeight }) => `${statusBarHeight}px`};
@@ -106,7 +107,8 @@ const OrderItem = ({
   apiLoading,
   setApiLoading,
   setLatLng,
-  setMapVisible
+  setMapVisible,
+  setBlockedShow
 }) => {
   const myBid =
     order.requests.find((request) => request.vendorId === user.id)?.bid || null;
@@ -130,11 +132,15 @@ const OrderItem = ({
         userId: order.userId,
         userName: order.userName,
       };
-      await VendorService.acceptOrder(payload);
-      Toast.show({
-        type: "success",
-        text1: "Order Accepted",
-      });
+      let res = await VendorService.acceptOrder(payload);
+      if(res.response?.status === 405){
+        setBlockedShow(true)
+      }else{
+        Toast.show({
+          type: "success",
+          text1: "Order Accepted",
+        });
+      }
     } catch (error) {
       Toast.show({
         type: "error",
@@ -260,6 +266,7 @@ const AvailableOrders = () => {
     lat: null,
     lng: null,
   });
+  const [blockedShow, setBlockedShow] = useState(false);
   const insets = useSafeAreaInsets();
   const [apiLoading, setApiLoading] = useState(false);
   const [values, setValues] = useState({
@@ -280,11 +287,16 @@ const AvailableOrders = () => {
           type: "info",
           text1: "Placing Bid",
         });
-        await VendorService.placeBid(values);
-        Toast.show({
-          type: "success",
-          text1: "Bid Placed",
-        });
+        
+        let res = await VendorService.placeBid(values);
+        if(res.response?.status === 405){
+          setBlockedShow(true)
+        }else{
+          Toast.show({
+            type: "success",
+            text1: "Bid Placed",
+          });
+        }
       } catch (error) {
         Toast.show({
           type: "error",
@@ -327,6 +339,7 @@ const AvailableOrders = () => {
                     setApiLoading={setApiLoading}
                     setLatLng={setLatLng}
                     setMapVisible={setMapVisible}
+                    setBlockedShow={setBlockedShow}
                   />
                 ))}
               </OrdersContainer>
@@ -378,6 +391,7 @@ const AvailableOrders = () => {
           </CustomOutlineButton>
         </Buttons>
       </Popup>
+      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
       <Map mapVisible={mapVisible} handleClose={handleClose} lat={latLng.lat} lng={latLng.lng} />
     </Common>
   );

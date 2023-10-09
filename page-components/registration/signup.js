@@ -291,7 +291,6 @@ const Form = ({ setMapVisible, location, setLocation }) => {
         setSubmitCount(prev => prev + 1);
         setSeconds(60);
       } catch (error) {
-        console.log(error)
         Toast.show({
           type: "error",
           text1: "There was error generating OTP",

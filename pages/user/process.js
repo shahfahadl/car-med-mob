@@ -12,6 +12,7 @@ import { Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Map from "../../components/map";
+import { BlockedComponent } from "../../components/blocked"; 
 
 const Common = styled.View`
   width: 100%;
@@ -81,20 +82,24 @@ const Bottom = styled.View`
   justify-content: space-between;
 `;
 
-const OrderItem = ({ order , setMapVisible , setLatLng}) => {
+const OrderItem = ({ order , setMapVisible , setLatLng , setBlockedShow}) => {
   const [apiLoading, setApiLoading] = useState(false);
-  function cancelOrder() {
+  async function cancelOrder() {
     try {
       setApiLoading(true);
       Toast.show({
         type: "info",
         text1: "Canceling Order",
       });
-      UserService.cancelOrder({ id: order.id });
-      Toast.show({
-        type: "success",
-        text1: "Order Canceled",
-      });
+      let res = await UserService.cancelOrder({ id: order.id });
+      if(res.response?.status === 405){
+        setBlockedShow(true)
+      }else{
+        Toast.show({
+          type: "success",
+          text1: "Order Canceled",
+        });
+      }
     } catch (error) {
       Toast.show({
         type: "error",
@@ -176,6 +181,7 @@ const OrderItem = ({ order , setMapVisible , setLatLng}) => {
 const Process = () => {
   const { data: orders, loading } = orderUserProcess();
   const { height } = Dimensions.get("window");
+  const [blockedShow, setBlockedShow] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
   const [latLng, setLatLng] = useState({
     lat: null,
@@ -197,7 +203,7 @@ const Process = () => {
             {orders.length > 0 ? (
               <OrdersContainer>
                 {orders?.map((order) => (
-                  <OrderItem key={order.id} order={order} setLatLng={setLatLng} setMapVisible={setMapVisible} />
+                  <OrderItem key={order.id} order={order} setLatLng={setLatLng} setMapVisible={setMapVisible} setBlockedShow={setBlockedShow} />
                 ))}
               </OrdersContainer>
             ) : (
@@ -213,6 +219,7 @@ const Process = () => {
       <ToastContainer>
         <Toast />
       </ToastContainer>
+      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
     </Common>
   );
 };

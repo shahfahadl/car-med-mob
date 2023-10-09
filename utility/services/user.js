@@ -20,9 +20,9 @@ class User extends CRUDService {
     return BrowserUtility.getObj(commonConstants.uniqueUserName);
   }
 
-  login = (data) => {
-    return BaseService.put(APIPath.userLogin, data)
-  }
+  login = (data) => 
+    BaseService.put(APIPath.userLogin, data)
+  
 
   logout = () => {
     BrowserUtility.remove(commonConstants.uniqueUserName);
@@ -33,24 +33,24 @@ class User extends CRUDService {
     return !!token;
   }
 
-  order = (data) => {
+  order = (data) => 
     BaseService.post(APIPath.order, data)
-  }
+  
 
   updateOrder = (data) => 
     BaseService.post(APIPath.updateOrder, data)
 
-  cancelOrder = (data) => {
+  cancelOrder = (data) => 
     BaseService.post(APIPath.cancelOrderUser, data)
-  }
+  
 
-  acceptRequest = (data) => {
+  acceptRequest = (data) => 
     BaseService.post(APIPath.acceptRequest, data)
-  }
+  
 
-  rateVendor = (data) => {
+  rateVendor = (data) => 
     BaseService.post(APIPath.rateVendor, data)
-  }
+  
 
   generateOTP = (data) => 
     BaseService.post(APIPath.generateOTP, data)

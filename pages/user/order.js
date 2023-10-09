@@ -23,7 +23,7 @@ import { OrderSchema } from "../../utility/validationSchema";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import Map from "../../components/map";
-import { use } from "react-devtools-core";
+import { BlockedComponent } from "../../components/blocked"; 
 
 const Common = styled.View`
   width: 100%;
@@ -240,6 +240,7 @@ const Order = () => {
     lat: null,
     lng: null
   });
+  const [blockedShow, setBlockedShow] = useState(false);
 
   const [location, setLocation] = useState({
     name: null,
@@ -280,11 +281,16 @@ const Order = () => {
             type: "info",
             text1: "Creating Order",
           });
-          await UserService.order(payload);
-          Toast.show({
-            type: "success",
-            text1: "Order Placed",
-          });
+          
+          let res = await UserService.order(payload);
+          if(res.response?.status === 405){
+            setBlockedShow(true)
+          }else{
+            Toast.show({
+              type: "success",
+              text1: "Order Placed",
+            });
+          }
         } catch (error) {
           Toast.show({
             type: "error",
@@ -433,6 +439,7 @@ const Order = () => {
         lng={latLng.lng}
         handleClose={handleClose}
       />
+      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
       <ToastContainer>
         <Toast />
       </ToastContainer>

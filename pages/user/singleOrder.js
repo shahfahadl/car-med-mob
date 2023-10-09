@@ -17,6 +17,7 @@ import Map from "../../components/map";
 import { CustomDatePicker, CustomDropdownInput, CustomTextInput, CustomTimePicker } from "../../elements/input";
 import LocationSelector from "../../components/locationSelector";
 import { OrderSchema } from "../../utility/validationSchema";
+import { BlockedComponent } from "../../components/blocked"; 
 
 const Common = styled.View`
   width: 100%;
@@ -99,7 +100,7 @@ const ShowMaps = styled.TouchableOpacity`
   ${borderRadius("15px")}
 `;
 
-const Request = ({ request, id }) => {
+const Request = ({ request, id , setBlockedShow}) => {
   const navigation = useNavigation();
   const [apiLoading, setApiLoading] = useState(false);
 
@@ -129,12 +130,16 @@ const Request = ({ request, id }) => {
         id: id,
         vendorProfile: request.vendorProfile,
       };
-      UserService.acceptRequest(payload);
-      Toast.show({
-        type: "success",
-        text1: "Request Accepted",
-      });
-      navigation.navigate("User_process");
+      let res = await UserService.acceptRequest(payload);
+      if(res.response?.status === 405){
+        setBlockedShow(true)
+      }else{
+        Toast.show({
+          type: "success",
+          text1: "Request Accepted",
+        });
+        navigation.navigate("User_process");
+      }
     } catch (error) {
       Toast.show({
         type: "error",
@@ -196,6 +201,7 @@ const SingleOrder = ({ route }) => {
   const [mapVisible, setMapVisible] = useState(false);
   const [appointment, setAppointment] = useState(false);
   const [show, setShow] = useState(false);
+  const [blockedShow, setBlockedShow] = useState(false);
   const [location, setLocation] = useState({
     name: null,
     latitude: null,
@@ -241,12 +247,16 @@ const SingleOrder = ({ route }) => {
         type: "info",
         text1: "Canceling Order",
       });
-      UserService.cancelOrder({ id: order.id });
-      Toast.show({
-        type: "success",
-        text1: "Order canceled",
-      });
-      navigation.navigate("User_order");
+      let res = await UserService.cancelOrder({ id: order.id });
+      if(res.response?.status === 405){
+        setBlockedShow(true)
+      }else{
+        Toast.show({
+          type: "success",
+          text1: "Order canceled",
+        });
+        navigation.navigate("User_order");
+      }
     } catch (error) {
       Toast.show({
         type: "error",
@@ -295,11 +305,15 @@ const SingleOrder = ({ route }) => {
             type: "info",
             text1: "Updating Order",
           });
-          await UserService.updateOrder(payload);
-          Toast.show({
-            type: "success",
-            text1: "Order Placed",
-          });
+          let res = await UserService.updateOrder(payload);
+          if(res.response?.status === 405){
+            setBlockedShow(true)
+          }else{
+            Toast.show({
+              type: "success",
+              text1: "Order Placed",
+            });
+          }
         } catch (error) {
           Toast.show({
             type: "error",
@@ -384,7 +398,7 @@ const SingleOrder = ({ route }) => {
               <RequestsContainer height={Math.round(height / 100)}>
                 {order.requests?.length > 0 ? (
                   order.requests.map((request) => (
-                    <Request request={request} id={orderId} />
+                    <Request request={request} id={orderId} setBlockedShow={setBlockedShow} />
                   ))
                 ) : (
                   <Center>
@@ -495,6 +509,7 @@ const SingleOrder = ({ route }) => {
         lng={latLng.lng}
         handleClose={handleClose}
       />
+      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
     </Common>
   );
 };

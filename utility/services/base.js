@@ -2,14 +2,12 @@ import { BrowserUtility } from '../browser-utility';
 import { commonConstants } from '../constants/api';
 import axios from 'axios';
 import process from '../../env'
-import Toast from "react-native-toast-message";
 
 const baseURL = process.API_PATH;
 
 const onSuccess = (response) => response.data
 
 const onError = async (error) => {
-  console.log(error)
   if (error.response) {
     if (error.response.status === 403) {
       await BrowserUtility.remove(commonConstants.uniqueUserName);
@@ -18,11 +16,6 @@ const onError = async (error) => {
   }
 
   if (error.response.status === 405) {
-    await BrowserUtility.remove(commonConstants.uniqueUserName);
-    Toast.show({
-      type: "error",
-      text1: `You are blocked`,
-    });
     return error;
   }
 

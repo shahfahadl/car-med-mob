@@ -17,7 +17,7 @@ import {
   CustomPasswordInput,
 } from "../../elements/input";
 import { Dimensions, Linking } from "react-native";
-import { Popup } from "../../elements/common";
+import { BlockedComponent } from "../../components/blocked";
 
 const SignupButton = styled.View`
   display: flex;
@@ -69,7 +69,7 @@ const ArrowImage = styled.Image`
 
 export default function Login() {
   const [forgotPassword, setForgotPassword] = useState(false);
-  const [show, setShow] = useState(false);
+  const [blockedShow, setBlockedShow] = useState(false);
   const [errors, setErrors] = useState({});
   const [role, setRole] = useState("user");
   const navigation = useNavigation();
@@ -139,7 +139,7 @@ export default function Login() {
           }
           UserService.storeUser(res);
           if(res.response?.status === 405){
-            setShow(true)
+            setBlockedShow(true)
           }else{
             if (res.token) {
               login();
@@ -181,15 +181,6 @@ export default function Login() {
       handleForgotPassword()
     }else{
       handleLogin()
-    }
-  };
-
-  const handleEmailPress = async () => {
-    const url = `mailto:carmed.contact4@gmail.com?subject=Why am I blocked`;
-    try {
-      await Linking.openURL(url);
-    } catch (error) {
-      console.error('Error opening email:', error);
     }
   };
 
@@ -248,18 +239,7 @@ export default function Login() {
         <SignupButtonText>Signup</SignupButtonText>
         <ArrowImage source={arrowImage} />
       </SignupButton>
-      <Popup show={show} setShow={setShow} >
-        <H4 style={{fontSize : 24 , height: 50 }} >
-          You've been blocked
-        </H4>
-        <H4>
-          Please contact
-        </H4>
-        <H4 onPress={handleEmailPress} style={{ color: 'blue' , height: 50 }} >
-          carmed.contact4@gmail.com
-        </H4>
-
-      </Popup>
+      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
     </LoginContainer>
   );
 }
