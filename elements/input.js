@@ -267,7 +267,7 @@ export const CustomDatePicker = ({
 }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [date, setDate] = useState(new Date());
-
+  const minDate = new Date();
   const showDatePicker = () => {
     setShowPicker(true);
   };
@@ -296,6 +296,7 @@ export const CustomDatePicker = ({
       </StyledButton>
       {showPicker && (
         <DateTimePicker
+          minimumDate={minDate}
           value={date}
           mode="date"
           display="default"
