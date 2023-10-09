@@ -74,7 +74,7 @@ export default function LocationSelector({
             })
             .catch((error) => console.warn(error));
         })();
-    }
+    } 
   }, []);
 
   function selectLocation() {

@@ -30,7 +30,7 @@
 //     <Common>
 //       <PositionFixed>
 //           <Toast />
-//           Place any thing you want to make position fixed 
+//           Place any thing you want to make position fixed
 //       </PositionFixed>
 //       <Container>
 //         All components go here
