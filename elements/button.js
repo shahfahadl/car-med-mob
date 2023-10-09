@@ -1,6 +1,6 @@
 import styled from "styled-components/native";
 import { borderRadius, colors, fonts } from "../utility/theme";
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from "react-native";
 
 const StyledButton = styled.TouchableOpacity`
   background-color: ${({ bgColor }) => bgColor || colors.yellow};
@@ -8,7 +8,7 @@ const StyledButton = styled.TouchableOpacity`
   padding: 10px 30px;
   display: flex;
   align-items: center;
-  ${ ({loading , disabled})=> (loading || disabled) && "pointer-events: none;"}
+  ${({ loading, disabled }) => (loading || disabled) && "pointer-events: none;"}
 `;
 
 const CustomText = styled.Text`
@@ -16,13 +16,23 @@ const CustomText = styled.Text`
   color: ${({ inverted, color }) => color || (inverted ? "black" : "white")};
 `;
 
-export const CustomButton = ({ inverted,color, children, disabled=false, loading=false, ...rest }) => {
+export const CustomButton = ({
+  inverted,
+  color,
+  children,
+  disabled = false,
+  loading = false,
+  ...rest
+}) => {
   return (
-    <StyledButton {...rest} loading={loading} disabled={disabled} >
-      {loading?
-        <ActivityIndicator size="small" color={inverted? "black":"white"} />:
-        <CustomText color={color} inverted={inverted}>{children}</CustomText>
-      }
+    <StyledButton {...rest} loading={loading} disabled={disabled}>
+      {loading ? (
+        <ActivityIndicator size="small" color={inverted ? "black" : "white"} />
+      ) : (
+        <CustomText color={color} inverted={inverted}>
+          {children}
+        </CustomText>
+      )}
     </StyledButton>
   );
 };
@@ -31,16 +41,22 @@ const StyledOutlineButton = styled.TouchableOpacity`
   padding: 5px 10px;
   border: 3px solid ${({ color }) => color};
   ${borderRadius("5px")}
-  ${ ({loading})=> loading && "pointer-events: none;"}
+  ${({ loading }) => loading && "pointer-events: none;"}
 `;
 
-export const CustomOutlineButton = ({ color,loading=false, children, ...rest }) => {
+export const CustomOutlineButton = ({
+  color,
+  loading = false,
+  children,
+  ...rest
+}) => {
   return (
     <StyledOutlineButton loading={loading} color={color} {...rest}>
-      {loading?
-        <ActivityIndicator size="small" color={color} />:
+      {loading ? (
+        <ActivityIndicator size="small" color={color} />
+      ) : (
         <CustomText color={color}>{children}</CustomText>
-      }
+      )}
     </StyledOutlineButton>
   );
 };

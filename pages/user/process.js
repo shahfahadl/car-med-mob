@@ -12,7 +12,7 @@ import { Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Map from "../../components/map";
-import { BlockedComponent } from "../../components/blocked"; 
+import { BlockedComponent } from "../../components/blocked";
 
 const Common = styled.View`
   width: 100%;
@@ -82,7 +82,7 @@ const Bottom = styled.View`
   justify-content: space-between;
 `;
 
-const OrderItem = ({ order , setMapVisible , setLatLng , setBlockedShow}) => {
+const OrderItem = ({ order, setMapVisible, setLatLng, setBlockedShow }) => {
   const [apiLoading, setApiLoading] = useState(false);
   async function cancelOrder() {
     try {
@@ -92,9 +92,9 @@ const OrderItem = ({ order , setMapVisible , setLatLng , setBlockedShow}) => {
         text1: "Canceling Order",
       });
       let res = await UserService.cancelOrder({ id: order.id });
-      if(res.response?.status === 405){
-        setBlockedShow(true)
-      }else{
+      if (res.response?.status === 405) {
+        setBlockedShow(true);
+      } else {
         Toast.show({
           type: "success",
           text1: "Order Canceled",
@@ -110,13 +110,13 @@ const OrderItem = ({ order , setMapVisible , setLatLng , setBlockedShow}) => {
     }
   }
 
-  function handleShowMaps(){
+  function handleShowMaps() {
     setLatLng({
-      lat: order.latLng.lat ,
-      lng: order.latLng.lng
-    })
-    setMapVisible(true)
-  } 
+      lat: order.latLng.lat,
+      lng: order.latLng.lng,
+    });
+    setMapVisible(true);
+  }
 
   return (
     <OrderContainer>
@@ -136,7 +136,7 @@ const OrderItem = ({ order , setMapVisible , setLatLng , setBlockedShow}) => {
         <FlexRow style={{ alignItems: "center" }}>
           <H4 bold>Location &nbsp;</H4>
           <H4 light>{order.location} &nbsp;</H4>
-          <ShowMaps onPress={handleShowMaps} >
+          <ShowMaps onPress={handleShowMaps}>
             <H4>Show Map</H4>
           </ShowMaps>
         </FlexRow>
@@ -144,10 +144,9 @@ const OrderItem = ({ order , setMapVisible , setLatLng , setBlockedShow}) => {
           <H4 bold>Problem &nbsp;</H4>
           <H4>{order.problem}</H4>
         </FlexRow>
-        {
-            order.date &&
-            <>
-              <H4 bold>Appointment &nbsp;</H4>
+        {order.date && (
+          <>
+            <H4 bold>Appointment &nbsp;</H4>
             <FlexRow>
               <H4 bold>Date &nbsp;</H4>
               <H4>{order.date}</H4>
@@ -156,8 +155,8 @@ const OrderItem = ({ order , setMapVisible , setLatLng , setBlockedShow}) => {
               <H4 bold>Time &nbsp;</H4>
               <H4>{order.time}</H4>
             </FlexRow>
-            </>
-          }
+          </>
+        )}
       </View>
       <Bottom style={{ marginTop: 20 }}>
         <FlexRow>
@@ -188,8 +187,8 @@ const Process = () => {
     lng: null,
   });
 
-  function handleClose (){
-    setMapVisible(false)
+  function handleClose() {
+    setMapVisible(false);
   }
 
   const insets = useSafeAreaInsets();
@@ -203,7 +202,13 @@ const Process = () => {
             {orders.length > 0 ? (
               <OrdersContainer>
                 {orders?.map((order) => (
-                  <OrderItem key={order.id} order={order} setLatLng={setLatLng} setMapVisible={setMapVisible} setBlockedShow={setBlockedShow} />
+                  <OrderItem
+                    key={order.id}
+                    order={order}
+                    setLatLng={setLatLng}
+                    setMapVisible={setMapVisible}
+                    setBlockedShow={setBlockedShow}
+                  />
                 ))}
               </OrdersContainer>
             ) : (
@@ -215,11 +220,19 @@ const Process = () => {
         )}
       </Container>
       <Navigation />
-      <Map mapVisible={mapVisible} handleClose={handleClose} lat={latLng.lat} lng={latLng.lng} />
+      <Map
+        mapVisible={mapVisible}
+        handleClose={handleClose}
+        lat={latLng.lat}
+        lng={latLng.lng}
+      />
       <ToastContainer>
         <Toast />
       </ToastContainer>
-      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
+      <BlockedComponent
+        blockedShow={blockedShow}
+        setBlockedShow={setBlockedShow}
+      />
     </Common>
   );
 };

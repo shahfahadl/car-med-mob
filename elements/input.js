@@ -53,7 +53,7 @@ export const CustomTextInput = ({
   ...rest
 }) => {
   return (
-    <TextInputContainer width={width} style={{marginBottom : hint && 20}}>
+    <TextInputContainer width={width} style={{ marginBottom: hint && 20 }}>
       <Label inverted={inverted} labelColor={labelColor}>
         {label}
       </Label>
@@ -195,7 +195,7 @@ export const CustomImageInput = ({ image, setImage, inverted, styling }) => {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-      base64: true
+      base64: true,
     });
     if (!result.canceled) {
       setImage(result.assets[0]);
@@ -289,9 +289,7 @@ export const CustomDatePicker = ({
         Date
       </Label>
       <StyledButton onPress={showDatePicker}>
-        <Text>
-          {value ? `${value}` : "Select Date"}
-        </Text>
+        <Text>{value ? `${value}` : "Select Date"}</Text>
         <IconContainer source={dateIcon} />
       </StyledButton>
       {showPicker && (
@@ -324,9 +322,7 @@ export const CustomTimePicker = ({
   };
 
   useEffect(() => {
-    setValue(
-      time.getHours() + ":" + time.getMinutes()
-    );
+    setValue(time.getHours() + ":" + time.getMinutes());
   }, [time]);
 
   const handleChange = (data) => {
@@ -340,9 +336,7 @@ export const CustomTimePicker = ({
         Time
       </Label>
       <StyledButton onPress={showTimePicker}>
-        <Text>
-          {value ? `${value}` : "Select Time"}
-        </Text>
+        <Text>{value ? `${value}` : "Select Time"}</Text>
         <IconContainer source={timeIcon} />
       </StyledButton>
       {showPicker && (

@@ -1,11 +1,11 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export class BrowserUtility {
   static save = async (key, value) => {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {
-      console.log('Error saving data:', error);
+      console.log("Error saving data:", error);
     }
   };
 
@@ -14,7 +14,7 @@ export class BrowserUtility {
       const value = await AsyncStorage.getItem(key);
       return value;
     } catch (error) {
-      console.log('Error retrieving data:', error);
+      console.log("Error retrieving data:", error);
       return null;
     }
   };
@@ -24,7 +24,7 @@ export class BrowserUtility {
       const jsonValue = JSON.stringify(obj);
       await AsyncStorage.setItem(key, jsonValue);
     } catch (error) {
-      console.log('Error saving object:', error);
+      console.log("Error saving object:", error);
     }
   };
 
@@ -33,7 +33,7 @@ export class BrowserUtility {
       const jsonValue = await AsyncStorage.getItem(key);
       return jsonValue != null ? JSON.parse(jsonValue) : null;
     } catch (error) {
-      console.log('Error retrieving object:', error);
+      console.log("Error retrieving object:", error);
       return null;
     }
   };
@@ -42,7 +42,7 @@ export class BrowserUtility {
     try {
       await AsyncStorage.removeItem(key);
     } catch (error) {
-      console.log('Error removing data:', error);
+      console.log("Error removing data:", error);
     }
   };
 
@@ -50,7 +50,7 @@ export class BrowserUtility {
     try {
       await AsyncStorage.clear();
     } catch (error) {
-      console.log('Error clearing data:', error);
+      console.log("Error clearing data:", error);
     }
   };
 

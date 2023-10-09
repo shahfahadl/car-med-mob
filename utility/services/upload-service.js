@@ -1,13 +1,13 @@
-import { APIPath } from '../constants/api';
-import { BaseService } from './base';
-import { CRUDService } from './crud';
+import { APIPath } from "../constants/api";
+import { BaseService } from "./base";
+import { CRUDService } from "./crud";
 
 class UploadMedia extends CRUDService {
   constructor() {
-    super(APIPath.aws)
+    super(APIPath.aws);
   }
 
-  getSignedUrl(data){
+  getSignedUrl(data) {
     return BaseService.put(APIPath.getSignedUrl, data);
   }
 }

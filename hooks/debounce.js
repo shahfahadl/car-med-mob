@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from "react";
 
 export const useDebounce = (value, delay = 1000) => {
   const [debouncedValue, setDebouncedValue] = useState();
@@ -15,13 +15,16 @@ export const useDebounce = (value, delay = 1000) => {
     };
   };
 
-  const startTimer = useCallback(debounce((val) => {
-    setDebouncedValue(val);
-  }), []);
+  const startTimer = useCallback(
+    debounce((val) => {
+      setDebouncedValue(val);
+    }),
+    []
+  );
 
   useEffect(() => {
     startTimer(value);
   }, [value]);
 
   return debouncedValue;
-}
+};

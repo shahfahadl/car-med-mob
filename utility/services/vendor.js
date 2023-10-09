@@ -1,7 +1,7 @@
-import { BrowserUtility } from '../browser-utility';
-import { APIPath, commonConstants } from '../constants/api';
-import { BaseService } from './base';
-import { CRUDService } from './crud';
+import { BrowserUtility } from "../browser-utility";
+import { APIPath, commonConstants } from "../constants/api";
+import { BaseService } from "./base";
+import { CRUDService } from "./crud";
 
 class Vendor extends CRUDService {
   constructor() {
@@ -9,52 +9,49 @@ class Vendor extends CRUDService {
   }
 
   getToken = () => {
-    return this.getVendor()?.token
-  }
+    return this.getVendor()?.token;
+  };
 
   storeVendor = (user) => {
-    BrowserUtility.saveObj(commonConstants.uniqueUserName,user)
-  }
+    BrowserUtility.saveObj(commonConstants.uniqueUserName, user);
+  };
 
   getVendor = () => {
     return BrowserUtility.getObj(commonConstants.uniqueUserName);
-  }
+  };
 
   login = (data) => {
-    return BaseService.put(APIPath.vendorLogin, data)
-  }
+    return BaseService.put(APIPath.vendorLogin, data);
+  };
 
   logout = () => {
     BrowserUtility.remove(commonConstants.uniqueUserName);
-  }
+  };
 
   isAuthenticated = () => {
     const token = this.getToken();
     return !!token;
-  }
+  };
 
   acceptOrder = (data) => {
-    return BaseService.post(APIPath.acceptOrder, data)
-  }
+    return BaseService.post(APIPath.acceptOrder, data);
+  };
 
   completeOrder = (data) => {
-    return BaseService.post(APIPath.completeOrder, data)
-  }
+    return BaseService.post(APIPath.completeOrder, data);
+  };
 
   cancelOrder = (data) => {
-    return BaseService.post(APIPath.cancelOrderVendor, data)
-  }
+    return BaseService.post(APIPath.cancelOrderVendor, data);
+  };
 
   placeBid = (data) => {
-    return BaseService.post(APIPath.placeBid, data)
-  }
+    return BaseService.post(APIPath.placeBid, data);
+  };
 
-  generateOTP = (data) => 
-    BaseService.post(APIPath.generateOTP, data)
+  generateOTP = (data) => BaseService.post(APIPath.generateOTP, data);
 
-  resetPassword = (data) => 
-    BaseService.post(APIPath.resetPassword, data)
-
+  resetPassword = (data) => BaseService.post(APIPath.resetPassword, data);
 }
 
 const VendorService = new Vendor();

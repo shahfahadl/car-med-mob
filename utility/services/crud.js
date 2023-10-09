@@ -1,9 +1,9 @@
-import { CommonUtility } from '../common';
-import { BaseService } from './base';
-import { APIPath } from '../constants/api';
+import { CommonUtility } from "../common";
+import { BaseService } from "./base";
+import { APIPath } from "../constants/api";
 
 export class CRUDService {
-  url = '';
+  url = "";
   isSecure;
 
   constructor(url, isSecure = true) {
@@ -26,7 +26,11 @@ export class CRUDService {
   }
 
   addWithoutProfile(data) {
-    return BaseService.post(this.url + APIPath.addWithoutProfile, data, this.isSecure);
+    return BaseService.post(
+      this.url + APIPath.addWithoutProfile,
+      data,
+      this.isSecure
+    );
   }
 
   update(id, data) {

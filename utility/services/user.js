@@ -1,7 +1,7 @@
-import { BrowserUtility } from '../browser-utility';
-import { APIPath, commonConstants } from '../constants/api';
-import { BaseService } from './base';
-import { CRUDService } from './crud';
+import { BrowserUtility } from "../browser-utility";
+import { APIPath, commonConstants } from "../constants/api";
+import { BaseService } from "./base";
+import { CRUDService } from "./crud";
 
 class User extends CRUDService {
   constructor() {
@@ -9,55 +9,41 @@ class User extends CRUDService {
   }
 
   getToken = () => {
-    return this.getUser()?.token
-  }
+    return this.getUser()?.token;
+  };
 
   storeUser = (user) => {
-    BrowserUtility.saveObj(commonConstants.uniqueUserName,user)
-  }
+    BrowserUtility.saveObj(commonConstants.uniqueUserName, user);
+  };
 
   getUser = () => {
     return BrowserUtility.getObj(commonConstants.uniqueUserName);
-  }
+  };
 
-  login = (data) => 
-    BaseService.put(APIPath.userLogin, data)
-  
+  login = (data) => BaseService.put(APIPath.userLogin, data);
 
   logout = () => {
     BrowserUtility.remove(commonConstants.uniqueUserName);
-  }
+  };
 
   isAuthenticated = () => {
     const token = this.getToken();
     return !!token;
-  }
+  };
 
-  order = (data) => 
-    BaseService.post(APIPath.order, data)
-  
+  order = (data) => BaseService.post(APIPath.order, data);
 
-  updateOrder = (data) => 
-    BaseService.post(APIPath.updateOrder, data)
+  updateOrder = (data) => BaseService.post(APIPath.updateOrder, data);
 
-  cancelOrder = (data) => 
-    BaseService.post(APIPath.cancelOrderUser, data)
-  
+  cancelOrder = (data) => BaseService.post(APIPath.cancelOrderUser, data);
 
-  acceptRequest = (data) => 
-    BaseService.post(APIPath.acceptRequest, data)
-  
+  acceptRequest = (data) => BaseService.post(APIPath.acceptRequest, data);
 
-  rateVendor = (data) => 
-    BaseService.post(APIPath.rateVendor, data)
-  
+  rateVendor = (data) => BaseService.post(APIPath.rateVendor, data);
 
-  generateOTP = (data) => 
-    BaseService.post(APIPath.generateOTP, data)
+  generateOTP = (data) => BaseService.post(APIPath.generateOTP, data);
 
-  resetPassword = (data) => 
-    BaseService.post(APIPath.resetPassword, data)
-
+  resetPassword = (data) => BaseService.post(APIPath.resetPassword, data);
 }
 
 const UserService = new User();

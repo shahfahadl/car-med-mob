@@ -1,4 +1,4 @@
-import React, { useState , useRef , useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View } from "react-native";
 import Toast from "react-native-toast-message";
 import { fonts, colors } from "../../utility/theme";
@@ -121,8 +121,8 @@ const Form = ({ setMapVisible, location, setLocation }) => {
 
   const [submitCount, setSubmitCount] = useState(0);
   const [seconds, setSeconds] = useState(0);
-  const [onceClicked, setOnceClicked] = useState(false)
-  const [otpLoading, setOtpLoading] = useState(false)
+  const [onceClicked, setOnceClicked] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
   const intervalRef = useRef();
   const { login } = useAuth();
   const [errors, setErrors] = useState({});
@@ -198,7 +198,7 @@ const Form = ({ setMapVisible, location, setLocation }) => {
           validationErrors?.inner?.forEach((error) => {
             errors[error.path] = error.message;
           });
-          setErrors(errors)
+          setErrors(errors);
           Toast.show({
             type: "error",
             text1: "Form Values Incorrect",
@@ -279,43 +279,43 @@ const Form = ({ setMapVisible, location, setLocation }) => {
 
   const generateOTP = () => {
     EmailSchema.validate(values.email)
-    .then(async ()=> {
-      setOtpLoading(true)
-      setOnceClicked(true);
-      try {
-        await UserService.generateOTP({email: values.email})
-        Toast.show({
-          type: "info",
-          text1: "Please check email for OTP",
+      .then(async () => {
+        setOtpLoading(true);
+        setOnceClicked(true);
+        try {
+          await UserService.generateOTP({ email: values.email });
+          Toast.show({
+            type: "info",
+            text1: "Please check email for OTP",
+          });
+          setSubmitCount((prev) => prev + 1);
+          setSeconds(60);
+        } catch (error) {
+          Toast.show({
+            type: "error",
+            text1: "There was error generating OTP",
+          });
+          setOnceClicked(false);
+        } finally {
+          setOtpLoading(false);
+        }
+      })
+      .catch((validationErrors) => {
+        const errors = {};
+        validationErrors?.inner?.forEach((error) => {
+          errors[error.path] = error.message;
         });
-        setSubmitCount(prev => prev + 1);
-        setSeconds(60);
-      } catch (error) {
+        setErrors(errors);
         Toast.show({
           type: "error",
-          text1: "There was error generating OTP",
+          text1: "Invalid Email",
         });
-        setOnceClicked(false);
-      }finally {
-        setOtpLoading(false)
-      }
-    })
-    .catch((validationErrors) => {
-      const errors = {};
-      validationErrors?.inner?.forEach((error) => {
-        errors[error.path] = error.message;
       });
-      setErrors(errors)
-      Toast.show({
-        type: "error",
-        text1: "Invalid Email",
-      });
-    });
-  }
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setSeconds(prev => (prev > 0 ? prev - 1 : 0));
+      setSeconds((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     intervalRef.current = timer;
     return () => {
@@ -326,7 +326,7 @@ const Form = ({ setMapVisible, location, setLocation }) => {
   useEffect(() => {
     if (seconds < 1) {
       clearInterval(intervalRef.current);
-      setOnceClicked(false)
+      setOnceClicked(false);
     }
   }, [seconds]);
 
@@ -360,17 +360,16 @@ const Form = ({ setMapVisible, location, setLocation }) => {
         placeholder="jone.doe@gmail.com"
         label="Email"
       />
-       <CustomButton
-        style={{marginTop: 10}}
+      <CustomButton
+        style={{ marginTop: 10 }}
         inverted={true}
         onPress={generateOTP}
-        disabled={onceClicked && seconds > 0} 
+        disabled={onceClicked && seconds > 0}
         loading={otpLoading}
       >
         {onceClicked ? `Resend OTP (${seconds}s)` : "Generate OTP"}
       </CustomButton>
-      {
-        onceClicked &&
+      {onceClicked && (
         <CustomTextInput
           hint={errors.otp}
           value={values.otp}
@@ -380,8 +379,8 @@ const Form = ({ setMapVisible, location, setLocation }) => {
           placeholder="Your OTP here"
           label="Input OTP"
         />
-      }
-      
+      )}
+
       <CustomPasswordInput
         hint={errors.password}
         value={values.password}

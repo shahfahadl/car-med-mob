@@ -1,22 +1,21 @@
-import { useState } from "react"
+import { useState } from "react";
 
 const DrawerHook = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-    const [ isOpen , setIsOpen ] = useState(false)
+  const openDrawer = () => {
+    setIsOpen(true);
+  };
 
-    const openDrawer = () => {
-        setIsOpen(true)
-    }
+  const closeDrawer = () => {
+    setIsOpen(false);
+  };
 
-    const closeDrawer = () => {
-        setIsOpen(false)
-    }
+  return {
+    isOpen,
+    openDrawer,
+    closeDrawer,
+  };
+};
 
-    return {
-        isOpen,
-        openDrawer,
-        closeDrawer
-    }
-}
-
-export default DrawerHook
+export default DrawerHook;

@@ -26,4 +26,3 @@ export const borderRadius = (size) => `
         border-bottom-right-radius: ${size};
         border-bottom-left-radius: ${size};
     `;
-

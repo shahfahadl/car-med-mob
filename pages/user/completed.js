@@ -14,7 +14,7 @@ import { StarElement } from "../../elements/common";
 import { Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BlockedComponent } from "../../components/blocked"; 
+import { BlockedComponent } from "../../components/blocked";
 
 const Common = styled.View`
   width: 100%;
@@ -175,9 +175,9 @@ const Completed = () => {
         };
 
         let res = await UserService.rateVendor(payload);
-        if(res.response?.status === 405){
-          setBlockedShow(true)
-        }else{
+        if (res.response?.status === 405) {
+          setBlockedShow(true);
+        } else {
           Toast.show({
             type: "success",
             text1: "Thanks for your feedback!",
@@ -267,7 +267,10 @@ const Completed = () => {
           </CustomOutlineButton>
         </Buttons>
       </Popup>
-      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
+      <BlockedComponent
+        blockedShow={blockedShow}
+        setBlockedShow={setBlockedShow}
+      />
     </Common>
   );
 };

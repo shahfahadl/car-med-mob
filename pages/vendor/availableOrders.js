@@ -14,7 +14,7 @@ import { CommonUtility } from "../../utility/common";
 import { Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Map from "../../components/map";
-import { BlockedComponent } from "../../components/blocked"; 
+import { BlockedComponent } from "../../components/blocked";
 
 const Common = styled.View`
   padding-top: ${({ statusBarHeight }) => `${statusBarHeight}px`};
@@ -108,7 +108,7 @@ const OrderItem = ({
   setApiLoading,
   setLatLng,
   setMapVisible,
-  setBlockedShow
+  setBlockedShow,
 }) => {
   const myBid =
     order.requests.find((request) => request.vendorId === user.id)?.bid || null;
@@ -133,9 +133,9 @@ const OrderItem = ({
         userName: order.userName,
       };
       let res = await VendorService.acceptOrder(payload);
-      if(res.response?.status === 405){
-        setBlockedShow(true)
-      }else{
+      if (res.response?.status === 405) {
+        setBlockedShow(true);
+      } else {
         Toast.show({
           type: "success",
           text1: "Order Accepted",
@@ -164,12 +164,12 @@ const OrderItem = ({
     setPopup(true);
   }
 
-  function handleShowMaps(){
+  function handleShowMaps() {
     setLatLng({
       lat: order.latLng.lat,
-      lng: order.latLng.lng
-    })
-    setMapVisible(true)
+      lng: order.latLng.lng,
+    });
+    setMapVisible(true);
   }
 
   return (
@@ -186,7 +186,7 @@ const OrderItem = ({
           <FlexRow style={{ alignItems: "center" }}>
             <H4 bold>Location &nbsp;</H4>
             <H4 light>{order.location} &nbsp;</H4>
-            <ShowMaps onPress={handleShowMaps} >
+            <ShowMaps onPress={handleShowMaps}>
               <H4>Show maps</H4>
             </ShowMaps>
           </FlexRow>
@@ -198,20 +198,19 @@ const OrderItem = ({
             <H4 bold>Contact &nbsp;</H4>
             <H4>{order.contact}</H4>
           </FlexRow>
-          {
-            order.date &&
+          {order.date && (
             <>
               <H4 bold>Appointment &nbsp;</H4>
-            <FlexRow>
-              <H4 bold>Date &nbsp;</H4>
-              <H4>{order.date}</H4>
-            </FlexRow>
-            <FlexRow>
-              <H4 bold>Time &nbsp;</H4>
-              <H4>{order.time}</H4>
-            </FlexRow>
+              <FlexRow>
+                <H4 bold>Date &nbsp;</H4>
+                <H4>{order.date}</H4>
+              </FlexRow>
+              <FlexRow>
+                <H4 bold>Time &nbsp;</H4>
+                <H4>{order.time}</H4>
+              </FlexRow>
             </>
-          }
+          )}
         </View>
       </OrderTop>
       <OrderBids>
@@ -287,11 +286,11 @@ const AvailableOrders = () => {
           type: "info",
           text1: "Placing Bid",
         });
-        
+
         let res = await VendorService.placeBid(values);
-        if(res.response?.status === 405){
-          setBlockedShow(true)
-        }else{
+        if (res.response?.status === 405) {
+          setBlockedShow(true);
+        } else {
           Toast.show({
             type: "success",
             text1: "Bid Placed",
@@ -314,8 +313,8 @@ const AvailableOrders = () => {
     }
   };
 
-  function handleClose (){
-    setMapVisible(false)
+  function handleClose() {
+    setMapVisible(false);
   }
 
   return (
@@ -391,8 +390,16 @@ const AvailableOrders = () => {
           </CustomOutlineButton>
         </Buttons>
       </Popup>
-      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
-      <Map mapVisible={mapVisible} handleClose={handleClose} lat={latLng.lat} lng={latLng.lng} />
+      <BlockedComponent
+        blockedShow={blockedShow}
+        setBlockedShow={setBlockedShow}
+      />
+      <Map
+        mapVisible={mapVisible}
+        handleClose={handleClose}
+        lat={latLng.lat}
+        lng={latLng.lng}
+      />
     </Common>
   );
 };

@@ -48,8 +48,7 @@ const H4 = styled.Text`
   ${({ bold }) => bold && fonts.fontFamilyBold}
 `;
 
-const ForgotPassword = styled.TouchableOpacity`
-`;
+const ForgotPassword = styled.TouchableOpacity``;
 
 const ForgotPasswordText = styled.Text`
   color: blue;
@@ -83,42 +82,42 @@ export default function Login() {
   });
 
   const handleForgotPassword = async () => {
-    setErrors({})
+    setErrors({});
     EmailSchema.validate(values.email)
-    .then(async ()=> {
-      setLoading(true);
-      const payload = {
-        email: values.email,
-      };
-      try {
-        const res = await UserService.resetPassword(payload);
-        if(res){
-          Toast.show({
-            type: "error",
-            text1: "Password resetted, kindly check your e-mail",
-          });
-        } else {
+      .then(async () => {
+        setLoading(true);
+        const payload = {
+          email: values.email,
+        };
+        try {
+          const res = await UserService.resetPassword(payload);
+          if (res) {
+            Toast.show({
+              type: "error",
+              text1: "Password resetted, kindly check your e-mail",
+            });
+          } else {
+            Toast.show({
+              type: "error",
+              text1: "There was Issue resetting",
+            });
+          }
+        } catch (error) {
           Toast.show({
             type: "error",
             text1: "There was Issue resetting",
           });
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
+      })
+      .catch(() => {
+        setErrors({ email: "Must be type email" });
         Toast.show({
           type: "error",
-          text1: "There was Issue resetting",
+          text1: "Invalid Email",
         });
-      } finally {
-        setLoading(false);
-      }
-    })
-    .catch(() => {
-      setErrors({email: "Must be type email"})
-      Toast.show({
-        type: "error",
-        text1: "Invalid Email",
       });
-    });
   };
 
   const handleLogin = () => {
@@ -138,9 +137,9 @@ export default function Login() {
             res = await VendorService.login(values);
           }
           UserService.storeUser(res);
-          if(res.response?.status === 405){
-            setBlockedShow(true)
-          }else{
+          if (res.response?.status === 405) {
+            setBlockedShow(true);
+          } else {
             if (res.token) {
               login();
               Toast.show({
@@ -177,19 +176,17 @@ export default function Login() {
   };
 
   const handlePress = () => {
-    if(forgotPassword){
-      handleForgotPassword()
-    }else{
-      handleLogin()
+    if (forgotPassword) {
+      handleForgotPassword();
+    } else {
+      handleLogin();
     }
   };
-
 
   return (
     <LoginContainer height={Math.round(height / 100)}>
       <RegistrationImage source={registrationImage} />
-      {
-        forgotPassword ? 
+      {forgotPassword ? (
         <>
           <CustomTextInput
             value={values.email}
@@ -200,7 +197,7 @@ export default function Login() {
             hint={errors.email}
           />
         </>
-        :
+      ) : (
         <>
           <CustomTextInput
             value={values.email}
@@ -212,7 +209,9 @@ export default function Login() {
           />
           <CustomPasswordInput
             value={values.password}
-            onChangeText={(e) => setValues((prev) => ({ ...prev, password: e }))}
+            onChangeText={(e) =>
+              setValues((prev) => ({ ...prev, password: e }))
+            }
             width="80%"
             placeholder="***************"
             label="Password"
@@ -226,20 +225,23 @@ export default function Login() {
             label="Sign-in As"
           />
         </>
-      }
-      <ForgotPassword onPress={()=> setForgotPassword(!forgotPassword)} >
+      )}
+      <ForgotPassword onPress={() => setForgotPassword(!forgotPassword)}>
         <ForgotPasswordText>
-          {forgotPassword ? "Back To Login":"Forgot Password? Click here"}
+          {forgotPassword ? "Back To Login" : "Forgot Password? Click here"}
         </ForgotPasswordText>
       </ForgotPassword>
       <CustomButton loading={loading} onPress={handlePress}>
-        {forgotPassword? "Reset Password" : "Login"}
+        {forgotPassword ? "Reset Password" : "Login"}
       </CustomButton>
       <SignupButton>
         <SignupButtonText>Signup</SignupButtonText>
         <ArrowImage source={arrowImage} />
       </SignupButton>
-      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
+      <BlockedComponent
+        blockedShow={blockedShow}
+        setBlockedShow={setBlockedShow}
+      />
     </LoginContainer>
   );
 }

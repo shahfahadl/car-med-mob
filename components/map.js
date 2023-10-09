@@ -12,7 +12,7 @@ const MapContainer = styled.View`
   width: 100%;
   height: 100%;
   flex: 1;
-  zIndex: 3;
+  zindex: 3;
 `;
 
 const SearchBar = styled.TouchableOpacity`
@@ -20,7 +20,7 @@ const SearchBar = styled.TouchableOpacity`
   padding: 10% 5%;
   padding-top: 5%;
   width: 100%;
-  zIndex: 4;
+  zindex: 4;
 `;
 
 const CloseButton = styled.TouchableOpacity`
@@ -35,21 +35,29 @@ const CloseButtonIcon = styled.Image`
   opacity: 0.8;
 `;
 
-export default function Map({ mapVisible, setLocation , lat=null , lng=null, handleClose }) {
+export default function Map({
+  mapVisible,
+  setLocation,
+  lat = null,
+  lng = null,
+  handleClose,
+}) {
   const [latitude, setLatitude] = useState(34.0105);
   const [longitude, setLongitude] = useState(71.9876);
 
   function handleMapPress(event) {
-    if( lat || lng ) return null
+    if (lat || lng) return null;
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setLatitude(latitude);
     setLongitude(longitude);
     Geocoder.from(latitude, longitude)
       .then((json) => {
-        const cityComponent = json.results.find((component)=>
+        const cityComponent = json.results.find((component) =>
           component.types.includes("administrative_area_level_2")
         );
-        const cityName = cityComponent ? cityComponent.address_components[0].long_name : "";
+        const cityName = cityComponent
+          ? cityComponent.address_components[0].long_name
+          : "";
         setLocation({
           name: cityName,
           latitude: latitude,
@@ -89,14 +97,14 @@ export default function Map({ mapVisible, setLocation , lat=null , lng=null, han
           <MapView
             style={{ flex: 1 }}
             region={{
-              latitude: lat? lat : latitude,
-              longitude: lng? lng : longitude,
+              latitude: lat ? lat : latitude,
+              longitude: lng ? lng : longitude,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
             initialRegion={{
-              latitude: lat? lat : latitude,
-              longitude: lng? lng : longitude,
+              latitude: lat ? lat : latitude,
+              longitude: lng ? lng : longitude,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
@@ -104,16 +112,16 @@ export default function Map({ mapVisible, setLocation , lat=null , lng=null, han
           >
             <Marker
               coordinate={{
-                latitude: lat? lat : latitude,
-                longitude: lng? lng : longitude,
+                latitude: lat ? lat : latitude,
+                longitude: lng ? lng : longitude,
               }}
             />
           </MapView>
-            <SearchBar activeOpacity={1} >
-              <CloseButton onPress={handleClose}>
-                <CloseButtonIcon source={Close} />
-              </CloseButton>
-              { !lat && !lng && 
+          <SearchBar activeOpacity={1}>
+            <CloseButton onPress={handleClose}>
+              <CloseButtonIcon source={Close} />
+            </CloseButton>
+            {!lat && !lng && (
               <GooglePlacesAutocomplete
                 placeholder="Search"
                 fetchDetails={true}
@@ -137,11 +145,10 @@ export default function Map({ mapVisible, setLocation , lat=null , lng=null, han
                   language: "en",
                 }}
               />
-            }
-            </SearchBar>
+            )}
+          </SearchBar>
         </MapContainer>
       )}
-
     </>
   );
 }

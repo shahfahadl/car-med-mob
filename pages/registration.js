@@ -31,7 +31,7 @@ const PositionFixed = styled.View`
 function Registration() {
   const navigation = useNavigation();
   const { isAuthenticated, isVendor } = useAuth();
-  const [ mapVisible, setMapVisible ] = useState(false);
+  const [mapVisible, setMapVisible] = useState(false);
   const [location, setLocation] = useState({
     name: null,
     latitude: null,
@@ -62,13 +62,13 @@ function Registration() {
 
   return (
     <Common>
-        <Map
-          mapVisible={mapVisible}
-          setLocation={setLocation}
-          lat={latLng.lat}
-          lng={latLng.lng}
-          handleClose={handleClose}
-        />
+      <Map
+        mapVisible={mapVisible}
+        setLocation={setLocation}
+        lat={latLng.lat}
+        lng={latLng.lng}
+        handleClose={handleClose}
+      />
       <PositionFixed>
         <Toast />
         {/* Place any thing you want to make position fixed */}

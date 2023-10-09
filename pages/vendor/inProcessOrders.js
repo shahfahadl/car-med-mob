@@ -13,7 +13,7 @@ import { Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Map from "../../components/map";
-import { BlockedComponent } from "../../components/blocked"; 
+import { BlockedComponent } from "../../components/blocked";
 
 const Common = styled.View`
   padding-top: ${({ statusBarHeight }) => `${statusBarHeight}px`};
@@ -95,7 +95,7 @@ const Buttons = styled.View`
   gap: 10px;
 `;
 
-const OrderItem = ({ order ,   setLatLng, setMapVisible , setBlockedShow }) => {
+const OrderItem = ({ order, setLatLng, setMapVisible, setBlockedShow }) => {
   const [apiLoading, setApiLoading] = useState(false);
   async function cancelOrder() {
     try {
@@ -105,9 +105,9 @@ const OrderItem = ({ order ,   setLatLng, setMapVisible , setBlockedShow }) => {
         text1: "Canceling Order",
       });
       let res = await VendorService.cancelOrder({ id: order.id });
-      if(res.response?.status === 405){
-        setBlockedShow(true)
-      }else{
+      if (res.response?.status === 405) {
+        setBlockedShow(true);
+      } else {
         Toast.show({
           type: "success",
           text1: "Order Canceled",
@@ -131,9 +131,9 @@ const OrderItem = ({ order ,   setLatLng, setMapVisible , setBlockedShow }) => {
         text1: "Completing Order",
       });
       let res = await VendorService.completeOrder({ id: order.id });
-      if(res.response?.status === 405){
-        setBlockedShow(true)
-      }else{
+      if (res.response?.status === 405) {
+        setBlockedShow(true);
+      } else {
         Toast.show({
           type: "success",
           text1: "Order Completed",
@@ -149,12 +149,12 @@ const OrderItem = ({ order ,   setLatLng, setMapVisible , setBlockedShow }) => {
     }
   }
 
-  function handleShowMaps(){
+  function handleShowMaps() {
     setLatLng({
       lat: order.latLng.lat,
-      lng: order.latLng.lng
-    })
-    setMapVisible(true)
+      lng: order.latLng.lng,
+    });
+    setMapVisible(true);
   }
 
   return (
@@ -171,7 +171,7 @@ const OrderItem = ({ order ,   setLatLng, setMapVisible , setBlockedShow }) => {
           <FlexRow style={{ alignItems: "center" }}>
             <H4 bold>Location &nbsp;</H4>
             <H4 light>{order.location} &nbsp;</H4>
-            <ShowMaps onPress={handleShowMaps} >
+            <ShowMaps onPress={handleShowMaps}>
               <H4>Show maps</H4>
             </ShowMaps>
           </FlexRow>
@@ -183,20 +183,19 @@ const OrderItem = ({ order ,   setLatLng, setMapVisible , setBlockedShow }) => {
             <H4 bold>Contact &nbsp;</H4>
             <H4>{order.contact}</H4>
           </FlexRow>
-          {
-            order.date &&
+          {order.date && (
             <>
               <H4 bold>Appointment &nbsp;</H4>
-            <FlexRow>
-              <H4 bold>Date &nbsp;</H4>
-              <H4>{order.date}</H4>
-            </FlexRow>
-            <FlexRow>
-              <H4 bold>Time &nbsp;</H4>
-              <H4>{order.time}</H4>
-            </FlexRow>
+              <FlexRow>
+                <H4 bold>Date &nbsp;</H4>
+                <H4>{order.date}</H4>
+              </FlexRow>
+              <FlexRow>
+                <H4 bold>Time &nbsp;</H4>
+                <H4>{order.time}</H4>
+              </FlexRow>
             </>
-          }
+          )}
         </View>
       </OrderTop>
       <OrderBid>
@@ -238,8 +237,8 @@ const InProcessOrders = () => {
     lng: null,
   });
   const [blockedShow, setBlockedShow] = useState(false);
-  function handleClose (){
-    setMapVisible(false)
+  function handleClose() {
+    setMapVisible(false);
   }
 
   return (
@@ -252,7 +251,13 @@ const InProcessOrders = () => {
             {orders.length > 0 ? (
               <OrdersContainer>
                 {orders?.map((order) => (
-                  <OrderItem key={order.id} order={order} setLatLng={setLatLng} setMapVisible={setMapVisible} setBlockedShow={setBlockedShow} />
+                  <OrderItem
+                    key={order.id}
+                    order={order}
+                    setLatLng={setLatLng}
+                    setMapVisible={setMapVisible}
+                    setBlockedShow={setBlockedShow}
+                  />
                 ))}
               </OrdersContainer>
             ) : (
@@ -267,8 +272,16 @@ const InProcessOrders = () => {
       <ToastContainer>
         <Toast />
       </ToastContainer>
-      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
-      <Map mapVisible={mapVisible} handleClose={handleClose} lat={latLng.lat} lng={latLng.lng} />
+      <BlockedComponent
+        blockedShow={blockedShow}
+        setBlockedShow={setBlockedShow}
+      />
+      <Map
+        mapVisible={mapVisible}
+        handleClose={handleClose}
+        lat={latLng.lat}
+        lng={latLng.lng}
+      />
     </Common>
   );
 };

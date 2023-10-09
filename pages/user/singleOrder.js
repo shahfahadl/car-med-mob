@@ -8,16 +8,25 @@ import { borderRadius, colors, fonts } from "../../utility/theme";
 import UserService from "../../utility/services/user";
 import { useNavigation } from "@react-navigation/native";
 import { ImageContainer, Popup, StarElement } from "../../elements/common";
-import { CommonUtility, carTypeOptions, skillOption } from "../../utility/common";
+import {
+  CommonUtility,
+  carTypeOptions,
+  skillOption,
+} from "../../utility/common";
 import Toast from "react-native-toast-message";
 import { Dimensions } from "react-native";
 import { ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Map from "../../components/map";
-import { CustomDatePicker, CustomDropdownInput, CustomTextInput, CustomTimePicker } from "../../elements/input";
+import {
+  CustomDatePicker,
+  CustomDropdownInput,
+  CustomTextInput,
+  CustomTimePicker,
+} from "../../elements/input";
 import LocationSelector from "../../components/locationSelector";
 import { OrderSchema } from "../../utility/validationSchema";
-import { BlockedComponent } from "../../components/blocked"; 
+import { BlockedComponent } from "../../components/blocked";
 
 const Common = styled.View`
   width: 100%;
@@ -72,9 +81,7 @@ const RequestsContainer = styled.ScrollView`
   width: 95%;
 `;
 
-const StyledSwitch = styled.Switch`
-
-`;
+const StyledSwitch = styled.Switch``;
 
 const RequestContainer = styled.View`
   background-color: white;
@@ -100,7 +107,7 @@ const ShowMaps = styled.TouchableOpacity`
   ${borderRadius("15px")}
 `;
 
-const Request = ({ request, id , setBlockedShow}) => {
+const Request = ({ request, id, setBlockedShow }) => {
   const navigation = useNavigation();
   const [apiLoading, setApiLoading] = useState(false);
 
@@ -131,9 +138,9 @@ const Request = ({ request, id , setBlockedShow}) => {
         vendorProfile: request.vendorProfile,
       };
       let res = await UserService.acceptRequest(payload);
-      if(res.response?.status === 405){
-        setBlockedShow(true)
-      }else{
+      if (res.response?.status === 405) {
+        setBlockedShow(true);
+      } else {
         Toast.show({
           type: "success",
           text1: "Request Accepted",
@@ -159,7 +166,7 @@ const Request = ({ request, id , setBlockedShow}) => {
         </FlexRow>
         <FlexRow>
           <H4 bold>Contact &nbsp;</H4>
-          <H4 >{request.vendorContact}</H4>
+          <H4>{request.vendorContact}</H4>
         </FlexRow>
         <FlexRow style={{ marginBottom: 10 }}>
           <H4 bold>Ratings &nbsp;</H4>
@@ -205,7 +212,7 @@ const SingleOrder = ({ route }) => {
   const [location, setLocation] = useState({
     name: null,
     latitude: null,
-    longitude: null
+    longitude: null,
   });
   const [errors, setErrors] = useState({});
   const [latLng, setLatLng] = useState({
@@ -218,7 +225,7 @@ const SingleOrder = ({ route }) => {
     carType: "cars",
     bid: null,
     date: null,
-    time: null
+    time: null,
   });
 
   useEffect(() => {
@@ -226,8 +233,8 @@ const SingleOrder = ({ route }) => {
       setLocation({
         name: order.location,
         latitude: order.latLng?.lat,
-        longitude: order.latLng?.lng
-      })
+        longitude: order.latLng?.lng,
+      });
       setValues({
         problem: order.problem,
         carType: order.carType,
@@ -235,8 +242,8 @@ const SingleOrder = ({ route }) => {
         latLng: order.latLng,
         bid: order.bid,
         date: order.date,
-        time: order.time
-      })
+        time: order.time,
+      });
     }
   }, [order]);
 
@@ -248,9 +255,9 @@ const SingleOrder = ({ route }) => {
         text1: "Canceling Order",
       });
       let res = await UserService.cancelOrder({ id: order.id });
-      if(res.response?.status === 405){
-        setBlockedShow(true)
-      }else{
+      if (res.response?.status === 405) {
+        setBlockedShow(true);
+      } else {
         Toast.show({
           type: "success",
           text1: "Order canceled",
@@ -267,24 +274,27 @@ const SingleOrder = ({ route }) => {
     }
   }
 
-  function handleClose(){
+  function handleClose() {
     setLatLng({
       lat: null,
-      lng: null
-    })
-    setMapVisible(false)
+      lng: null,
+    });
+    setMapVisible(false);
   }
 
   function handleMapClick() {
     setLatLng({
       lat: order.latLng?.lat,
       lng: order.latLng?.lng,
-    })
+    });
     setMapVisible(true);
   }
 
   const handleForm = async () => {
-    OrderSchema.validate({...values, location: location.name}, { abortEarly: false })
+    OrderSchema.validate(
+      { ...values, location: location.name },
+      { abortEarly: false }
+    )
       .then(async () => {
         const payload = {
           problem: values.problem,
@@ -292,12 +302,12 @@ const SingleOrder = ({ route }) => {
           carType: values.carType,
           location: location.name,
           latLng: {
-            lat: location.latitude , 
-            lng: location.longitude
+            lat: location.latitude,
+            lng: location.longitude,
           },
-          id : orderId,
-          date: appointment? values.date : "",
-          time: appointment? values.time : ""
+          id: orderId,
+          date: appointment ? values.date : "",
+          time: appointment ? values.time : "",
         };
         try {
           setApiLoading(true);
@@ -306,9 +316,9 @@ const SingleOrder = ({ route }) => {
             text1: "Updating Order",
           });
           let res = await UserService.updateOrder(payload);
-          if(res.response?.status === 405){
-            setBlockedShow(true)
-          }else{
+          if (res.response?.status === 405) {
+            setBlockedShow(true);
+          } else {
             Toast.show({
               type: "success",
               text1: "Order Placed",
@@ -388,7 +398,11 @@ const SingleOrder = ({ route }) => {
                 >
                   Cancel
                 </CustomOutlineButton>
-                <CustomOutlineButton loading={apiLoading} color={colors.blue} onPress={()=>setShow(true)} >
+                <CustomOutlineButton
+                  loading={apiLoading}
+                  color={colors.blue}
+                  onPress={() => setShow(true)}
+                >
                   Update
                 </CustomOutlineButton>
               </FlexRow>
@@ -398,7 +412,11 @@ const SingleOrder = ({ route }) => {
               <RequestsContainer height={Math.round(height / 100)}>
                 {order.requests?.length > 0 ? (
                   order.requests.map((request) => (
-                    <Request request={request} id={orderId} setBlockedShow={setBlockedShow} />
+                    <Request
+                      request={request}
+                      id={orderId}
+                      setBlockedShow={setBlockedShow}
+                    />
                   ))
                 ) : (
                   <Center>
@@ -463,24 +481,29 @@ const SingleOrder = ({ route }) => {
             hint={errors.bid}
           />
         </FlexRow>
-        <FlexRow style={{ alignItems: "center" }} >
-            <H4>
-              Appointment
-            </H4>
-            <StyledSwitch value={appointment} onValueChange={(value)=> setAppointment(value) } />
+        <FlexRow style={{ alignItems: "center" }}>
+          <H4>Appointment</H4>
+          <StyledSwitch
+            value={appointment}
+            onValueChange={(value) => setAppointment(value)}
+          />
         </FlexRow>
-        { appointment && 
-        <FlexRow style={{ gap: 10, marginBottom: 10 }} >
+        {appointment && (
+          <FlexRow style={{ gap: 10, marginBottom: 10 }}>
             <CustomDatePicker
               value={values.date}
-              setValue={(data)=> setValues((prev)=>({...prev, date: data}))}
+              setValue={(data) =>
+                setValues((prev) => ({ ...prev, date: data }))
+              }
             />
             <CustomTimePicker
               value={values.time}
-              setValue={(data)=> setValues((prev)=> ({...prev, time: data}))}
+              setValue={(data) =>
+                setValues((prev) => ({ ...prev, time: data }))
+              }
             />
-        </FlexRow>
-        }
+          </FlexRow>
+        )}
         <Buttons>
           <CustomOutlineButton
             style={{ marginLeft: "auto" }}
@@ -509,7 +532,10 @@ const SingleOrder = ({ route }) => {
         lng={latLng.lng}
         handleClose={handleClose}
       />
-      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
+      <BlockedComponent
+        blockedShow={blockedShow}
+        setBlockedShow={setBlockedShow}
+      />
     </Common>
   );
 };

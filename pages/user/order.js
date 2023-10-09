@@ -7,7 +7,12 @@ import { borderRadius, colors, fonts } from "../../utility/theme";
 import { arrowRight } from "../../Layout/importingImages";
 import plusCircle from "../../assets/plus-circle.png";
 import { Popup } from "../../elements/common";
-import { CustomDatePicker, CustomDropdownInput, CustomTextInput, CustomTimePicker } from "../../elements/input";
+import {
+  CustomDatePicker,
+  CustomDropdownInput,
+  CustomTextInput,
+  CustomTimePicker,
+} from "../../elements/input";
 import {
   CommonUtility,
   carTypeOptions,
@@ -23,7 +28,7 @@ import { OrderSchema } from "../../utility/validationSchema";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import Map from "../../components/map";
-import { BlockedComponent } from "../../components/blocked"; 
+import { BlockedComponent } from "../../components/blocked";
 
 const Common = styled.View`
   width: 100%;
@@ -87,9 +92,7 @@ const FlexRow = styled.View`
   flex-direction: row;
 `;
 
-const StyledSwitch = styled.Switch`
-
-`;
+const StyledSwitch = styled.Switch``;
 
 const Images = styled.Image`
   width: 20px;
@@ -160,15 +163,15 @@ const OrderNow = ({ setPopup }) => {
   );
 };
 
-const OrderItem = ({ order , setLatLng, setMapVisible }) => {
+const OrderItem = ({ order, setLatLng, setMapVisible }) => {
   const navigation = useNavigation();
-  const handleMapClick = () =>{
+  const handleMapClick = () => {
     setLatLng({
       lat: order.latLng.lat,
-      lng: order.latLng.lng
-    })
-    setMapVisible(true)
-  }
+      lng: order.latLng.lng,
+    });
+    setMapVisible(true);
+  };
   return (
     <OrderContainer>
       <OrderLeft>
@@ -180,7 +183,7 @@ const OrderItem = ({ order , setLatLng, setMapVisible }) => {
           <FlexRow style={{ alignItems: "center" }}>
             <H4 bold>Location &nbsp;</H4>
             <H4 light>{order.location} &nbsp;</H4>
-            <ShowMaps onPress={handleMapClick} >
+            <ShowMaps onPress={handleMapClick}>
               <H4>Show maps</H4>
             </ShowMaps>
           </FlexRow>
@@ -188,20 +191,19 @@ const OrderItem = ({ order , setLatLng, setMapVisible }) => {
             <H4 bold>Problem &nbsp;</H4>
             <H4>{order.problem}</H4>
           </FlexRow>
-          {
-            order.date &&
+          {order.date && (
             <>
               <H4 bold>Appointment &nbsp;</H4>
-            <FlexRow>
-              <H4 bold>Date &nbsp;</H4>
-              <H4>{order.date}</H4>
-            </FlexRow>
-            <FlexRow>
-              <H4 bold>Time &nbsp;</H4>
-              <H4>{order.time}</H4>
-            </FlexRow>
+              <FlexRow>
+                <H4 bold>Date &nbsp;</H4>
+                <H4>{order.date}</H4>
+              </FlexRow>
+              <FlexRow>
+                <H4 bold>Time &nbsp;</H4>
+                <H4>{order.time}</H4>
+              </FlexRow>
             </>
-          }
+          )}
         </View>
         <FlexRow style={{ marginTop: 20 }}>
           <H4 light bold>
@@ -238,25 +240,28 @@ const Order = () => {
   const [appointment, setAppointment] = useState(false);
   const [latLng, setLatLng] = useState({
     lat: null,
-    lng: null
+    lng: null,
   });
   const [blockedShow, setBlockedShow] = useState(false);
 
   const [location, setLocation] = useState({
     name: null,
     latitude: null,
-    longitude: null
+    longitude: null,
   });
   const [values, setValues] = useState({
     problem: "dentAndPaint",
     carType: "cars",
     bid: null,
     date: null,
-    time: null
+    time: null,
   });
 
   const handleForm = async () => {
-    OrderSchema.validate({...values, location: location.name}, { abortEarly: false })
+    OrderSchema.validate(
+      { ...values, location: location.name },
+      { abortEarly: false }
+    )
       .then(async () => {
         const payload = {
           problem: values.problem,
@@ -268,12 +273,12 @@ const Order = () => {
           userName: user.name,
           userProfile: user.profile,
           latLng: {
-            lat: location.latitude , 
-            lng: location.longitude
+            lat: location.latitude,
+            lng: location.longitude,
           },
           requests: [],
-          date: appointment? values.date : "",
-          time: appointment? values.time : ""
+          date: appointment ? values.date : "",
+          time: appointment ? values.time : "",
         };
         try {
           setApiLoading(true);
@@ -281,11 +286,11 @@ const Order = () => {
             type: "info",
             text1: "Creating Order",
           });
-          
+
           let res = await UserService.order(payload);
-          if(res.response?.status === 405){
-            setBlockedShow(true)
-          }else{
+          if (res.response?.status === 405) {
+            setBlockedShow(true);
+          } else {
             Toast.show({
               type: "success",
               text1: "Order Placed",
@@ -314,12 +319,12 @@ const Order = () => {
       });
   };
 
-  function handleClose(){
+  function handleClose() {
     setLatLng({
       lat: null,
-      lng: null
-    })
-    setMapVisible(false)
+      lng: null,
+    });
+    setMapVisible(false);
   }
 
   return (
@@ -332,7 +337,12 @@ const Order = () => {
             {orders.length > 0 ? (
               <OrdersContainer>
                 {orders?.map((order) => (
-                  <OrderItem key={order.id} order={order} setLatLng={setLatLng} setMapVisible={setMapVisible} />
+                  <OrderItem
+                    key={order.id}
+                    order={order}
+                    setLatLng={setLatLng}
+                    setMapVisible={setMapVisible}
+                  />
                 ))}
               </OrdersContainer>
             ) : (
@@ -397,24 +407,29 @@ const Order = () => {
             hint={errors.bid}
           />
         </FlexRow>
-        <FlexRow style={{ alignItems: "center" }} >
-            <H4>
-              Appointment
-            </H4>
-            <StyledSwitch value={appointment} onValueChange={(value)=> setAppointment(value) } />
+        <FlexRow style={{ alignItems: "center" }}>
+          <H4>Appointment</H4>
+          <StyledSwitch
+            value={appointment}
+            onValueChange={(value) => setAppointment(value)}
+          />
         </FlexRow>
-        { appointment && 
-        <FlexRow style={{ gap: 10, marginBottom: 10 }} >
+        {appointment && (
+          <FlexRow style={{ gap: 10, marginBottom: 10 }}>
             <CustomDatePicker
               value={values.date}
-              setValue={(data)=> setValues((prev)=>({...prev, date: data}))}
+              setValue={(data) =>
+                setValues((prev) => ({ ...prev, date: data }))
+              }
             />
             <CustomTimePicker
               value={values.time}
-              setValue={(data)=> setValues((prev)=> ({...prev, time: data}))}
+              setValue={(data) =>
+                setValues((prev) => ({ ...prev, time: data }))
+              }
             />
-        </FlexRow>
-        }
+          </FlexRow>
+        )}
         <Buttons>
           <CustomOutlineButton
             style={{ marginLeft: "auto" }}
@@ -439,7 +454,10 @@ const Order = () => {
         lng={latLng.lng}
         handleClose={handleClose}
       />
-      <BlockedComponent blockedShow={blockedShow} setBlockedShow={setBlockedShow}/>
+      <BlockedComponent
+        blockedShow={blockedShow}
+        setBlockedShow={setBlockedShow}
+      />
       <ToastContainer>
         <Toast />
       </ToastContainer>

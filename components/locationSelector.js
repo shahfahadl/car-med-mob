@@ -11,7 +11,7 @@ const LocationContainer = styled.TouchableOpacity`
   display: flex;
   justify-content: center;
   padding: 10px;
-  ${({ inverted }) =>  inverted && "background-color: white; color: black;" }
+  ${({ inverted }) => inverted && "background-color: white; color: black;"}
 `;
 
 const Container = styled.View`
@@ -50,30 +50,30 @@ export default function LocationSelector({
   useEffect(() => {
     {
       autoSelect &&
-      (async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          setErrorMsg("Permission to access location was denied");
-          return;
-        }
-  
-        let location = await Location.getCurrentPositionAsync({});
-        Geocoder.from(location.coords.latitude, location.coords.longitude)
-          .then((json) => {
-            const cityComponent = json.results.find((component) =>
-              component.types.includes("administrative_area_level_2")
-            );
-            const cityName = cityComponent
-              ? cityComponent.address_components[0].long_name
-              : "";
-            setLocation({
-              name: cityName,
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            });
-          })
-          .catch((error) => console.warn(error));
-      })();
+        (async () => {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== "granted") {
+            setErrorMsg("Permission to access location was denied");
+            return;
+          }
+
+          let location = await Location.getCurrentPositionAsync({});
+          Geocoder.from(location.coords.latitude, location.coords.longitude)
+            .then((json) => {
+              const cityComponent = json.results.find((component) =>
+                component.types.includes("administrative_area_level_2")
+              );
+              const cityName = cityComponent
+                ? cityComponent.address_components[0].long_name
+                : "";
+              setLocation({
+                name: cityName,
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              });
+            })
+            .catch((error) => console.warn(error));
+        })();
     }
   }, []);
 
@@ -82,7 +82,7 @@ export default function LocationSelector({
   }
 
   return (
-    <Container width={width} {...rest} >
+    <Container width={width} {...rest}>
       <Label inverted={inverted} labelColor={labelColor}>
         Location
       </Label>

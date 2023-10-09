@@ -89,17 +89,17 @@ export const cities = [
       latLng: {
         lat: 33.9956777,
         lng: 71.9075292,
-      }
+      },
     },
     label: "Nowshera",
   },
   {
     value: {
       name: "Peshawar",
-      latLng:{
+      latLng: {
         lat: 34.0151,
-        lng: 71.5249
-      }
+        lng: 71.5249,
+      },
     },
     label: "Peshawar",
   },
@@ -108,8 +108,8 @@ export const cities = [
       name: "Islamabad",
       latLng: {
         lat: 33.6844,
-        lng: 73.0479
-      }
+        lng: 73.0479,
+      },
     },
     label: "Islamabad",
   },
